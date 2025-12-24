@@ -96,14 +96,17 @@ export default function HomeContent() {
         </div>
 
         {/* Right: Featured Property - 40% */}
-        <div className="lg:w-[40%] bg-gradient-to-br from-blue-600 to-indigo-700 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+        <div className="lg:w-[40%] bg-gradient-to-br from-blue-600 to-indigo-700 relative overflow-hidden group rounded-3xl">
+          {/* Pattern Overlay - Ensure this doesn't cover the rounding */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,...')] opacity-30"></div>
 
           <div className="relative h-full flex flex-col justify-end p-8 lg:p-12">
+            {/* Badge */}
             <div className="absolute top-8 right-8 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30">
               <span className="text-white text-sm font-medium">Featured</span>
             </div>
 
+            {/* Content Card */}
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 transform group-hover:scale-105 transition-all duration-500">
               <div className="text-6xl mb-4">🏢</div>
               <h3 className="text-2xl font-bold text-white mb-2">
