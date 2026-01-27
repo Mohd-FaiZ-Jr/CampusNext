@@ -211,19 +211,19 @@ export default function FilterSidebar({
 
         {/* Verified Only */}
         <div>
-          <label className="flex items-center gap-3 cursor-pointer group p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+          <label className="flex items-center gap-3 cursor-pointer group p-3 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors">
             <input
               type="checkbox"
-              checked={filters.verified || false}
+              checked={filters.verified !== false} // Checked by default (true), unchecked only if explicitly false
               onChange={handleVerifiedToggle}
-              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
             />
             <div className="flex-1">
               <span className="text-sm font-semibold text-zinc-900 block">
                 Verified Properties Only
               </span>
               <span className="text-xs text-zinc-600">
-                Show only verified listings
+                {filters.verified ? "Showing only verified listings" : "Showing all listings"}
               </span>
             </div>
           </label>

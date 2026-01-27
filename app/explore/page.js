@@ -43,7 +43,7 @@ export default function ExplorePage() {
     maxDistance: null,
     gender: "",
     amenities: [],
-    verified: false,
+    verified: true, // Default to showing only verified properties
   });
 
   // Fetch properties from API
@@ -61,7 +61,8 @@ export default function ExplorePage() {
       if (filters.priceMax) params.append("priceMax", filters.priceMax);
       if (filters.maxDistance) params.append("distance", filters.maxDistance);
       if (filters.gender) params.append("gender", filters.gender);
-      if (filters.verified) params.append("verified", "true");
+      // Always send verified parameter - true or false
+      params.append("verified", filters.verified ? "true" : "false");
       if (searchTerm) params.append("college", searchTerm);
 
       const response = await fetch(`/api/properties?${params.toString()}`);
@@ -122,7 +123,7 @@ export default function ExplorePage() {
       maxDistance: null,
       gender: "",
       amenities: [],
-      verified: false,
+      verified: true, // Keep verified as true even when clearing filters
     });
     setSearchTerm("");
   };
@@ -132,13 +133,13 @@ export default function ExplorePage() {
     fetchProperties();
   };
 
-  // Count active filters
+  // Count active filters (don't count verified=true as an active filter since it's default)
   const activeFilterCount = [
     filters.priceMin !== null,
     filters.maxDistance !== null,
     filters.gender !== "",
     filters.amenities?.length > 0,
-    filters.verified,
+    filters.verified === false, // Only count as active if user explicitly wants unverified
   ].filter(Boolean).length;
 
   return (
