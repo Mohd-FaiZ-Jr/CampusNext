@@ -23,6 +23,9 @@ export default function PropertyDetailPage() {
             const res = await fetch(`/api/properties/${id}`);
             if (!res.ok) throw new Error("Failed to fetch property details");
             const data = await res.json();
+            console.log("Fetched property data:", data);
+            console.log("Location data:", data.location);
+            console.log("Location coordinates:", data.location?.coordinates);
             setProperty(data);
         } catch (err) {
             console.error(err);
@@ -214,7 +217,7 @@ export default function PropertyDetailPage() {
 
                                     {/* Map Preview */}
                                     <div className="rounded-2xl overflow-hidden border border-gray-200 h-64 shadow-md bg-gray-100 relative">
-                                        {property.location?.coordinates ? (
+                                        {property.location?.coordinates && property.location.coordinates.length === 2 ? (
                                             <PropertyMap
                                                 coordinates={property.location.coordinates}
                                                 title={property.title}

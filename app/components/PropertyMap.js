@@ -30,6 +30,11 @@ export default function PropertyMap({ coordinates, title }) {
         setIsMounted(true);
     }, []);
 
+    // Debug logging
+    console.log("PropertyMap received coordinates:", coordinates);
+    console.log("Coordinates type:", typeof coordinates);
+    console.log("Is array:", Array.isArray(coordinates));
+
     if (!isMounted) {
         return (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center text-zinc-400">
@@ -38,10 +43,33 @@ export default function PropertyMap({ coordinates, title }) {
         );
     }
 
+    // Validate coordinates
+    if (!coordinates || !Array.isArray(coordinates) || coordinates.length !== 2) {
+        console.error("Invalid coordinates:", coordinates);
+        return (
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-zinc-400">
+                Invalid coordinates
+            </div>
+        );
+    }
+
+    // Validate that coordinates are numbers
+    const [lng, lat] = coordinates;
+    if (typeof lng !== 'number' || typeof lat !== 'number' || isNaN(lng) || isNaN(lat)) {
+        console.error("Coordinates are not valid numbers:", { lng, lat });
+        return (
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-zinc-400">
+                Invalid coordinate values
+            </div>
+        );
+    }
+
     // Default to New Delhi if no coordinates
     // Note: Leaflet uses [lat, lng], while GeoJSON/MapLibre uses [lng, lat]
     // We need to swap them if the input is [lng, lat]
-    const position = coordinates ? [coordinates[1], coordinates[0]] : [28.6139, 77.2090];
+    const position = [lat, lng]; // Swap from GeoJSON [lng, lat] to Leaflet [lat, lng]
+
+    console.log("Final position for map:", position);
 
     return (
         <MapContainer
