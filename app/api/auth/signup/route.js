@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import User from "@/app/backend/models/User.model";
 import { NextResponse } from "next/server";
 import { sendData } from "@/app/lib/email";
+import { getOTPEmailTemplate, getWelcomeBackEmailTemplate } from "@/app/lib/emailTemplates";
 
 export async function POST(req) {
   const { name, email, password, role } = await req.json();
@@ -42,16 +43,8 @@ export async function POST(req) {
     try {
       await sendData({
         to: email,
-        subject: "Verify your email address",
-        html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Welcome Back!</h2>
-          <p>You previously started signing up but didn't verify.</p>
-          <p>Your new verification code is:</p>
-          <h1 style="background: #f4f4f4; padding: 10px; text-align: center; letter-spacing: 5px;">${otp}</h1>
-          <p>This code will expire in 10 minutes.</p>
-        </div>
-      `
+        subject: "Complete Your Registration - Student Housing",
+        html: getWelcomeBackEmailTemplate(otp, name)
       });
     } catch (error) {
       console.error("Email sending failed:", error);
@@ -81,22 +74,21 @@ export async function POST(req) {
 
   // Send verification email
   try {
+    // We await this, but now with a 10s timeout from the transporter config
     await sendData({
       to: email,
-      subject: "Verify your email address",
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Welcome to Student Housing App!</h2>
-          <p>Please verify your email address to continue.</p>
-          <p>Your verification code is:</p>
-          <h1 style="background: #f4f4f4; padding: 10px; text-align: center; letter-spacing: 5px;">${otp}</h1>
-          <p>This code will expire in 10 minutes.</p>
-        </div>
-      `
+      subject: "Verify Your Email - Student Housing",
+      html: getOTPEmailTemplate(otp, name)
     });
   } catch (error) {
-    console.error("Email sending failed:", error);
-    // Continue even if email fails, user can resend
+    console.error("Email sending failed during signup:", error);
+    // If email fails, we still return success for the account creation
+    // The user will see the OTP screen and can click "Resend" to try again
+    // This prevents the "40s wait then crash" experience
+    return NextResponse.json(
+      { message: "Signup successful, but email failed to send. Please try 'Resend Code'." },
+      { status: 201 }
+    );
   }
 
   return NextResponse.json(
