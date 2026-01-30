@@ -15,9 +15,12 @@ const transporter = nodemailer.createTransport({
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
     },
-    // Add timeouts to prevent 40s hangs on Render
-    connectionTimeout: 10000, // 10 seconds
-    socketTimeout: 10000,     // 10 seconds
+    // Add timeouts to prevent hangs
+    connectionTimeout: 10000,
+    socketTimeout: 10000,
+    tls: {
+        rejectUnauthorized: false
+    }
 });
 
 export const sendData = async (data, req) => {
@@ -29,14 +32,23 @@ export const sendData = async (data, req) => {
     };
 
     try {
-        console.log(`Attempting to send email to ${data.to}...`);
+        console.log(`Attempting to send email via ${process.env.SMTP_HOST}:${process.env.SMTP_PORT} with user ${process.env.SMTP_USER}...`);
         const info = await transporter.sendMail(mailOptions);
         console.log("Message sent: %s", info.messageId);
         return info;
     } catch (error) {
-        console.error("Critical Email Error:", error);
-        // On production (Render), Gmail often blocks sign-ins.
-        // We throw checking connection specifically.
+        console.error("Critical Email Error Details:", {
+            code: error.code,
+            response: error.response,
+            command: error.command,
+            message: error.message
+        });
+
+        // Explicitly check for Brevo specific errors
+        if (error.response && error.response.includes("535")) {
+            throw new Error(`Authentication Failed: Check API Key or Verified Sender status on Brevo.`);
+        }
+
         throw new Error(`Email failed: ${error.message}`);
     }
 };

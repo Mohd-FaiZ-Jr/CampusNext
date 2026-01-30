@@ -4,6 +4,7 @@ import { connectDB } from "@/app/backend/db/connect";
 import User from "@/app/backend/models/User.model";
 import { sendData } from "@/app/lib/email";
 import { NextResponse } from "next/server";
+import { getOTPEmailTemplate } from "@/app/lib/emailTemplates";
 
 export async function POST(req) {
     try {
@@ -49,15 +50,8 @@ export async function POST(req) {
         try {
             await sendData({
                 to: email,
-                subject: "Verify your email address",
-                html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Email Verification</h2>
-          <p>Your verification code is:</p>
-          <h1 style="background: #f4f4f4; padding: 10px; text-align: center; letter-spacing: 5px;">${otp}</h1>
-          <p>This code will expire in 10 minutes.</p>
-        </div>
-      `
+                subject: "Your New Verification Code - Student Housing",
+                html: getOTPEmailTemplate(otp, user.name)
             });
             console.log("Resend OTP email sent successfully");
         } catch (error) {
