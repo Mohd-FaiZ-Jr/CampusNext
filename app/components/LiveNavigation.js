@@ -23,6 +23,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
     const [isLoadingLocation, setIsLoadingLocation] = useState(true);
     const [showTurnByTurn, setShowTurnByTurn] = useState(false);
     const [voiceEnabled, setVoiceEnabled] = useState(true);
+    const [autoFollow, setAutoFollow] = useState(true); // Toggle for auto-centering
     const watchId = useRef(null);
     const lastPosition = useRef(null);
     const lastSpokenStep = useRef(-1);
@@ -150,12 +151,24 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                 // Now start watching position
                 watchId.current = navigator.geolocation.watchPosition(
                     (pos) => {
-                        const { longitude, latitude, speed: gpsSpeed, heading } = pos.coords;
+                        const { longitude, latitude, speed: gpsSpeed, heading: gpsHeading } = pos.coords;
                         const loc = [longitude, latitude];
 
                         setUserLocation(loc);
                         if (gpsSpeed !== null && gpsSpeed > 0) setSpeed(gpsSpeed * 3.6);
-                        if (heading !== null) setBearing(heading);
+
+                        // Calculate bearing from movement if GPS heading unavailable
+                        let actualBearing = gpsHeading;
+                        if (gpsHeading === null || gpsHeading === undefined) {
+                            if (lastPosition.current) {
+                                actualBearing = calculateBearing(lastPosition.current, loc);
+                                console.log(`📐 Calculated bearing from movement: ${actualBearing}°`);
+                            }
+                        } else {
+                            console.log(`🧭 Using GPS heading: ${gpsHeading}°`);
+                        }
+
+                        if (actualBearing !== null) setBearing(actualBearing);
 
                         // Check if route needs recalculation
                         if (route && shouldRecalculateRoute(loc)) {
@@ -163,8 +176,8 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                             calculateRoute(loc);
                         }
 
-                        // Update user marker
-                        updateUserMarker(loc, heading);
+                        // Update user marker with calculated bearing
+                        updateUserMarker(loc, actualBearing);
 
                         // Update current step based on proximity
                         updateCurrentStep(loc);
@@ -246,16 +259,34 @@ export default function LiveNavigation({ destination, propertyTitle }) {
             const res = await fetch(url);
             const data = await res.json();
 
-            console.log("OSRM Response:", data);
+            console.log("=".repeat(50));
+            console.log("🗺️ OSRM ROUTE RESPONSE:");
+            console.log("=".repeat(50));
+            console.log("Full response:", JSON.stringify(data, null, 2));
 
             if (!data.routes || !data.routes.length) {
-                console.error("No routes found in response");
+                console.error("❌ No routes found in response");
                 return;
             }
 
             const routeData = data.routes[0];
-            console.log("Route distance:", routeData.distance, "meters");
-            console.log("Route duration:", routeData.duration, "seconds");
+            console.log("\n📍 ROUTE DETAILS:");
+            console.log("Distance:", routeData.distance, "meters");
+            console.log("Duration:", routeData.duration, "seconds");
+            console.log("Number of steps:", routeData.legs[0].steps.length);
+
+            console.log("\n🔄 ALL NAVIGATION STEPS:");
+            routeData.legs[0].steps.forEach((step, index) => {
+                console.log(`Step ${index + 1}:`, {
+                    type: step.maneuver?.type,
+                    modifier: step.maneuver?.modifier,
+                    instruction: step.maneuver?.instruction,
+                    formatted: formatInstruction(step),
+                    distance: step.distance,
+                    name: step.name
+                });
+            });
+            console.log("=".repeat(50));
 
             const distanceKm = (routeData.distance / 1000).toFixed(1);
             const etaMin = Math.round(routeData.duration / 60);
@@ -442,7 +473,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
         }
     };
 
-    // Update user marker with rotation - MODERN GOOGLE MAPS STYLE
+    // Update user marker with rotation - SIMPLE & ACCURATE
     const updateUserMarker = (location, heading) => {
         if (!map.current) return;
 
@@ -452,84 +483,66 @@ export default function LiveNavigation({ destination, propertyTitle }) {
             const rotation = heading || 0;
 
             if (!userMarker.current) {
-                // Create modern navigation marker container
+                // Create simple, accurate marker
                 const el = document.createElement('div');
-                el.className = 'user-marker-modern';
+                el.className = 'user-marker-accurate';
                 el.style.cssText = `
-                    width: 60px;
-                    height: 60px;
+                    width: 50px;
+                    height: 50px;
                     position: relative;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                 `;
 
-                // Modern marker with directional cone and pulsing effect
+                // Simple, clear design
                 el.innerHTML = `
-                    <!-- Pulsing outer ring -->
+                    <!-- Pulsing ring -->
                     <div style="
                         position: absolute;
-                        width: 60px;
-                        height: 60px;
+                        width: 50px;
+                        height: 50px;
                         border-radius: 50%;
-                        background: rgba(66, 133, 244, 0.2);
+                        background: rgba(66, 133, 244, 0.15);
                         animation: pulse 2s ease-in-out infinite;
                     "></div>
                     
-                    <!-- Direction cone (fan shape) -->
-                    <div class="direction-cone" style="
-                        position: absolute;
-                        width: 80px;
-                        height: 80px;
-                        transform: rotate(${rotation}deg) translateY(-15px);
-                        transition: transform 0.3s ease-out;
-                    ">
-                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
-                            <defs>
-                                <linearGradient id="coneGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:rgba(66,133,244,0.4);stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:rgba(66,133,244,0);stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <path d="M50,50 L30,15 Q50,5 70,15 Z" fill="url(#coneGradient)"/>
-                        </svg>
-                    </div>
-                    
-                    <!-- Center dot -->
+                    <!-- Main blue dot -->
                     <div style="
                         position: absolute;
-                        width: 24px;
-                        height: 24px;
-                        background: linear-gradient(135deg, #4285F4 0%, #1a73e8 100%);
+                        width: 20px;
+                        height: 20px;
+                        background: #4285F4;
                         border-radius: 50%;
-                        border: 4px solid white;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 0 2px rgba(66,133,244,0.3);
+                        border: 3px solid white;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.4);
                         z-index: 2;
                     "></div>
                     
-                    <!-- Arrow indicator inside dot -->
-                    <div class="arrow-indicator" style="
+                    <!-- Direction arrow -->
+                    <div class="direction-arrow" style="
                         position: absolute;
                         width: 0;
                         height: 0;
-                        border-left: 6px solid transparent;
-                        border-right: 6px solid transparent;
-                        border-bottom: 10px solid white;
-                        transform: rotate(${rotation}deg) translateY(-2px);
+                        border-left: 8px solid transparent;
+                        border-right: 8px solid transparent;
+                        border-bottom: 20px solid #4285F4;
+                        transform: rotate(${rotation}deg) translateY(-20px);
                         transition: transform 0.3s ease-out;
+                        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
                         z-index: 3;
                     "></div>
                 `;
 
-                // Add keyframe animation for pulse
-                if (!document.getElementById('marker-animations')) {
+                // Add animation
+                if (!document.getElementById('marker-pulse-animation')) {
                     const style = document.createElement('style');
-                    style.id = 'marker-animations';
+                    style.id = 'marker-pulse-animation';
                     style.textContent = `
                         @keyframes pulse {
-                            0% { transform: scale(0.8); opacity: 1; }
-                            50% { transform: scale(1.2); opacity: 0.5; }
-                            100% { transform: scale(0.8); opacity: 1; }
+                            0% { transform: scale(1); opacity: 0.8; }
+                            50% { transform: scale(1.3); opacity: 0.3; }
+                            100% { transform: scale(1); opacity: 0.8; }
                         }
                     `;
                     document.head.appendChild(style);
@@ -538,27 +551,27 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                 userMarker.current = new maplibregl.Marker({ element: el })
                     .setLngLat(location)
                     .addTo(map.current);
+
+                console.log(`📍 User marker created at ${location}`);
             } else {
                 userMarker.current.setLngLat(location);
-                // Update rotation of direction cone and arrow
-                const markerEl = userMarker.current.getElement();
-                const cone = markerEl.querySelector('.direction-cone');
-                const arrow = markerEl.querySelector('.arrow-indicator');
-                if (cone) {
-                    cone.style.transform = `rotate(${rotation}deg) translateY(-15px)`;
-                }
+                // Update arrow rotation
+                const arrow = userMarker.current.getElement().querySelector('.direction-arrow');
                 if (arrow) {
-                    arrow.style.transform = `rotate(${rotation}deg) translateY(-2px)`;
+                    arrow.style.transform = `rotate(${rotation}deg) translateY(-20px)`;
                 }
             }
 
-            map.current.easeTo({
-                center: location,
-                bearing: rotation,
-                zoom: 18,
-                pitch: 60,
-                duration: 1000
-            });
+            // Only auto-center if autoFollow is enabled
+            if (autoFollow) {
+                map.current.easeTo({
+                    center: location,
+                    bearing: rotation,
+                    zoom: 18,
+                    pitch: 60,
+                    duration: 1000
+                });
+            }
         });
     };
 
@@ -579,6 +592,25 @@ export default function LiveNavigation({ destination, propertyTitle }) {
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    };
+
+    // Calculate bearing (direction) between two points
+    const calculateBearing = (from, to) => {
+        const [lon1, lat1] = from;
+        const [lon2, lat2] = to;
+
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const lat1Rad = lat1 * Math.PI / 180;
+        const lat2Rad = lat2 * Math.PI / 180;
+
+        const y = Math.sin(dLon) * Math.cos(lat2Rad);
+        const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+
+        let bearing = Math.atan2(y, x) * 180 / Math.PI;
+        bearing = (bearing + 360) % 360; // Normalize to 0-360
+
+        return bearing;
     };
 
     // Voice navigation - Google Maps style with distance
@@ -608,33 +640,72 @@ export default function LiveNavigation({ destination, propertyTitle }) {
         window.speechSynthesis.speak(utterance);
     };
 
-    // Update current navigation step
+    // Update current navigation step - PRODUCTION VERSION
     const updateCurrentStep = (location) => {
         if (!route || !route.legs || !route.legs[0].steps) return;
 
         const steps = route.legs[0].steps;
+        const currentStepData = steps[currentStep];
 
-        for (let i = currentStep; i < steps.length; i++) {
-            const step = steps[i];
-            if (!step.maneuver || !step.maneuver.location) continue;
+        if (!currentStepData || !currentStepData.maneuver || !currentStepData.maneuver.location) return;
 
-            const stepLocation = step.maneuver.location;
-            const dist = calculateDistance(location, stepLocation);
-            const distMeters = dist * 1000;
+        const stepLocation = currentStepData.maneuver.location;
+        const distToCurrentStep = calculateDistance(location, stepLocation);
+        const distMeters = distToCurrentStep * 1000;
 
-            // Announce upcoming turn when 200m away
-            if (distMeters < 200 && distMeters > 50 && lastSpokenStep.current !== i) {
-                speakInstruction(formatInstruction(step), distMeters);
-                lastSpokenStep.current = i;
+        console.log(`📍 Distance to next turn: ${distMeters.toFixed(0)}m (Step ${currentStep + 1}/${steps.length})`);
+
+        // Voice announcements at multiple distances for better UX
+        const stepKey = `step_${currentStep}`;
+
+        // Announce at 500m
+        if (distMeters <= 500 && distMeters > 400 && lastSpokenStep.current !== `${stepKey}_500`) {
+            console.log("🔊 Announcing at 500m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_500`;
+        }
+        // Announce at 200m
+        else if (distMeters <= 200 && distMeters > 150 && lastSpokenStep.current !== `${stepKey}_200`) {
+            console.log("🔊 Announcing at 200m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_200`;
+        }
+        // Announce at 100m
+        else if (distMeters <= 100 && distMeters > 70 && lastSpokenStep.current !== `${stepKey}_100`) {
+            console.log("🔊 Announcing at 100m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_100`;
+        }
+        // Final announcement at 50m
+        else if (distMeters <= 50 && distMeters > 30 && lastSpokenStep.current !== `${stepKey}_50`) {
+            console.log("🔊 Final announcement at 50m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_50`;
+        }
+
+        // Advance to next step when within 25 meters
+        if (distMeters < 25 && currentStep < steps.length - 1) {
+            console.log(`✅ Advancing to step ${currentStep + 2}`);
+            setCurrentStep(currentStep + 1);
+            lastSpokenStep.current = null; // Reset for next step
+
+            // Speak the new instruction immediately
+            const nextStep = steps[currentStep + 1];
+            if (nextStep) {
+                speakInstruction(formatInstruction(nextStep));
             }
+        }
 
-            // If within 30m of next step, advance
-            if (dist < 0.03 && i > currentStep) {
-                setCurrentStep(i);
-                // Speak the new instruction immediately
-                speakInstruction(formatInstruction(step));
-                break;
-            }
+        // Check if reached destination (final step and very close)
+        if (currentStep === steps.length - 1 && distMeters < 20 && lastSpokenStep.current !== 'destination_reached') {
+            console.log("🎯 Destination reached!");
+            speakInstruction("You have reached your destination");
+            lastSpokenStep.current = 'destination_reached';
+
+            // Optional: Show celebration or completion UI
+            setTimeout(() => {
+                console.log("✅ Navigation complete");
+            }, 2000);
         }
     };
 
@@ -662,13 +733,20 @@ export default function LiveNavigation({ destination, propertyTitle }) {
     };
 
     // Get distance to next turn
+    // Get accurate distance to next turn - PRODUCTION VERSION
     const getDistanceToNextTurn = () => {
         if (!route || !route.legs || !route.legs[0].steps || !userLocation) return null;
         const step = route.legs[0].steps[currentStep];
         if (!step || !step.maneuver || !step.maneuver.location) return null;
 
+        // Calculate straight-line distance to maneuver point
         const dist = calculateDistance(userLocation, step.maneuver.location);
-        return (dist * 1000).toFixed(0); // Convert to meters
+        const distMeters = Math.round(dist * 1000);
+
+        // Return null if distance is unreasonably large (likely calculation error)
+        if (distMeters > 10000) return null;
+
+        return distMeters;
     };
 
     return (
@@ -806,33 +884,36 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                     gap: '12px',
                     alignItems: 'flex-end'
                 }}>
-                    {/* Recenter Button */}
+                    {/* Auto-Follow Toggle (Recenter) */}
                     <button
                         onClick={() => {
-                            if (userLocation && map.current) {
+                            const newState = !autoFollow;
+                            setAutoFollow(newState);
+                            // If enabling auto-follow, recenter immediately
+                            if (newState && userLocation && map.current) {
                                 map.current.flyTo({
                                     center: userLocation,
                                     zoom: 18,
                                     pitch: 60,
                                     bearing: bearing
                                 });
-                                setIsNavigating(true);
                             }
                         }}
-                        title="Recenter"
+                        title={autoFollow ? "Auto-follow ON (tap to disable)" : "Auto-follow OFF (tap to enable)"}
                         style={{
-                            backgroundColor: 'white',
-                            color: '#1f2937',
+                            backgroundColor: autoFollow ? '#3b82f6' : 'white',
+                            color: autoFollow ? 'white' : '#1f2937',
                             padding: '12px',
                             borderRadius: '50%',
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            border: '1px solid #e5e7eb',
+                            border: autoFollow ? 'none' : '1px solid #e5e7eb',
                             cursor: 'pointer',
                             width: '48px',
                             height: '48px',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            transition: 'all 0.3s ease'
                         }}
                     >
                         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1059,7 +1140,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                                             color: '#1f2937',
                                             marginBottom: '4px'
                                         }}>
-                                            {step.maneuver?.instruction || 'Continue'}
+                                            {formatInstruction(step)}
                                         </div>
                                         <div style={{
                                             fontSize: '12px',

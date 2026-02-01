@@ -16,7 +16,7 @@ export async function POST(req, { params }) {
     const { reason } = body;
 
     // Find property
-    const property = await Property.findById(id);
+    const property = await Property.findById(id).populate('owner', 'name email');
     if (!property) {
       return NextResponse.json(
         { message: "Property not found" },
@@ -32,6 +32,40 @@ export async function POST(req, { params }) {
     property.verifiedBy = undefined;
 
     await property.save();
+
+    // Send rejection email to landlord
+    if (property.owner) {
+      try {
+        const { getLandlordPropertyRejectionTemplate } = await import('@/app/lib/emailTemplates');
+        const { sendData } = await import('@/app/lib/email');
+
+        const propertyData = {
+          propertyId: property._id.toString(),
+          title: property.title,
+          address: property.address
+        };
+
+        const landlordName = property.owner.name;
+        const landlordEmail = property.owner.email;
+        const rejectionReason = property.rejectionReason;
+
+        console.log(`📧 Sending rejection email to landlord: ${landlordEmail}`);
+
+        // Send email asynchronously
+        sendData({
+          to: landlordEmail,
+          subject: `📋 Property Listing Update Required`,
+          html: getLandlordPropertyRejectionTemplate(propertyData, landlordName, rejectionReason)
+        }).then(() => {
+          console.log(`✅ Rejection email sent to landlord: ${landlordEmail}`);
+        }).catch(error => {
+          console.error(`❌ Failed to send rejection email to landlord ${landlordEmail}:`, error.message);
+        });
+      } catch (emailError) {
+        console.error('Error sending rejection email:', emailError);
+        // Don't fail the request if email fails
+      }
+    }
 
     return NextResponse.json(
       {

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/app/backend/db/connect";
 import Property from "@/app/backend/models/Property.model";
+import User from "@/app/backend/models/User.model";
 import { isLandlord } from "@/app/lib/auth";
+import { sendData } from "@/app/lib/email";
+import { getAdminPropertyNotificationTemplate } from "@/app/lib/emailTemplates";
 
 export async function POST(req) {
     try {
@@ -59,6 +62,76 @@ export async function POST(req) {
             verified: false, // Default
             distance: 0, // Default or calculated
         });
+
+        console.log('✅ Property created successfully:', newProperty._id);
+
+        // 6. Send email notifications to all admins (async, don't block response)
+        try {
+            console.log('🔍 Starting admin notification process...');
+
+            // Fetch landlord details
+            const landlord = await User.findById(user.id).select('name email');
+            console.log('👤 Landlord found:', landlord ? landlord.email : 'NOT FOUND');
+
+            // Fetch all admin users
+            const admins = await User.find({ role: "ADMIN" }).select('email name');
+            console.log('👥 Admin users found:', admins.length, admins.map(a => a.email));
+
+            if (admins && admins.length > 0 && landlord) {
+                const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+                console.log('🌐 Site URL:', siteUrl);
+
+                const propertyData = {
+                    propertyId: newProperty._id.toString(),
+                    title: newProperty.title,
+                    description: newProperty.description,
+                    address: newProperty.address,
+                    price: newProperty.price,
+                    gender: newProperty.gender,
+                    college: newProperty.college,
+                    images: newProperty.images
+                };
+
+                const landlordData = {
+                    landlordName: landlord.name,
+                    landlordEmail: landlord.email
+                };
+
+                console.log(`📧 Preparing to send emails to ${admins.length} admin(s) for property: ${title}`);
+
+                // Send email to each admin asynchronously
+                const emailPromises = admins.map(admin => {
+                    console.log(`📨 Sending email to: ${admin.email}`);
+                    return sendData({
+                        to: admin.email,
+                        subject: `🏠 New Property Listed - ${title}`,
+                        html: getAdminPropertyNotificationTemplate(propertyData, landlordData, siteUrl)
+                    }).then(() => {
+                        console.log(`✅ Email sent successfully to: ${admin.email}`);
+                    }).catch(error => {
+                        // Log error but don't fail the request
+                        console.error(`❌ Failed to send email to admin ${admin.email}:`, error.message);
+                    });
+                });
+
+                // Don't await - let emails send in background
+                Promise.all(emailPromises).then(() => {
+                    console.log(`✅ All admin notification emails sent for property: ${newProperty._id}`);
+                }).catch(error => {
+                    console.error('❌ Some admin emails failed:', error);
+                });
+
+                console.log(`📧 Email sending initiated for ${admins.length} admin(s)`);
+            } else {
+                console.log('⚠️ No admins found or landlord not found - skipping email notifications');
+                console.log('   Admins count:', admins ? admins.length : 0);
+                console.log('   Landlord found:', !!landlord);
+            }
+        } catch (emailError) {
+            // Log email error but don't fail property creation
+            console.error('❌ Error sending admin notifications:', emailError);
+        }
+
 
         return NextResponse.json(
             {
