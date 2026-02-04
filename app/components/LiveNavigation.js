@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { formatInstruction, getTurnIcon } from "../lib/navigationHelpers";
 
 export default function LiveNavigation({ destination, propertyTitle }) {
     const mapContainer = useRef(null);
@@ -22,9 +23,11 @@ export default function LiveNavigation({ destination, propertyTitle }) {
     const [isLoadingLocation, setIsLoadingLocation] = useState(true);
     const [showTurnByTurn, setShowTurnByTurn] = useState(false);
     const [voiceEnabled, setVoiceEnabled] = useState(true);
+    const [autoFollow, setAutoFollow] = useState(true); // Toggle for auto-centering
     const watchId = useRef(null);
     const lastPosition = useRef(null);
     const lastSpokenStep = useRef(-1);
+    const routeGeometryRef = useRef(null); // Store geometry for immediate access
 
     // Initialize Map
     useEffect(() => {
@@ -37,6 +40,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                 container: mapContainer.current,
                 style: {
                     version: 8,
+                    glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
                     sources: {
                         osm: {
                             type: "raster",
@@ -63,14 +67,26 @@ export default function LiveNavigation({ destination, propertyTitle }) {
 
             // Add zoom controls
             map.current.addControl(new maplibregl.NavigationControl(), 'bottom-right');
-        });
 
-        return () => {
-            if (watchId.current) {
-                navigator.geolocation.clearWatch(watchId.current);
-            }
-            if (map.current) map.current.remove();
-        };
+            // Force route redraw on style change (fixes disappearing route)
+            map.current.on('styledata', () => {
+                // Use ref to access current geometry (state won't work in closure)
+                if (map.current.loaded() && routeGeometryRef.current) {
+                    const hasLayer = map.current.getLayer('route');
+                    if (!hasLayer) {
+                        console.log("🎨 Style loaded/changed, redrawing route from ref...");
+                        drawRoute(routeGeometryRef.current);
+                    }
+                }
+            });
+
+            return () => {
+                if (watchId.current) {
+                    navigator.geolocation.clearWatch(watchId.current);
+                }
+                if (map.current) map.current.remove();
+            };
+        });
     }, [destination.coordinates]);
 
     // Add destination marker when map loads
@@ -135,12 +151,24 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                 // Now start watching position
                 watchId.current = navigator.geolocation.watchPosition(
                     (pos) => {
-                        const { longitude, latitude, speed: gpsSpeed, heading } = pos.coords;
+                        const { longitude, latitude, speed: gpsSpeed, heading: gpsHeading } = pos.coords;
                         const loc = [longitude, latitude];
 
                         setUserLocation(loc);
                         if (gpsSpeed !== null && gpsSpeed > 0) setSpeed(gpsSpeed * 3.6);
-                        if (heading !== null) setBearing(heading);
+
+                        // Calculate bearing from movement if GPS heading unavailable
+                        let actualBearing = gpsHeading;
+                        if (gpsHeading === null || gpsHeading === undefined) {
+                            if (lastPosition.current) {
+                                actualBearing = calculateBearing(lastPosition.current, loc);
+                                console.log(`📐 Calculated bearing from movement: ${actualBearing}°`);
+                            }
+                        } else {
+                            console.log(`🧭 Using GPS heading: ${gpsHeading}°`);
+                        }
+
+                        if (actualBearing !== null) setBearing(actualBearing);
 
                         // Check if route needs recalculation
                         if (route && shouldRecalculateRoute(loc)) {
@@ -148,8 +176,8 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                             calculateRoute(loc);
                         }
 
-                        // Update user marker
-                        updateUserMarker(loc, heading);
+                        // Update user marker with calculated bearing
+                        updateUserMarker(loc, actualBearing);
 
                         // Update current step based on proximity
                         updateCurrentStep(loc);
@@ -194,6 +222,33 @@ export default function LiveNavigation({ destination, propertyTitle }) {
         };
     }, [mapLoaded]);
 
+    // Handle Device Orientation (Compass)
+    useEffect(() => {
+        const handleOrientation = (event) => {
+            // alpha is the compass direction (0-360)
+            // webkitCompassHeading is for iOS
+            let compass = event.webkitCompassHeading || Math.abs(event.alpha - 360);
+
+            if (compass !== null && compass !== undefined) {
+                // If we aren't moving fast (speed < 5 km/h), use compass for bearing
+                if (!speed || speed < 5) {
+                    setBearing(compass);
+                    if (userLocation) {
+                        updateUserMarker(userLocation, compass);
+                    }
+                }
+            }
+        };
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', handleOrientation);
+        }
+
+        return () => {
+            window.removeEventListener('deviceorientation', handleOrientation);
+        };
+    }, [speed, userLocation]);
+
     // Calculate route using OSRM
     const calculateRoute = async (from) => {
         try {
@@ -204,16 +259,34 @@ export default function LiveNavigation({ destination, propertyTitle }) {
             const res = await fetch(url);
             const data = await res.json();
 
-            console.log("OSRM Response:", data);
+            console.log("=".repeat(50));
+            console.log("🗺️ OSRM ROUTE RESPONSE:");
+            console.log("=".repeat(50));
+            console.log("Full response:", JSON.stringify(data, null, 2));
 
             if (!data.routes || !data.routes.length) {
-                console.error("No routes found in response");
+                console.error("❌ No routes found in response");
                 return;
             }
 
             const routeData = data.routes[0];
-            console.log("Route distance:", routeData.distance, "meters");
-            console.log("Route duration:", routeData.duration, "seconds");
+            console.log("\n📍 ROUTE DETAILS:");
+            console.log("Distance:", routeData.distance, "meters");
+            console.log("Duration:", routeData.duration, "seconds");
+            console.log("Number of steps:", routeData.legs[0].steps.length);
+
+            console.log("\n🔄 ALL NAVIGATION STEPS:");
+            routeData.legs[0].steps.forEach((step, index) => {
+                console.log(`Step ${index + 1}:`, {
+                    type: step.maneuver?.type,
+                    modifier: step.maneuver?.modifier,
+                    instruction: step.maneuver?.instruction,
+                    formatted: formatInstruction(step),
+                    distance: step.distance,
+                    name: step.name
+                });
+            });
+            console.log("=".repeat(50));
 
             const distanceKm = (routeData.distance / 1000).toFixed(1);
             const etaMin = Math.round(routeData.duration / 60);
@@ -223,133 +296,295 @@ export default function LiveNavigation({ destination, propertyTitle }) {
             setEta(etaMin);
             setCurrentStep(0);
 
+            // Store geometry in ref for immediate access
+            routeGeometryRef.current = routeData.geometry;
+
             console.log("Set distance:", distanceKm, "km");
             console.log("Set ETA:", etaMin, "min");
 
-            // Draw route on map (wait for map to be ready)
-            setTimeout(() => {
-                if (map.current && map.current.loaded()) {
-                    drawRoute(routeData.geometry);
-                    // Fit map to route
-                    setTimeout(() => {
+            // Draw route immediately if map is ready
+            if (map.current && map.current.loaded()) {
+                console.log("Drawing route immediately after calculation...");
+                drawRoute(routeData.geometry);
+                // Fit map to route
+                setTimeout(() => {
+                    fitMapToRoute(routeData.geometry.coordinates);
+                }, 300);
+            } else {
+                // Retry after map loads
+                console.log("Map not ready, will retry route drawing...");
+                const retryInterval = setInterval(() => {
+                    if (map.current && map.current.loaded()) {
+                        console.log("Map now ready, drawing route...");
+                        drawRoute(routeData.geometry);
                         fitMapToRoute(routeData.geometry.coordinates);
-                    }, 300);
-                }
-            }, 100);
+                        clearInterval(retryInterval);
+                    }
+                }, 200);
+                // Clear after 5 seconds max
+                setTimeout(() => clearInterval(retryInterval), 5000);
+            }
 
         } catch (err) {
             console.error("Route calculation error:", err);
         }
     };
 
-    // Draw route on map
+
+    // AGGRESSIVE route persistence - ensure route stays visible
+    useEffect(() => {
+        if (!map.current || !map.current.loaded() || !route) return;
+
+        console.log("=== ROUTE PERSISTENCE CHECK ===");
+        const hasRouteLayer = map.current.getLayer("route");
+        console.log("Route layer exists:", !!hasRouteLayer);
+
+        if (!hasRouteLayer) {
+            console.log("⚠️ Route layer missing! Redrawing...");
+            drawRoute(route.geometry);
+        }
+    }, [mapLoaded, route]);
+
+    // ADDITIONAL: Redraw route every 2 seconds as failsafe
+    useEffect(() => {
+        if (!routeGeometryRef.current || !map.current) return;
+
+        const interval = setInterval(() => {
+            if (map.current && map.current.loaded() && routeGeometryRef.current && !map.current.getLayer("route")) {
+                console.log("🔄 Failsafe: Redrawing missing route from ref");
+                drawRoute(routeGeometryRef.current);
+            }
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [route]); // Still depends on route state to trigger effect setup
+
+    // Draw route on map - PRODUCTION VERSION with extensive debugging
     const drawRoute = (geometry) => {
+        console.log("=== DRAW ROUTE CALLED ===");
+        console.log("Map current:", !!map.current);
+        console.log("Map loaded:", map.current ? map.current.loaded() : false);
+        console.log("Geometry:", geometry);
+
         if (!map.current) {
-            console.error("Map not initialized");
+            console.error("❌ Map not initialized");
             return;
         }
 
         if (!map.current.loaded()) {
-            console.error("Map not loaded yet");
+            console.error("❌ Map not loaded yet");
             return;
         }
 
-        console.log("Drawing route...");
+        if (!geometry || !geometry.coordinates || geometry.coordinates.length < 2) {
+            console.error("❌ Invalid geometry:", geometry);
+            return;
+        }
+
+        console.log("✅ All validations passed, drawing route...");
+        console.log("Coordinates count:", geometry.coordinates.length);
 
         try {
-            // Remove existing route if it exists
+            // STEP 1 & 2: Update or Add Source
             if (map.current.getSource("route")) {
-                console.log("Removing existing route");
-                if (map.current.getLayer("route")) {
-                    map.current.removeLayer("route");
-                }
-                map.current.removeSource("route");
+                console.log("  Updating existing route source...");
+                map.current.getSource("route").setData({
+                    type: "Feature",
+                    properties: {},
+                    geometry: geometry
+                });
+            } else {
+                console.log("  Adding new route source...");
+                map.current.addSource("route", {
+                    type: "geojson",
+                    data: {
+                        type: "Feature",
+                        properties: {},
+                        geometry: geometry
+                    }
+                });
             }
 
-            // Add new route source
-            map.current.addSource("route", {
-                type: "geojson",
-                data: {
-                    type: "Feature",
-                    geometry: geometry
-                }
-            });
+            // STEP 3: Ensure Route Layer Exists
+            if (!map.current.getLayer("route")) {
+                console.log("  Adding route layer...");
+                map.current.addLayer({
+                    id: "route",
+                    type: "line",
+                    source: "route",
+                    layout: {
+                        "line-join": "round",
+                        "line-cap": "round",
+                        "visibility": "visible"
+                    },
+                    paint: {
+                        "line-color": "#4285F4",  // Google Blue
+                        "line-width": 10,          // THICK line for visibility
+                        "line-opacity": 1.0
+                    }
+                });
+            } else {
+                console.log("  Route layer already exists");
+            }
 
-            console.log("Added route source");
+            // STEP 4: Add directional arrows (optional, may fail if glyphs not loaded)
+            console.log("Step 4: Adding arrow layer...");
+            try {
+                map.current.addLayer({
+                    id: "route-arrows",
+                    type: "symbol",
+                    source: "route",
+                    layout: {
+                        "symbol-placement": "line",
+                        "text-field": "▶",
+                        "text-size": 20,
+                        "symbol-spacing": 100,
+                        "text-keep-upright": false,
+                        "text-allow-overlap": true,
+                        "text-ignore-placement": true
+                    },
+                    paint: {
+                        "text-color": "#ffffff",
+                        "text-halo-color": "#4285F4",
+                        "text-halo-width": 2
+                    }
+                });
+                console.log("✅ Arrow layer added");
+            } catch (arrowError) {
+                console.warn("⚠️ Arrow layer failed (non-critical):", arrowError);
+            }
 
-            // Add route layer
-            map.current.addLayer({
-                id: "route",
-                type: "line",
-                source: "route",
-                layout: {
-                    "line-join": "round",
-                    "line-cap": "round",
-                    "visibility": "visible"
-                },
-                paint: {
-                    "line-color": "#3b82f6",
-                    "line-width": 5,
-                    "line-opacity": 1
-                }
-            });
+            // STEP 5: Verify layers exist
+            console.log("Step 5: Verifying layers...");
+            const routeLayer = map.current.getLayer("route");
+            const routeSource = map.current.getSource("route");
+            console.log("Route layer exists:", !!routeLayer);
+            console.log("Route source exists:", !!routeSource);
 
-            console.log("Route layer added successfully - blue line should be visible");
+            if (routeLayer && routeSource) {
+                console.log("🎉 ROUTE SUCCESSFULLY DRAWN!");
+            } else {
+                console.error("❌ Route drawing verification FAILED");
+            }
+
         } catch (error) {
-            console.error("Error drawing route:", error);
+            console.error("❌ CRITICAL ERROR in drawRoute:", error);
+            console.error("Error stack:", error.stack);
         }
     };
 
-    // Update user marker with smooth animation
+    // Update user marker with rotation - SIMPLE & ACCURATE
     const updateUserMarker = (location, heading) => {
         if (!map.current) return;
 
         import('maplibre-gl').then((module) => {
             const maplibregl = module.default;
 
+            const rotation = heading || 0;
+
             if (!userMarker.current) {
-                // Create user marker (blue dot)
+                // Create simple, accurate marker
                 const el = document.createElement('div');
-                el.style.width = '20px';
-                el.style.height = '20px';
-                el.style.backgroundColor = '#3b82f6';
-                el.style.border = '3px solid white';
-                el.style.borderRadius = '50%';
-                el.style.boxShadow = '0 0 0 4px rgba(59, 130, 246, 0.3)';
-                el.style.transition = 'transform 0.3s ease-out';
+                el.className = 'user-marker-accurate';
+                el.style.cssText = `
+                    width: 50px;
+                    height: 50px;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                `;
+
+                // Simple, clear design
+                el.innerHTML = `
+                    <!-- Pulsing ring -->
+                    <div style="
+                        position: absolute;
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                        background: rgba(66, 133, 244, 0.15);
+                        animation: pulse 2s ease-in-out infinite;
+                    "></div>
+                    
+                    <!-- Main blue dot -->
+                    <div style="
+                        position: absolute;
+                        width: 20px;
+                        height: 20px;
+                        background: #4285F4;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+                        z-index: 2;
+                    "></div>
+                    
+                    <!-- Direction arrow -->
+                    <div class="direction-arrow" style="
+                        position: absolute;
+                        width: 0;
+                        height: 0;
+                        border-left: 8px solid transparent;
+                        border-right: 8px solid transparent;
+                        border-bottom: 20px solid #4285F4;
+                        transform: rotate(${rotation}deg) translateY(-20px);
+                        transition: transform 0.3s ease-out;
+                        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+                        z-index: 3;
+                    "></div>
+                `;
+
+                // Add animation
+                if (!document.getElementById('marker-pulse-animation')) {
+                    const style = document.createElement('style');
+                    style.id = 'marker-pulse-animation';
+                    style.textContent = `
+                        @keyframes pulse {
+                            0% { transform: scale(1); opacity: 0.8; }
+                            50% { transform: scale(1.3); opacity: 0.3; }
+                            100% { transform: scale(1); opacity: 0.8; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
 
                 userMarker.current = new maplibregl.Marker({ element: el })
                     .setLngLat(location)
                     .addTo(map.current);
 
-                console.log("User marker created");
+                console.log(`📍 User marker created at ${location}`);
             } else {
                 userMarker.current.setLngLat(location);
+                // Update arrow rotation
+                const arrow = userMarker.current.getElement().querySelector('.direction-arrow');
+                if (arrow) {
+                    arrow.style.transform = `rotate(${rotation}deg) translateY(-20px)`;
+                }
             }
 
-            // Center map on user with smooth animation
-            map.current.easeTo({
-                center: location,
-                zoom: 16,
-                duration: 1000
-            });
+            // Only auto-center if autoFollow is enabled
+            if (autoFollow) {
+                map.current.easeTo({
+                    center: location,
+                    bearing: rotation,
+                    zoom: 18,
+                    pitch: 60,
+                    duration: 1000
+                });
+            }
         });
     };
 
     // Check if route needs recalculation
     const shouldRecalculateRoute = (currentLocation) => {
         if (!route || !lastPosition.current) return false;
-
-        // Calculate distance from last position
         const distanceMoved = calculateDistance(currentLocation, lastPosition.current);
-
-        // Recalculate every 100m moved
-        return distanceMoved > 0.1; // 100 meters in km
+        return distanceMoved > 0.1;
     };
 
     // Haversine distance formula
     const calculateDistance = (point1, point2) => {
-        const R = 6371; // Earth radius in km
+        const R = 6371;
         const dLat = (point2[1] - point1[1]) * Math.PI / 180;
         const dLon = (point2[0] - point1[0]) * Math.PI / 180;
         const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -359,59 +594,118 @@ export default function LiveNavigation({ destination, propertyTitle }) {
         return R * c;
     };
 
-    // Voice navigation - speak instruction
-    const speakInstruction = (instruction, distanceMeters) => {
+    // Calculate bearing (direction) between two points
+    const calculateBearing = (from, to) => {
+        const [lon1, lat1] = from;
+        const [lon2, lat2] = to;
+
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const lat1Rad = lat1 * Math.PI / 180;
+        const lat2Rad = lat2 * Math.PI / 180;
+
+        const y = Math.sin(dLon) * Math.cos(lat2Rad);
+        const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+
+        let bearing = Math.atan2(y, x) * 180 / Math.PI;
+        bearing = (bearing + 360) % 360; // Normalize to 0-360
+
+        return bearing;
+    };
+
+    // Voice navigation - Google Maps style with distance
+    const speakInstruction = (instruction, distanceMeters = null) => {
         if (!voiceEnabled || !('speechSynthesis' in window)) return;
 
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
+        let speechText = instruction;
 
-        let text = instruction;
-        if (distanceMeters) {
-            if (distanceMeters < 100) {
-                text = `In ${Math.round(distanceMeters)} meters, ${instruction}`;
-            } else if (distanceMeters < 1000) {
-                text = `In ${Math.round(distanceMeters / 100) * 100} meters, ${instruction}`;
+        // Add distance if provided (like Google Maps)
+        if (distanceMeters !== null && distanceMeters > 0) {
+            if (distanceMeters < 1000) {
+                speechText = `In ${Math.round(distanceMeters)} meters, ${instruction.toLowerCase()}`;
+            } else {
+                const km = (distanceMeters / 1000).toFixed(1);
+                speechText = `In ${km} kilometers, ${instruction.toLowerCase()}`;
             }
         }
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        utterance.volume = 1;
+        console.log("🔊 Speaking:", speechText);
 
-        console.log("🔊 Speaking:", text);
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.rate = 0.9; // Slightly slower for clarity
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
     };
 
-
-    // Update current navigation step
+    // Update current navigation step - PRODUCTION VERSION
     const updateCurrentStep = (location) => {
         if (!route || !route.legs || !route.legs[0].steps) return;
 
         const steps = route.legs[0].steps;
+        const currentStepData = steps[currentStep];
 
-        for (let i = currentStep; i < steps.length; i++) {
-            const step = steps[i];
-            if (!step.maneuver || !step.maneuver.location) continue;
+        if (!currentStepData || !currentStepData.maneuver || !currentStepData.maneuver.location) return;
 
-            const stepLocation = step.maneuver.location;
-            const dist = calculateDistance(location, stepLocation);
-            const distMeters = dist * 1000;
+        const stepLocation = currentStepData.maneuver.location;
+        const distToCurrentStep = calculateDistance(location, stepLocation);
+        const distMeters = distToCurrentStep * 1000;
 
-            // Announce upcoming turn when 200m away
-            if (distMeters < 200 && distMeters > 50 && lastSpokenStep.current !== i) {
-                speakInstruction(step.maneuver.instruction, distMeters);
-                lastSpokenStep.current = i;
+        console.log(`📍 Distance to next turn: ${distMeters.toFixed(0)}m (Step ${currentStep + 1}/${steps.length})`);
+
+        // Voice announcements at multiple distances for better UX
+        const stepKey = `step_${currentStep}`;
+
+        // Announce at 500m
+        if (distMeters <= 500 && distMeters > 400 && lastSpokenStep.current !== `${stepKey}_500`) {
+            console.log("🔊 Announcing at 500m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_500`;
+        }
+        // Announce at 200m
+        else if (distMeters <= 200 && distMeters > 150 && lastSpokenStep.current !== `${stepKey}_200`) {
+            console.log("🔊 Announcing at 200m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_200`;
+        }
+        // Announce at 100m
+        else if (distMeters <= 100 && distMeters > 70 && lastSpokenStep.current !== `${stepKey}_100`) {
+            console.log("🔊 Announcing at 100m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_100`;
+        }
+        // Final announcement at 50m
+        else if (distMeters <= 50 && distMeters > 30 && lastSpokenStep.current !== `${stepKey}_50`) {
+            console.log("🔊 Final announcement at 50m");
+            speakInstruction(formatInstruction(currentStepData), distMeters);
+            lastSpokenStep.current = `${stepKey}_50`;
+        }
+
+        // Advance to next step when within 25 meters
+        if (distMeters < 25 && currentStep < steps.length - 1) {
+            console.log(`✅ Advancing to step ${currentStep + 2}`);
+            setCurrentStep(currentStep + 1);
+            lastSpokenStep.current = null; // Reset for next step
+
+            // Speak the new instruction immediately
+            const nextStep = steps[currentStep + 1];
+            if (nextStep) {
+                speakInstruction(formatInstruction(nextStep));
             }
+        }
 
-            // If within 30m of next step, advance
-            if (dist < 0.03 && i > currentStep) {
-                setCurrentStep(i);
-                // Speak the new instruction immediately
-                speakInstruction(step.maneuver.instruction);
-                break;
-            }
+        // Check if reached destination (final step and very close)
+        if (currentStep === steps.length - 1 && distMeters < 20 && lastSpokenStep.current !== 'destination_reached') {
+            console.log("🎯 Destination reached!");
+            speakInstruction("You have reached your destination");
+            lastSpokenStep.current = 'destination_reached';
+
+            // Optional: Show celebration or completion UI
+            setTimeout(() => {
+                console.log("✅ Navigation complete");
+            }, 2000);
         }
     };
 
@@ -435,18 +729,24 @@ export default function LiveNavigation({ destination, propertyTitle }) {
     const getCurrentInstruction = () => {
         if (!route || !route.legs || !route.legs[0].steps) return "Calculating route...";
         const step = route.legs[0].steps[currentStep];
-        if (!step || !step.maneuver) return "Continue straight";
-        return step.maneuver.instruction || "Continue";
+        return formatInstruction(step);
     };
 
     // Get distance to next turn
+    // Get accurate distance to next turn - PRODUCTION VERSION
     const getDistanceToNextTurn = () => {
         if (!route || !route.legs || !route.legs[0].steps || !userLocation) return null;
         const step = route.legs[0].steps[currentStep];
         if (!step || !step.maneuver || !step.maneuver.location) return null;
 
+        // Calculate straight-line distance to maneuver point
         const dist = calculateDistance(userLocation, step.maneuver.location);
-        return (dist * 1000).toFixed(0); // Convert to meters
+        const distMeters = Math.round(dist * 1000);
+
+        // Return null if distance is unreasonably large (likely calculation error)
+        if (distMeters > 10000) return null;
+
+        return distMeters;
     };
 
     return (
@@ -462,7 +762,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
             padding: 0,
             overflow: 'hidden'
         }}>
-            {/* Map Container */}
+            {/* 1. Map Container */}
             <div
                 ref={mapContainer}
                 style={{
@@ -476,7 +776,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                 }}
             />
 
-            {/* Loading State */}
+            {/* 2. Loading State Overlay */}
             {isLoadingLocation && !error && (
                 <div style={{
                     position: 'absolute',
@@ -505,7 +805,7 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                 </div>
             )}
 
-            {/* Navigation Info Card */}
+            {/* 3. Top Instruction Card */}
             {isNavigating && !error && (
                 <div style={{
                     position: 'absolute',
@@ -521,180 +821,119 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                         borderRadius: '16px',
                         boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
                         padding: '20px',
-                        border: '1px solid #e5e7eb'
+                        border: '1px solid #e5e7eb',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '20px'
                     }}>
-                        {/* Current Instruction */}
-                        <div style={{ marginBottom: '16px' }}>
+                        {/* Turn Icon */}
+                        <div style={{
+                            fontSize: '48px',
+                            minWidth: '60px',
+                            textAlign: 'center',
+                            lineHeight: '1'
+                        }}>
+                            {route && route.legs && route.legs[0].steps[currentStep] && route.legs[0].steps[currentStep].maneuver ?
+                                getTurnIcon(route.legs[0].steps[currentStep].maneuver.modifier) : "⬆️"}
+                        </div>
+
+                        {/* Turn Details */}
+                        <div style={{ flex: 1 }}>
                             <div style={{
-                                fontSize: '12px',
+                                fontSize: '13px',
                                 color: '#6b7280',
-                                marginBottom: '4px',
                                 textTransform: 'uppercase',
-                                letterSpacing: '0.5px'
+                                fontWeight: '600',
+                                marginBottom: '4px'
                             }}>Next Turn</div>
+
                             <div style={{
-                                fontSize: '20px',
+                                fontSize: '24px',
                                 fontWeight: 'bold',
                                 color: '#1f2937',
-                                lineHeight: '1.3'
+                                lineHeight: '1.2',
+                                marginBottom: '4px'
                             }}>
                                 {getCurrentInstruction()}
                             </div>
+
+                            {/* Distance to Turn */}
                             {getDistanceToNextTurn() && (
                                 <div style={{
-                                    fontSize: '16px',
-                                    color: '#3b82f6',
-                                    marginTop: '4px',
-                                    fontWeight: '600'
+                                    fontSize: '20px',
+                                    color: '#2563eb',
+                                    fontWeight: '800'
                                 }}>
-                                    in {getDistanceToNextTurn()}m
+                                    In {getDistanceToNextTurn()}m
                                 </div>
                             )}
                         </div>
-
-                        {/* ETA and Distance */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            borderTop: '1px solid #e5e7eb',
-                            paddingTop: '16px'
-                        }}>
-                            <div>
-                                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '2px' }}>ETA</div>
-                                <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                                    {eta !== null ? `${eta} min` : "..."}
-                                </div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '2px' }}>Distance</div>
-                                <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                                    {distance !== null ? `${distance} km` : "..."}
-                                </div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '2px' }}>Speed</div>
-                                <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                                    {speed.toFixed(0)} km/h
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Error Message */}
-            {error && (
+            {/* 4. Floating Controls (Right Side) */}
+            {isNavigating && !error && (
                 <div style={{
                     position: 'absolute',
-                    top: '16px',
-                    left: '16px',
+                    bottom: '200px',
                     right: '16px',
                     zIndex: 50,
-                    maxWidth: '600px',
-                    margin: '0 auto'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    alignItems: 'flex-end'
                 }}>
-                    <div style={{
-                        backgroundColor: '#fef2f2',
-                        border: '1px solid #fecaca',
-                        borderRadius: '16px',
-                        padding: '16px'
-                    }}>
-                        <div style={{ color: '#991b1b', fontWeight: '600', marginBottom: '8px' }}>⚠️ Location Error</div>
-                        <div style={{ color: '#7f1d1d', fontSize: '14px' }}>{error}</div>
-                    </div>
-                </div>
-            )}
-
-            {/* Exit Button */}
-            <button
-                onClick={() => window.close()}
-                style={{
-                    position: 'absolute',
-                    bottom: '32px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 50,
-                    backgroundColor: 'white',
-                    color: '#1f2937',
-                    padding: '14px 32px',
-                    borderRadius: '9999px',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-                    fontWeight: 'bold',
-                    fontSize: '16px',
-                    cursor: 'pointer',
-                    border: 'none',
-                    transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-            >
-                Exit Navigation
-            </button>
-
-            {/* Destination Info */}
-            <div style={{
-                position: 'absolute',
-                bottom: '96px',
-                left: '16px',
-                right: '16px',
-                zIndex: 50,
-                maxWidth: '600px',
-                margin: '0 auto'
-            }}>
-                {!showTurnByTurn && (
-                    <div style={{
-                        backgroundColor: 'white',
-                        borderRadius: '12px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        padding: '16px',
-                        border: '1px solid #e5e7eb'
-                    }}>
-                        <div style={{ fontSize: '12px', color: '#6b7280' }}>Navigating to</div>
-                        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1f2937', marginTop: '2px' }}>{propertyTitle}</div>
-                    </div>
-                )}
-            </div>
-
-            {/* Turn-by-Turn Toggle Button */}
-            {isNavigating && !error && route && (
-                <>
+                    {/* Auto-Follow Toggle (Recenter) */}
                     <button
-                        onClick={() => setShowTurnByTurn(!showTurnByTurn)}
+                        onClick={() => {
+                            const newState = !autoFollow;
+                            setAutoFollow(newState);
+                            // If enabling auto-follow, recenter immediately
+                            if (newState && userLocation && map.current) {
+                                map.current.flyTo({
+                                    center: userLocation,
+                                    zoom: 18,
+                                    pitch: 60,
+                                    bearing: bearing
+                                });
+                            }
+                        }}
+                        title={autoFollow ? "Auto-follow ON (tap to disable)" : "Auto-follow OFF (tap to enable)"}
                         style={{
-                            position: 'absolute',
-                            bottom: '180px',
-                            right: '16px',
-                            zIndex: 50,
-                            backgroundColor: 'white',
-                            color: '#1f2937',
+                            backgroundColor: autoFollow ? '#3b82f6' : 'white',
+                            color: autoFollow ? 'white' : '#1f2937',
                             padding: '12px',
                             borderRadius: '50%',
                             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            border: '1px solid #e5e7eb',
+                            border: autoFollow ? 'none' : '1px solid #e5e7eb',
                             cursor: 'pointer',
                             width: '48px',
                             height: '48px',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            transition: 'all 0.3s ease'
                         }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
                     >
                         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </button>
 
-                    {/* Voice Toggle Button */}
+                    {/* Voice Toggle */}
                     <button
-                        onClick={() => setVoiceEnabled(!voiceEnabled)}
+                        onClick={() => {
+                            const newState = !voiceEnabled;
+                            setVoiceEnabled(newState);
+                            if (newState) {
+                                const utterance = new SpeechSynthesisUtterance("Voice navigation enabled");
+                                window.speechSynthesis.speak(utterance);
+                            }
+                        }}
+                        title="Toggle Voice"
                         style={{
-                            position: 'absolute',
-                            bottom: '240px',
-                            right: '16px',
-                            zIndex: 50,
                             backgroundColor: voiceEnabled ? '#3b82f6' : 'white',
                             color: voiceEnabled ? 'white' : '#1f2937',
                             padding: '12px',
@@ -708,8 +947,6 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}
-                        onMouseEnter={(e) => e.target.style.opacity = '0.9'}
-                        onMouseLeave={(e) => e.target.style.opacity = '1'}
                     >
                         {voiceEnabled ? (
                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -722,10 +959,97 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                             </svg>
                         )}
                     </button>
-                </>
+
+                    {/* Turn List Toggle */}
+                    {route && (
+                        <button
+                            onClick={() => setShowTurnByTurn(!showTurnByTurn)}
+                            title="Turn List"
+                            style={{
+                                backgroundColor: 'white',
+                                color: '#1f2937',
+                                padding: '12px',
+                                borderRadius: '50%',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                                border: '1px solid #e5e7eb',
+                                cursor: 'pointer',
+                                width: '48px',
+                                height: '48px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
             )}
 
-            {/* Turn-by-Turn Panel */}
+            {/* 5. Bottom Stats Card */}
+            {isNavigating && !error && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: '32px',
+                    left: '16px',
+                    right: '16px',
+                    zIndex: 50,
+                    maxWidth: '600px',
+                    margin: '0 auto'
+                }}>
+                    <div style={{
+                        backgroundColor: 'white',
+                        borderRadius: '16px',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                        padding: '16px 24px',
+                        border: '1px solid #e5e7eb',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>ETA</div>
+                            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
+                                {eta !== null ? `${eta} min` : "..."}
+                            </div>
+                        </div>
+                        <div style={{ width: '1px', height: '32px', backgroundColor: '#e5e7eb' }}></div>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>Distance</div>
+                            <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                                {distance !== null ? `${distance} km` : "..."}
+                            </div>
+                        </div>
+                        <div style={{ width: '1px', height: '32px', backgroundColor: '#e5e7eb' }}></div>
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>Speed</div>
+                            <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                                {speed.toFixed(0)} km/h
+                            </div>
+                        </div>
+                        <div style={{ width: '1px', height: '32px', backgroundColor: '#e5e7eb' }}></div>
+
+                        {/* Exit Button */}
+                        <button
+                            onClick={() => window.close()}
+                            style={{
+                                color: '#ef4444',
+                                fontWeight: 'bold',
+                                fontSize: '14px',
+                                border: 'none',
+                                background: 'none',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Exit
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* 6. Turn-by-Turn Panel Overlay */}
             {showTurnByTurn && isNavigating && !error && route && route.legs && route.legs[0].steps && (
                 <div style={{
                     position: 'absolute',
@@ -795,7 +1119,6 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                                         alignItems: 'flex-start'
                                     }}
                                 >
-                                    {/* Step Number/Icon */}
                                     <div style={{
                                         minWidth: '32px',
                                         height: '32px',
@@ -810,8 +1133,6 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                                     }}>
                                         {isPastStep ? '✓' : index + 1}
                                     </div>
-
-                                    {/* Step Details */}
                                     <div style={{ flex: 1 }}>
                                         <div style={{
                                             fontSize: '14px',
@@ -819,23 +1140,41 @@ export default function LiveNavigation({ destination, propertyTitle }) {
                                             color: '#1f2937',
                                             marginBottom: '4px'
                                         }}>
-                                            {step.maneuver?.instruction || 'Continue'}
+                                            {formatInstruction(step)}
                                         </div>
                                         <div style={{
                                             fontSize: '12px',
                                             color: '#6b7280'
                                         }}>
                                             {stepDistance} km
-                                            {isCurrentStep && userLocation && (
-                                                <span style={{ color: '#3b82f6', marginLeft: '8px', fontWeight: '600' }}>
-                                                    • Current
-                                                </span>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {/* 7. Error Toast */}
+            {error && (
+                <div style={{
+                    position: 'absolute',
+                    top: '16px',
+                    left: '16px',
+                    right: '16px',
+                    zIndex: 50,
+                    maxWidth: '600px',
+                    margin: '0 auto'
+                }}>
+                    <div style={{
+                        backgroundColor: '#fef2f2',
+                        border: '1px solid #fecaca',
+                        borderRadius: '16px',
+                        padding: '16px'
+                    }}>
+                        <div style={{ color: '#991b1b', fontWeight: '600', marginBottom: '8px' }}>⚠️ Location Error</div>
+                        <div style={{ color: '#7f1d1d', fontSize: '14px' }}>{error}</div>
                     </div>
                 </div>
             )}

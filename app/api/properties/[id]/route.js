@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/app/backend/db/connect";
 import Property from "@/app/backend/models/Property.model";
+import User from "@/app/backend/models/User.model";
 import { isLandlord, isLandlordOrAdmin } from "@/app/lib/auth";
+import { sendData } from "@/app/lib/email";
+import { getAdminPropertyUpdateNotificationTemplate } from "@/app/lib/emailTemplates";
 
 // GET Single Property
 export async function GET(req, { params }) {
@@ -70,6 +73,58 @@ export async function PUT(req, { params }) {
     console.log('PUT /api/properties/[id] - Received address:', address);
     console.log('PUT /api/properties/[id] - Current property address:', property.address);
 
+    // Detect changes in critical fields
+    const criticalFields = ['price', 'address', 'college', 'location', 'images'];
+    const changes = {};
+    let hasCriticalChanges = false;
+
+    // Check price
+    if (price && price !== property.price) {
+      changes.price = { old: property.price, new: price };
+      hasCriticalChanges = true;
+    }
+
+    // Check address
+    if (address !== undefined && address !== property.address) {
+      changes.address = { old: property.address, new: address };
+      hasCriticalChanges = true;
+    }
+
+    // Check college
+    if (college && college !== property.college) {
+      changes.college = { old: property.college, new: college };
+      hasCriticalChanges = true;
+    }
+
+    // Check location
+    if (location && location.lat && location.lng) {
+      const oldLat = property.location.coordinates[1];
+      const oldLng = property.location.coordinates[0];
+      if (location.lat !== oldLat || location.lng !== oldLng) {
+        changes.location = {
+          old: `${oldLat}, ${oldLng}`,
+          new: `${location.lat}, ${location.lng}`
+        };
+        hasCriticalChanges = true;
+      }
+    }
+
+    // Check images
+    if (images !== undefined && Array.isArray(images)) {
+      const oldImages = JSON.stringify(property.images.sort());
+      const newImages = JSON.stringify([...images].sort());
+      if (oldImages !== newImages) {
+        changes.images = {
+          old: `${property.images.length} image(s)`,
+          new: `${images.length} image(s)`
+        };
+        hasCriticalChanges = true;
+      }
+    }
+
+    console.log('🔍 Critical changes detected:', hasCriticalChanges);
+    console.log('📝 Changes:', changes);
+
     // Construct update object
     const updateData = {};
     if (title) updateData.title = title;
@@ -79,6 +134,12 @@ export async function PUT(req, { params }) {
     if (gender) updateData.gender = gender;
     if (amenities) updateData.amenities = amenities;
     if (college) updateData.college = college;
+
+    // If critical fields changed, unverify the property
+    if (hasCriticalChanges) {
+      updateData.verified = false;
+      console.log('⚠️ Property will be unverified due to critical changes');
+    }
 
     // Explicitly handle images array checks before update
     if (images !== undefined) {
@@ -112,8 +173,68 @@ export async function PUT(req, { params }) {
 
     console.log('PUT /api/properties/[id] - Successfully updated property. New address:', updatedProperty.address);
 
+    // Send admin notification if critical changes were made
+    if (hasCriticalChanges && Object.keys(changes).length > 0) {
+      try {
+        console.log('📧 Sending admin notifications for property update...');
+
+        // Fetch landlord details
+        const landlord = await User.findById(user.id).select('name email');
+
+        // Fetch all admin users
+        const admins = await User.find({ role: "ADMIN" }).select('email name');
+
+        if (admins && admins.length > 0 && landlord) {
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+          const propertyData = {
+            propertyId: updatedProperty._id.toString(),
+            title: updatedProperty.title,
+            address: updatedProperty.address,
+            images: updatedProperty.images
+          };
+
+          const landlordData = {
+            landlordName: landlord.name,
+            landlordEmail: landlord.email
+          };
+
+          console.log(`📧 Sending update notifications to ${admins.length} admin(s)`);
+
+          // Send email to each admin asynchronously
+          const emailPromises = admins.map(admin => {
+            console.log(`📨 Sending update email to: ${admin.email}`);
+            return sendData({
+              to: admin.email,
+              subject: `🔄 Property Updated - ${updatedProperty.title}`,
+              html: getAdminPropertyUpdateNotificationTemplate(propertyData, landlordData, changes, siteUrl)
+            }).then(() => {
+              console.log(`✅ Update email sent to: ${admin.email}`);
+            }).catch(error => {
+              console.error(`❌ Failed to send update email to ${admin.email}:`, error.message);
+            });
+          });
+
+          // Don't await - let emails send in background
+          Promise.all(emailPromises).then(() => {
+            console.log(`✅ All admin update notification emails sent`);
+          }).catch(error => {
+            console.error('❌ Some admin update emails failed:', error);
+          });
+        } else {
+          console.log('⚠️ No admins found or landlord not found - skipping update notifications');
+        }
+      } catch (emailError) {
+        console.error('❌ Error sending admin update notifications:', emailError);
+      }
+    }
+
     return NextResponse.json(
-      { message: "Property updated successfully", property: updatedProperty },
+      {
+        message: "Property updated successfully",
+        property: updatedProperty,
+        unverified: hasCriticalChanges
+      },
       { status: 200 },
     );
   } catch (error) {
