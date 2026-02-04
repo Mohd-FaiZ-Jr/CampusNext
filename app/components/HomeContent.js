@@ -12,6 +12,7 @@ import {
   Check,
   Camera,
   Zap,
+  Star,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -175,8 +176,9 @@ export default function HomeContent() {
                         </div>
                       )}
                       {/* Featured Badge */}
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">
-                        ⭐ Featured
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
+                        <Star className="w-4 h-4 fill-white" />
+                        Featured
                       </div>
                     </div>
 
