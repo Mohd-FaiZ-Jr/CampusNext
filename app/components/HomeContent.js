@@ -202,7 +202,7 @@ export default function HomeContent() {
                           onClick={(e) =>
                             handlePropertyClick(
                               e,
-                              `/explore/${featuredProperty._id}`,
+                              `/explore/${featuredProperty.id}`,
                             )
                           }
                           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105 shadow-lg"

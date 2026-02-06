@@ -6,6 +6,8 @@ import Link from "next/link";
 import Layout from "../../components/Layout";
 import PropertyMap from "../../components/PropertyMap";
 import { useAuth } from "../../context/AuthContext";
+import { getPublicLandlordProfile } from "../../services/landlordService";
+import { Building2, CheckCircle, Calendar, User } from "lucide-react";
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
@@ -14,6 +16,7 @@ export default function PropertyDetailPage() {
   const hasRedirected = useRef(false);
 
   const [property, setProperty] = useState(null);
+  const [landlord, setLandlord] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -30,17 +33,6 @@ export default function PropertyDetailPage() {
     }
   }, [user, authLoading]);
 
-  // Don't render anything while checking auth or if not authenticated
-  if (authLoading || !user) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-white flex items-center justify-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-        </div>
-      </Layout>
-    );
-  }
-
   useEffect(() => {
     if (id) {
       fetchPropertyDetails();
@@ -56,12 +48,53 @@ export default function PropertyDetailPage() {
       console.log("Location data:", data.location);
       console.log("Location coordinates:", data.location?.coordinates);
       setProperty(data);
+
+      // Fetch landlord profile if owner exists
+      if (data.owner) {
+        try {
+          const landlordData = await getPublicLandlordProfile(data.owner);
+          console.log("Fetched landlord data:", landlordData);
+          setLandlord(landlordData.profile);
+        } catch (err) {
+          console.error("Failed to fetch landlord profile:", err);
+          // Don't fail the whole page if landlord fetch fails
+        }
+      }
     } catch (err) {
       console.error(err);
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Don't render anything while checking auth or if not authenticated
+  if (authLoading || !user) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const getInitials = (name) => {
+    if (!name) return "LL";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    });
   };
 
   if (isLoading) {
@@ -234,35 +267,66 @@ export default function PropertyDetailPage() {
               <div className="flex flex-col lg:flex-row gap-10">
                 {/* Left Column: Details */}
                 <div className="flex-1 space-y-8">
-                  {/* Title & Location */}
-                  <div>
-                    <h1 className="text-3xl lg:text-4xl font-bold text-zinc-900 mb-3">
+                  {/* Property Header */}
+                  <div className="mb-6">
+                    <h1 className="text-4xl font-bold text-zinc-900 mb-2">
                       {property.title}
                     </h1>
-                    <div className="flex items-center gap-2 text-zinc-600 text-lg">
-                      <svg
-                        className="w-5 h-5 flex-shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      {property.distance
-                        ? `${property.distance} km from campus`
-                        : "Near campus"}
+                <p className="text-zinc-600 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  {property.location?.address || "Location not specified"}
+                </p>
+                
+                {/* Landlord Badge */}
+                {landlord && (
+                  <Link
+                    href={`/landlord/profile/${landlord.id}`}
+                    className="inline-flex items-center gap-2 mt-3 px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all duration-300 group"
+                  >
+                    {landlord.profileImage ? (
+                      <img
+                        src={landlord.profileImage}
+                        alt={landlord.name}
+                        className="w-8 h-8 rounded-full object-cover border-2 border-blue-400"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-2 border-blue-400">
+                        <span className="text-xs font-bold text-white">
+                          {getInitials(landlord.name)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
+                        {landlord.name}
+                      </span>
+                      {landlord.isVerified && (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                      )}
                     </div>
+                    <span className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                      →
+                    </span>
+                  </Link>
+                )}
                   </div>
 
                   {/* Key Stats Grid */}
@@ -397,6 +461,86 @@ export default function PropertyDetailPage() {
 
                 {/* Right Column: Map & Contact */}
                 <div className="w-full lg:w-96 space-y-6">
+                  {/* Landlord Info Card */}
+                  {landlord && (
+                    <Link
+                      href={`/landlord/profile/${landlord.id}`}
+                      className="block bg-white p-6 rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-blue-300 transition-all duration-300 cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-zinc-900">
+                          Property Owner
+                        </h3>
+                        <span className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                          View Profile →
+                        </span>
+                      </div>
+
+                      <div className="flex items-start gap-4 mb-4">
+                        {landlord.profileImage ? (
+                          <img
+                            src={landlord.profileImage}
+                            alt={landlord.name}
+                            className="w-16 h-16 rounded-full object-cover border-2 border-blue-500 group-hover:border-blue-600 transition-colors"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-2 border-blue-500 group-hover:border-blue-600 transition-colors">
+                            <span className="text-lg font-bold text-white">
+                              {getInitials(landlord.name)}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                              {landlord.name}
+                            </h4>
+                            {landlord.isVerified && (
+                              <CheckCircle className="w-5 h-5 text-green-500" />
+                            )}
+                          </div>
+
+                          {landlord.companyName && (
+                            <p className="text-sm text-gray-600 flex items-center gap-1 mb-1">
+                              <Building2 className="w-4 h-4" />
+                              {landlord.companyName}
+                            </p>
+                          )}
+
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            Member since {formatDate(landlord.memberSince)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {landlord.bio && (
+                        <div className="mb-4">
+                          <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
+                            {landlord.bio}
+                          </p>
+                        </div>
+                      )}
+
+                      {landlord.yearsOfExperience !== null &&
+                        landlord.yearsOfExperience !== undefined && (
+                          <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                            <p className="text-xs text-blue-600 font-semibold mb-1">
+                              Experience
+                            </p>
+                            <p className="text-sm text-gray-900 font-medium">
+                              {landlord.yearsOfExperience}{" "}
+                              {landlord.yearsOfExperience === 1
+                                ? "year"
+                                : "years"}{" "}
+                              in property rental
+                            </p>
+                          </div>
+                        )}
+                    </Link>
+                  )}
+
                   {/* Action Card */}
                   <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-lg top-24 sticky">
                     <h3 className="text-xl font-bold text-zinc-900 mb-6">
@@ -418,7 +562,10 @@ export default function PropertyDetailPage() {
                   </div>
 
                   {/* Map Preview */}
-                  <div className="rounded-2xl overflow-hidden border border-gray-200 h-64 shadow-md bg-gray-100 relative" style={{ zIndex: 0, isolation: 'isolate' }}>
+                  <div
+                    className="rounded-2xl overflow-hidden border border-gray-200 h-64 shadow-md bg-gray-100 relative"
+                    style={{ zIndex: 0, isolation: "isolate" }}
+                  >
                     {property.location?.coordinates &&
                     property.location.coordinates.length === 2 ? (
                       <PropertyMap

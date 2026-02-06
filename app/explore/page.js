@@ -23,6 +23,19 @@ export default function ExplorePage() {
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
 
+  const [filters, setFilters] = useState({
+    priceMin: null,
+    priceMax: null,
+    maxDistance: null,
+    gender: "",
+    amenities: [],
+    verified: true, // Default to showing only verified properties
+  });
+
+  const [userLocation, setUserLocation] = useState(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+
   // Check authentication - redirect if not logged in
   useEffect(() => {
     console.log("Auth check - authLoading:", authLoading, "user:", user);
@@ -39,21 +52,6 @@ export default function ExplorePage() {
       }
     }
   }, [user, authLoading]);
-
-  // Don't render anything while checking auth or if not authenticated
-  if (authLoading || !user) {
-    console.log("Showing loading - authLoading:", authLoading, "user:", user);
-    return (
-      <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
 
   // Fetch Suggestions
   useEffect(() => {
@@ -77,23 +75,25 @@ export default function ExplorePage() {
     }
   }, [debouncedSearch]);
 
-  const [filters, setFilters] = useState({
-    priceMin: null,
-    priceMax: null,
-    maxDistance: null,
-    gender: "",
-    amenities: [],
-    verified: true, // Default to showing only verified properties
-  });
-
-  const [userLocation, setUserLocation] = useState(null);
-  const [isLocating, setIsLocating] = useState(false);
-  const [locationError, setLocationError] = useState(null);
-
   // Fetch properties from API
   useEffect(() => {
     fetchProperties();
   }, [filters, sortBy, userLocation]);
+
+  // Don't render anything while checking auth or if not authenticated
+  if (authLoading || !user) {
+    console.log("Showing loading - authLoading:", authLoading, "user:", user);
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   const fetchProperties = async () => {
     setIsLoading(true);

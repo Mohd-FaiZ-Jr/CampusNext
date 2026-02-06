@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SignupModal from "./SignupModal";
 import LoginModal from "./LoginModal";
 import { useAuth } from "../context/AuthContext";
+import { User, LogOut, Edit } from "lucide-react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const {
     user,
     isLoading,
@@ -57,8 +60,33 @@ export default function Navbar() {
 
   const handleLogout = () => {
     setIsMobileMenuOpen(false);
+    setIsProfileDropdownOpen(false);
     logout();
   };
+
+  const getInitials = (name) => {
+    if (!name) return "LL";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -76,7 +104,7 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
+              <div className="ml-10 flex items-center space-x-8">
                 <Link
                   href="/"
                   className="text-zinc-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
@@ -109,15 +137,85 @@ export default function Navbar() {
                     {user ? (
                       // Logged in state
                       <>
-                        <span className="text-zinc-600 px-3 py-2 text-sm font-medium">
-                          Hi, {user.name}
-                        </span>
-                        <button
-                          onClick={handleLogout}
-                          className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
-                        >
-                          Logout
-                        </button>
+                        {user.role === "LANDLORD" ? (
+                          // Landlord with profile avatar and dropdown
+                          <div className="relative" ref={dropdownRef}>
+                            <button
+                              onClick={() =>
+                                setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                              }
+                              className="flex items-center gap-2 hover:opacity-80 transition-all duration-300 focus:outline-none"
+                            >
+                              {user.landlordProfile?.profileImage ? (
+                                <img
+                                  src={user.landlordProfile.profileImage}
+                                  alt={user.name}
+                                  className="w-9 h-9 rounded-full object-cover border-2 border-blue-500"
+                                />
+                              ) : (
+                                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-2 border-blue-500">
+                                  <span className="text-xs font-bold text-white">
+                                    {getInitials(user.name)}
+                                  </span>
+                                </div>
+                              )}
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {isProfileDropdownOpen && (
+                              <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                                <div className="px-4 py-3 border-b border-gray-100">
+                                  <p className="text-sm font-semibold text-gray-900">
+                                    {user.name}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {user.email}
+                                  </p>
+                                </div>
+                                <Link
+                                  href="/landlord/profile"
+                                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                                  onClick={() =>
+                                    setIsProfileDropdownOpen(false)
+                                  }
+                                >
+                                  <User className="w-4 h-4" />
+                                  View Profile
+                                </Link>
+                                <Link
+                                  href="/landlord/profile/edit"
+                                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                                  onClick={() =>
+                                    setIsProfileDropdownOpen(false)
+                                  }
+                                >
+                                  <Edit className="w-4 h-4" />
+                                  Edit Profile
+                                </Link>
+                                <button
+                                  onClick={handleLogout}
+                                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                                >
+                                  <LogOut className="w-4 h-4" />
+                                  Logout
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          // Non-landlord users (students, admin)
+                          <>
+                            <span className="text-zinc-600 px-3 py-2 text-sm font-medium">
+                              Hi, {user.name}
+                            </span>
+                            <button
+                              onClick={handleLogout}
+                              className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                            >
+                              Logout
+                            </button>
+                          </>
+                        )}
                       </>
                     ) : (
                       // Logged out state
@@ -203,15 +301,67 @@ export default function Navbar() {
                     {user ? (
                       // Logged in state (mobile)
                       <>
-                        <div className="text-zinc-600 block px-4 py-3 text-base font-medium">
-                          Hi, {user.name}
-                        </div>
-                        <button
-                          onClick={handleLogout}
-                          className="text-zinc-600 hover:text-blue-600 block w-full text-left px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                        >
-                          Logout
-                        </button>
+                        {user.role === "LANDLORD" ? (
+                          // Landlord mobile menu
+                          <>
+                            <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                              {user.landlordProfile?.profileImage ? (
+                                <img
+                                  src={user.landlordProfile.profileImage}
+                                  alt={user.name}
+                                  className="w-12 h-12 rounded-full object-cover border-2 border-blue-500"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-2 border-blue-500">
+                                  <span className="text-base font-bold text-white">
+                                    {getInitials(user.name)}
+                                  </span>
+                                </div>
+                              )}
+                              <div>
+                                <p className="text-sm font-semibold text-gray-900">
+                                  {user.name}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {user.email}
+                                </p>
+                              </div>
+                            </div>
+                            <Link
+                              href="/landlord/profile"
+                              className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              View Profile
+                            </Link>
+                            <Link
+                              href="/landlord/profile/edit"
+                              className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              Edit Profile
+                            </Link>
+                            <button
+                              onClick={handleLogout}
+                              className="text-red-600 hover:text-red-700 block w-full text-left px-4 py-3 text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
+                            >
+                              Logout
+                            </button>
+                          </>
+                        ) : (
+                          // Non-landlord mobile menu
+                          <>
+                            <div className="text-zinc-600 block px-4 py-3 text-base font-medium">
+                              Hi, {user.name}
+                            </div>
+                            <button
+                              onClick={handleLogout}
+                              className="text-zinc-600 hover:text-blue-600 block w-full text-left px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                            >
+                              Logout
+                            </button>
+                          </>
+                        )}
                       </>
                     ) : (
                       // Logged out state (mobile)
