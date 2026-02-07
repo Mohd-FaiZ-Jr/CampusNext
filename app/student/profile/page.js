@@ -88,26 +88,26 @@ export default function StudentProfile() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
             <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
             <div className="px-8 pb-8">
-              <div className="relative flex justify-between items-end -mt-12 mb-6">
-                <div className="flex items-end gap-6">
+              <div className="relative flex flex-col sm:flex-row justify-between items-center sm:items-end -mt-12 mb-6 gap-4">
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6">
                   {studentProfile.profileImage ? (
                     <img
                       src={studentProfile.profileImage}
                       alt={profile.name}
-                      className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                      className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg shrink-0"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-white shadow-lg">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-white shadow-lg shrink-0">
                       <span className="text-4xl font-bold text-white">
                         {getInitials(profile.name)}
                       </span>
                     </div>
                   )}
-                  <div className="mb-1">
+                  <div className="mb-1 text-center sm:text-left">
                     <h1 className="text-3xl font-bold text-gray-900">
                       {profile.name}
                     </h1>
-                    <p className="text-gray-500 flex items-center gap-2">
+                    <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2">
                       <Mail className="w-4 h-4" />
                       {profile.email}
                     </p>
@@ -115,7 +115,7 @@ export default function StudentProfile() {
                 </div>
                 <button
                   onClick={() => router.push("/student/profile/edit")}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-sm flex items-center gap-2"
+                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-sm flex items-center justify-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
                   Edit Profile
