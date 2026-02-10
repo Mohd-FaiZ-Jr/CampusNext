@@ -23,9 +23,18 @@ export async function GET(req) {
             .populate("participants", "name email role landlordProfile")
             .populate("property", "title images address")
             .populate("lastMessage")
-            .sort({ lastMessageAt: -1 });
+            .sort({ lastMessageAt: -1 })
+            .lean(); // Use lean() to get plain JavaScript objects
 
-        return NextResponse.json({ conversations }, { status: 200 });
+        // Convert Map to plain object for JSON serialization
+        const conversationsWithUnread = conversations.map(conv => ({
+            ...conv,
+            unreadCount: conv.unreadCount instanceof Map 
+                ? Object.fromEntries(conv.unreadCount)
+                : conv.unreadCount || {}
+        }));
+
+        return NextResponse.json({ conversations: conversationsWithUnread }, { status: 200 });
     } catch (error) {
         console.error("GET /api/conversations error:", error);
         return NextResponse.json(
@@ -88,9 +97,16 @@ export async function POST(req) {
             isGroup: { $ne: true }
         })
             .populate("participants", "name email role landlordProfile")
-            .populate("property", "title images address");
+            .populate("property", "title images address")
+            .lean();
 
         if (conversation) {
+            // Convert Map to plain object for JSON serialization
+            if (conversation.unreadCount instanceof Map) {
+                conversation.unreadCount = Object.fromEntries(conversation.unreadCount);
+            } else if (!conversation.unreadCount) {
+                conversation.unreadCount = {};
+            }
             return NextResponse.json({ conversation }, { status: 200 });
         }
 
@@ -110,7 +126,13 @@ export async function POST(req) {
             { path: "property", select: "title images address" },
         ]);
 
-        return NextResponse.json({ conversation }, { status: 200 });
+        // Convert Map to plain object for JSON serialization
+        const conversationObj = conversation.toObject();
+        if (conversationObj.unreadCount instanceof Map) {
+            conversationObj.unreadCount = Object.fromEntries(conversationObj.unreadCount);
+        }
+
+        return NextResponse.json({ conversation: conversationObj }, { status: 200 });
     } catch (error) {
         console.error("POST /api/conversations error:", error);
 
@@ -123,9 +145,14 @@ export async function POST(req) {
                     isGroup: { $ne: true }
                 })
                     .populate("participants", "name email role landlordProfile")
-                    .populate("property", "title images address");
+                    .populate("property", "title images address")
+                    .lean();
 
                 if (existingConversation) {
+                    // Convert Map to plain object
+                    if (existingConversation.unreadCount instanceof Map) {
+                        existingConversation.unreadCount = Object.fromEntries(existingConversation.unreadCount);
+                    }
                     return NextResponse.json(
                         { conversation: existingConversation },
                         { status: 200 }
