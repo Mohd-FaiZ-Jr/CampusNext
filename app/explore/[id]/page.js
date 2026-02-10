@@ -392,9 +392,22 @@ export default function PropertyDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <button className="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                    View Profile
-                  </button>
+                  {landlord?._id ? (
+                    <Link
+                      href={`/landlord/profile/${landlord._id}`}
+                      className="block w-full text-center bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      View Profile
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="w-full bg-white border border-gray-200 text-gray-400 py-2 rounded-lg font-medium cursor-not-allowed"
+                      disabled
+                    >
+                      View Profile
+                    </button>
+                  )}
                 </div>
               )}
 
