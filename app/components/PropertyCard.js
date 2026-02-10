@@ -35,103 +35,88 @@ export default function PropertyCard({ property }) {
   return (
     <Link
       href={`/explore/${id}`}
-      className="block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
+      className="group block bg-white rounded-2xl
+             border border-gray-100
+             shadow-[0_8px_28px_rgba(0,0,0,0.06)]
+             hover:shadow-[0_14px_40px_rgba(0,0,0,0.08)]
+             transition-all duration-300 overflow-hidden"
     >
-      {/* Property Image */}
-      <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 h-48 overflow-hidden">
+      {/* IMAGE */}
+      <div className="relative h-48 bg-gray-100 overflow-hidden">
         {images.length > 0 ? (
           <img
             src={images[0]}
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="h-full w-full object-cover
+                   group-hover:scale-[1.03]
+                   transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="text-6xl group-hover:scale-105 transition-transform duration-300">
-              🏠
-            </div>
+          <div className="h-full flex items-center justify-center text-5xl">
+            🏠
           </div>
         )}
 
-        {/* Verified Badge - Green with checkmark */}
+        {/* VERIFIED */}
         {verified && (
-          <div className="absolute top-3 right-3 bg-green-500 text-white px-2.5 py-1 rounded-md text-xs font-semibold flex items-center gap-1 shadow-sm">
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Verified
-          </div>
+          <span
+            className="absolute top-3 left-3
+                   bg-white/90 backdrop-blur
+                   text-green-700 text-xs font-ui font-semibold
+                   px-2.5 py-1 rounded-full
+                   flex items-center gap-1 shadow-sm"
+          >
+            ✓ Verified
+          </span>
         )}
       </div>
 
-      {/* Property Details */}
-      <div className="p-4">
-        {/* Price */}
-        <div className="text-xl font-bold text-gray-900 mb-1">
+      {/* CONTENT */}
+      <div className="p-5 font-body">
+        {/* PRICE */}
+        <div className="font-heading text-xl text-gray-900 mb-1">
           {formattedPrice}
-          <span className="text-sm text-gray-500 font-normal">/mo</span>
+          <span className="text-sm text-gray-500 font-normal"> / month</span>
         </div>
 
-        {/* ITER Testing Badge */}
-        {college && (
-          <div className="flex items-center gap-1.5 text-xs text-gray-600 mb-2">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>ITER Testing</span>
-          </div>
-        )}
+        {/* TITLE */}
+        <h3 className="font-heading text-base text-gray-900 line-clamp-1 mb-2">
+          {title}
+        </h3>
 
-        {/* College/Location */}
+        {/* LOCATION */}
         {college && (
-          <div className="flex items-start gap-1.5 text-xs text-gray-600 mb-2">
-            <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          <div className="flex items-center gap-1.5 text-sm text-gray-600 mb-3">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <span className="line-clamp-1">Near {college}</span>
           </div>
         )}
 
-        {/* Distance from campus */}
-        {formattedDistance && (
-          <div className="flex items-center gap-1.5 text-xs text-gray-600 mb-3">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
+        {/* META INFO */}
+        <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
+          {formattedDistance && (
             <span>{formattedDistance} from campus</span>
-          </div>
-        )}
-
-        {/* Amenities */}
-        <div className="flex items-center gap-2 text-xs text-gray-700">
-          {displayAmenities.includes("WiFi") && (
-            <div className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-              </svg>
-              <span>WiFi</span>
-            </div>
           )}
-          {displayAmenities.includes("Furnished") && (
-            <div className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <span>Furnished</span>
-            </div>
-          )}
+          {displayAmenities.includes("WiFi") && <span>Wi-Fi</span>}
+          {displayAmenities.includes("Furnished") && <span>Furnished</span>}
         </div>
 
-        {/* View Details Button */}
-        <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-semibold transition-colors">
+        {/* CTA */}
+        <button
+          className="w-full mt-2 py-2.5 rounded-xl
+                 bg-blue-600 hover:bg-blue-700
+                 text-white text-sm font-ui font-semibold
+                 transition-colors"
+        >
           View Details
         </button>
       </div>
     </Link>
+
   );
 }

@@ -1,11 +1,22 @@
 @import "tailwindcss";
 
+@theme {
+  --font-orbitron: var(--font-orbitron);
+  --font-poppins: var(--font-poppins);
+  --font-raleway: var(--font-raleway);
+  --font-montserrat: var(--font-montserrat);
+  --font-nunito: var(--font-nunito);
+}
+
 /* Hide scrollbar for thumbnail strip */
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }

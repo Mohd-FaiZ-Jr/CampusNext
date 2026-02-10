@@ -95,48 +95,42 @@ export default function Navbar() {
             <div className="shrink-0">
               <Link href="/">
                 <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                  {/* <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                     <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
-                  </div>
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900">
-                    CampusNest
+                  </div> */}
+                  <h1 className="text-base sm:text-2xl font-bold text-gray-900 font-orbitron">
+                    CampusNest.
                   </h1>
                 </div>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block font-poppins">
               <div className="ml-10 flex items-center space-x-6 xl:space-x-8">
                 <Link
                   href="/"
-                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
-                  Rent
+                  Home
+                </Link>
+                <Link
+                  href="/"
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
+                >
+                  Explore
                 </Link>
                 <Link
                   href="/explore"
-                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
-                  PG
+                  About Us
                 </Link>
                 <Link
                   href="/explore"
-                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Rooms
-                </Link>
-                <Link
-                  href="/explore"
-                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Nearby
-                </Link>
-                <Link
-                  href="/explore"
-                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
                   Contact
                 </Link>
@@ -145,7 +139,7 @@ export default function Navbar() {
                 {user && user.role === "LANDLORD" && (
                   <Link
                     href="/landlord/dashboard"
-                    className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                    className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                   >
                     Dashboard
                   </Link>
@@ -167,8 +161,8 @@ export default function Navbar() {
                             {/* Determine Profile Image */}
                             {(user.role === "LANDLORD" &&
                               user.landlordProfile?.profileImage) ||
-                            (user.role === "STUDENT" &&
-                              user.studentProfile?.profileImage) ? (
+                              (user.role === "STUDENT" &&
+                                user.studentProfile?.profileImage) ? (
                               <img
                                 src={
                                   user.role === "LANDLORD"
@@ -176,19 +170,17 @@ export default function Navbar() {
                                     : user.studentProfile.profileImage
                                 }
                                 alt={user.name}
-                                className={`w-9 h-9 rounded-full object-cover border-2 ${
-                                  user.role === "LANDLORD"
-                                    ? "border-blue-500"
-                                    : "border-indigo-500"
-                                }`}
+                                className={`w-9 h-9 rounded-full object-cover border-2 ${user.role === "LANDLORD"
+                                  ? "border-blue-500"
+                                  : "border-indigo-500"
+                                  }`}
                               />
                             ) : (
                               <div
-                                className={`w-9 h-9 rounded-full bg-gradient-to-br ${
-                                  user.role === "LANDLORD"
-                                    ? "from-blue-500 to-indigo-600 border-blue-500"
-                                    : "from-indigo-500 to-purple-600 border-indigo-500"
-                                } flex items-center justify-center border-2`}
+                                className={`w-9 h-9 rounded-full bg-gradient-to-br ${user.role === "LANDLORD"
+                                  ? "from-blue-500 to-indigo-600 border-blue-500"
+                                  : "from-indigo-500 to-purple-600 border-indigo-500"
+                                  } flex items-center justify-center border-2`}
                               >
                                 <span className="text-xs font-bold text-white">
                                   {getInitials(user.name)}
@@ -208,11 +200,10 @@ export default function Navbar() {
                                   {user.email}
                                 </p>
                                 <span
-                                  className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${
-                                    user.role === "LANDLORD"
-                                      ? "bg-blue-50 text-blue-600"
-                                      : "bg-indigo-50 text-indigo-600"
-                                  }`}
+                                  className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${user.role === "LANDLORD"
+                                    ? "bg-blue-50 text-blue-600"
+                                    : "bg-indigo-50 text-indigo-600"
+                                    }`}
                                 >
                                   {user.role}
                                 </span>
@@ -284,16 +275,16 @@ export default function Navbar() {
                     <>
                       <button
                         onClick={handleOpenLoginModal}
-                        className="text-zinc-600 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                        className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm"
                       >
                         Login
                       </button>
-                      <button
+                      {/* <button
                         onClick={openSignupModal}
                         className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm"
                       >
                         Login/Sign Up
-                      </button>
+                      </button> */}
                     </>
                   )}
                 </>
@@ -331,40 +322,25 @@ export default function Navbar() {
               <div className="px-2 pt-2 pb-3 space-y-1 backdrop-blur-xl bg-white/95 rounded-2xl mt-2 shadow-lg border border-gray-200">
                 <Link
                   href="/"
-                  className="text-zinc-900 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
-                  Rent
+                  Home
                 </Link>
-
+                <Link
+                  href="/"
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
+                >
+                  Explore
+                </Link>
                 <Link
                   href="/explore"
-                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
-                  PG
+                  About Us
                 </Link>
-
                 <Link
                   href="/explore"
-                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Rooms
-                </Link>
-
-                <Link
-                  href="/explore"
-                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Nearby
-                </Link>
-
-                <Link
-                  href="/explore"
-                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
                   Contact
                 </Link>
@@ -391,8 +367,8 @@ export default function Navbar() {
                             <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3">
                               {(user.role === "LANDLORD" &&
                                 user.landlordProfile?.profileImage) ||
-                              (user.role === "STUDENT" &&
-                                user.studentProfile?.profileImage) ? (
+                                (user.role === "STUDENT" &&
+                                  user.studentProfile?.profileImage) ? (
                                 <img
                                   src={
                                     user.role === "LANDLORD"
@@ -400,19 +376,17 @@ export default function Navbar() {
                                       : user.studentProfile.profileImage
                                   }
                                   alt={user.name}
-                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 ${
-                                    user.role === "LANDLORD"
-                                      ? "border-blue-500"
-                                      : "border-indigo-500"
-                                  }`}
+                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 ${user.role === "LANDLORD"
+                                    ? "border-blue-500"
+                                    : "border-indigo-500"
+                                    }`}
                                 />
                               ) : (
                                 <div
-                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${
-                                    user.role === "LANDLORD"
-                                      ? "from-blue-500 to-indigo-600 border-blue-500"
-                                      : "from-indigo-500 to-purple-600 border-indigo-500"
-                                  } flex items-center justify-center border-2`}
+                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${user.role === "LANDLORD"
+                                    ? "from-blue-500 to-indigo-600 border-blue-500"
+                                    : "from-indigo-500 to-purple-600 border-indigo-500"
+                                    } flex items-center justify-center border-2`}
                                 >
                                   <span className="text-sm sm:text-base font-bold text-white">
                                     {getInitials(user.name)}
@@ -427,11 +401,10 @@ export default function Navbar() {
                                   {user.email}
                                 </p>
                                 <span
-                                  className={`text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded-full mt-1 inline-block ${
-                                    user.role === "LANDLORD"
-                                      ? "bg-blue-50 text-blue-600"
-                                      : "bg-indigo-50 text-indigo-600"
-                                  }`}
+                                  className={`text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded-full mt-1 inline-block ${user.role === "LANDLORD"
+                                    ? "bg-blue-50 text-blue-600"
+                                    : "bg-indigo-50 text-indigo-600"
+                                    }`}
                                 >
                                   {user.role}
                                 </span>
