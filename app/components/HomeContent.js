@@ -72,354 +72,221 @@ export default function HomeContent() {
 
   return (
     <>
-      {/* Hero Section - Modern Split Design */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20 sm:pt-24">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Left Content */}
-            <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
-              {/* Live Badge */}
-              <div className="flex justify-center lg:justify-start">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 shadow-sm">
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-600"></span>
-                  </span>
-                  <span className="text-sm font-semibold text-blue-900">
-                    {totalCount} Live Properties
-                  </span>
-                </div>
-              </div>
-
-              {/* Heading */}
-              <div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-gray-900 leading-tight mb-4">
-                  Find Your Dream
-                  <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Student Home
-                  </span>
-                </h1>
-                <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-xl mx-auto lg:mx-0">
-                  Discover verified properties near campus. Book instantly. Join
-                  10,000+ happy students.
-                </p>
-              </div>
-
-              {/* Search Bar */}
-              <div className="relative max-w-xl mx-auto lg:mx-0">
-                <div className="relative flex items-center bg-white rounded-2xl shadow-xl border-2 border-transparent focus-within:border-blue-500 transition-all">
-                  <input
-                    type="text"
-                    placeholder="Search university or location..."
-                    className="flex-1 px-5 sm:px-6 py-4 sm:py-5 text-sm sm:text-base rounded-2xl focus:outline-none"
-                  />
-                  <Link href="/explore">
-                    <button className="m-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold transition-all hover:scale-105 shadow-lg">
-                      Search
-                    </button>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-6 sm:gap-8">
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    10K+
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-600 font-medium">
-                    Happy Students
-                  </div>
-                </div>
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    {properties.length}+
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-600 font-medium">
-                    Properties
-                  </div>
-                </div>
-                <div className="text-center lg:text-left">
-                  <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    4.9★
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-600 font-medium">
-                    Average Rating
+      {/* Hero Section with Background Image */}
+      <section className="relative bg-gradient-to-b from-[#eaf7fb] to-white pt-16 sm:pt-20 pb-24 sm:pb-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hero Card with Image and Search */}
+          <div className="relative bg-white rounded-[20px] shadow-lg overflow-hidden">
+            {/* Hero Background Image */}
+            <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] w-full">
+              <img
+                src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=1400&h=600&fit=crop"
+                alt="Modern Student Accommodation"
+                className="w-full h-full object-cover"
+              />
+              
+              {/* Search Bar Overlay - Centered */}
+              <div className="absolute inset-0 flex items-center justify-center px-4">
+                <div className="w-full max-w-2xl">
+                  <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-1.5 sm:p-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div className="flex-1 flex items-center gap-2 sm:gap-3 px-3 sm:px-5">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder="Search university or location..."
+                        className="flex-1 py-3 sm:py-4 text-sm sm:text-base focus:outline-none placeholder-gray-400"
+                      />
+                    </div>
+                    <Link href="/explore" className="w-full sm:w-auto">
+                      <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg sm:rounded-xl font-semibold transition-all text-sm sm:text-base shadow-md hover:shadow-lg">
+                        Search
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Right - Featured Property Card */}
-            <div className="relative">
-              <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-all duration-500">
-                {featuredProperty ? (
-                  <>
-                    {/* Property Image */}
-                    <div className="relative h-64 sm:h-80 overflow-hidden">
-                      {featuredProperty.images &&
-                      featuredProperty.images.length > 0 ? (
-                        <img
-                          src={featuredProperty.images[0]}
-                          alt={featuredProperty.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                          <Building2 className="w-20 h-20 text-white" />
-                        </div>
-                      )}
-                      {/* Featured Badge */}
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-1.5">
-                        <Star className="w-4 h-4 fill-white" />
-                        Featured
-                      </div>
-                    </div>
+        {/* Available Now Section - Overlapping the hero */}
+        <div className="relative -mt-16 sm:-mt-20 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white rounded-2xl sm:rounded-[20px] shadow-lg p-4 sm:p-6 lg:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Available Now</h2>
 
-                    {/* Property Details */}
-                    <div className="p-6">
-                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                        {featuredProperty.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4 flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        {featuredProperty.college}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            ₹{featuredProperty.price.toLocaleString("en-IN")}
+              <div className="overflow-x-auto -mx-2 px-2 scrollbar-hide">
+                <div className="flex gap-3 sm:gap-4 lg:gap-5 pb-2" style={{ minWidth: 'min-content' }}>
+                  {isLoadingProperties ? (
+                    <div className="text-gray-600 text-sm sm:text-base">Loading properties...</div>
+                  ) : (
+                    properties.slice(0, 5).map((property, index) => (
+                      <a
+                        key={property.id}
+                        href="/explore"
+                        onClick={(e) => handlePropertyClick(e, "/explore")}
+                        className="block flex-shrink-0 w-[240px] sm:w-[260px] lg:w-[280px]"
+                      >
+                        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden hover:shadow-xl transition-all cursor-pointer group relative h-full">
+                          {/* Wishlist Heart Icon */}
+                          <button className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all">
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </button>
+
+                          {property.images && property.images.length > 0 ? (
+                            <div className="h-40 sm:h-44 lg:h-48 overflow-hidden">
+                              <img
+                                src={property.images[0]}
+                                alt={property.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-40 sm:h-44 lg:h-48 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                              {getPropertyIcon(index)}
+                            </div>
+                          )}
+                          <div className="p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="text-base sm:text-lg font-bold text-gray-900">
+                                ₹{property.price.toLocaleString("en-IN")}/mo
+                              </div>
+                              {property.verified && (
+                                <span className="text-[10px] sm:text-xs bg-green-100 text-green-700 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full font-semibold">
+                                  Verified
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-start gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-700 mb-1 font-medium">
+                              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 mt-0.5" />
+                              <span className="line-clamp-1 leading-tight">{property.title}</span>
+                            </div>
+                            <div className="text-[11px] sm:text-xs text-gray-500 line-clamp-1">
+                              {property.college}
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500">per month</div>
                         </div>
-                        <button
-                          onClick={(e) =>
-                            handlePropertyClick(
-                              e,
-                              `/explore/${featuredProperty.id}`,
-                            )
-                          }
-                          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105 shadow-lg"
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="p-12 text-center">
-                    <Building2 className="w-24 h-24 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      No Properties Yet
-                    </h3>
-                    <p className="text-gray-600">
-                      Check back soon for listings
-                    </p>
-                  </div>
-                )}
+                      </a>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Property Carousel */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                Available Now
-              </h2>
-              <p className="text-gray-600">Ready for immediate move-in</p>
-            </div>
-            <Link href="/explore">
-              <button className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-2 group">
-                View All
-                <svg
-                  className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </Link>
-          </div>
-
-          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-            {isLoadingProperties ? (
-              <div className="text-gray-600">Loading properties...</div>
-            ) : (
-              properties.slice(0, 4).map((property, index) => (
-                <a
-                  key={property.id}
-                  href="/explore"
-                  onClick={(e) => handlePropertyClick(e, "/explore")}
-                  className="min-w-[260px] sm:min-w-[300px] shrink-0"
-                >
-                  <div className="bg-white border-2 border-gray-100 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-xl transition-all duration-300 cursor-pointer group">
-                    {property.images && property.images.length > 0 ? (
-                      <div className="h-48 overflow-hidden">
-                        <img
-                          src={property.images[0]}
-                          alt={property.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-48 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-                        {getPropertyIcon(index)}
-                      </div>
-                    )}
-                    <div className="p-5">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
-                        {property.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                        <MapPin className="w-4 h-4 shrink-0" />
-                        <span className="truncate">{property.college}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="text-xl font-bold text-blue-600">
-                          ₹{property.price.toLocaleString("en-IN")}
-                          <span className="text-xs text-gray-500">/mo</span>
-                        </div>
-                        <Check className="w-5 h-5 text-green-500" />
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose CampusNest?
+      {/* Why Choose CampusNest */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Why Choose CampusNest
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              We make finding student housing simple, safe, and stress-free
-            </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4">
-                <Check className="w-7 h-7 text-white" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+            {/* Feature 1 - Verified Properties */}
+            <div className="text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-sm">
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Verified Properties
               </h3>
-              <p className="text-gray-600">
-                Every listing is personally verified. Real photos, accurate
-                details, zero surprises.
+              <p className="text-gray-600 text-sm leading-relaxed px-4">
+                We list search-carefully and verify listed properties.
               </p>
             </div>
 
-            {/* Feature 2 */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4">
-                <Zap className="w-7 h-7 text-white" />
+            {/* Feature 2 - Instant Booking */}
+            <div className="text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-sm">
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Instant Booking
               </h3>
-              <p className="text-gray-600">
-                Book your room in minutes with secure payment and instant
-                confirmation.
+              <p className="text-gray-600 text-sm leading-relaxed px-4">
+                Easily check with instant booking your access time.
               </p>
             </div>
 
-            {/* Feature 3 */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-4">
-                <MapPin className="w-7 h-7 text-white" />
+            {/* Feature 3 - Near Campus */}
+            <div className="text-center sm:col-span-2 lg:col-span-1">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-sm">
+                <svg className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Near Campus
               </h3>
-              <p className="text-gray-600">
-                All properties within walking distance of major universities and
-                colleges.
+              <p className="text-gray-600 text-sm leading-relaxed px-4">
+                Near campus or within a short campus.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Property Grid */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Newest Properties
-            </h3>
-            <select className="px-4 py-2 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:outline-none bg-white">
-              <option>Closest first</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-            </select>
-          </div>
+      {/* Newest Properties Grid */}
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8">
+            Newest Properties
+          </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
             {properties.slice(0, 6).map((property, index) => (
               <a
                 key={property.id}
                 href="/explore"
                 onClick={(e) => handlePropertyClick(e, "/explore")}
               >
-                <div className="bg-white border-2 border-gray-100 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl overflow-hidden hover:shadow-xl transition-all cursor-pointer group relative">
+                  {/* Wishlist Heart Icon */}
+                  <button className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-all">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </button>
+
                   {property.images && property.images.length > 0 ? (
-                    <div className="h-56 overflow-hidden">
+                    <div className="h-48 sm:h-52 lg:h-56 overflow-hidden">
                       <img
                         src={property.images[0]}
                         alt={property.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   ) : (
-                    <div className="h-56 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                    <div className="h-48 sm:h-52 lg:h-56 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
                       {getPropertyIcon(index)}
                     </div>
                   )}
-                  <div className="p-5">
-                    <h4 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
+                  <div className="p-4 sm:p-5">
+                    <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-1.5 sm:mb-2 line-clamp-1">
                       {property.title}
                     </h4>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                      <MapPin className="w-4 h-4 shrink-0" />
-                      <span className="truncate">{property.college}</span>
-                      <span>•</span>
-                      <Check className="w-4 h-4 text-green-500 shrink-0" />
-                      <span className="text-green-600 font-medium">
-                        Verified
-                      </span>
+                    <div className="flex items-start gap-1 sm:gap-1.5 text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
+                      <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 mt-0.5" />
+                      <span className="line-clamp-1">{property.college}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="text-xl font-bold text-blue-600">
-                        ₹{property.price.toLocaleString("en-IN")}
-                        <span className="text-xs text-gray-500">/mo</span>
+                      <div className="text-lg sm:text-xl font-bold text-gray-900">
+                        ₹{property.price.toLocaleString("en-IN")}/mo
                       </div>
-                      <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:shadow-lg transition-all">
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm hover:shadow-md">
                         View
                       </button>
                     </div>
@@ -431,33 +298,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="relative py-16 sm:py-20 lg:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yIDItNCA0LTRzNCAxIDQgNC0yIDQtNCA0LTQtMi00LTR6bTAgMjRjMC0yIDItNCA0LTRzNCAxIDQgNC0yIDQtNCA0LTQtMi00LTR6TTEyIDM0YzAtMiAyLTQgNC00czQgMSA0IDQtMiA0LTQgNC00LTItNC00em0wIDI0YzAtMiAyLTQgNC00czQgMSA0IDQtMiA0LTQgNC00LTItNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-            Ready to Find Your Perfect Home?
-          </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-blue-100 mb-8 sm:mb-10 max-w-2xl mx-auto">
-            Join thousands of students who found their ideal housing through
-            CampusNest.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/explore">
-              <button className="w-full sm:w-auto bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all hover:scale-105 shadow-2xl">
-                Browse Properties
-              </button>
-            </Link>
-            <Link href="/explore">
-              <button className="w-full sm:w-auto border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-all hover:scale-105">
-                List Your Property
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* CTA Section - Removed */}
     </>
   );
 }

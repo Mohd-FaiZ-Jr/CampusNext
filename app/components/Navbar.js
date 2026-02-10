@@ -88,43 +88,64 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/90 border-b border-gray-200/80 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Link href="/">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent cursor-pointer">
-                  CampusNest
-                </h1>
+                <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                  </div>
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900">
+                    CampusNest
+                  </h1>
+                </div>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-center space-x-8">
+            <div className="hidden lg:block">
+              <div className="ml-10 flex items-center space-x-6 xl:space-x-8">
                 <Link
                   href="/"
-                  className="text-zinc-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
                 >
-                  Home
+                  Rent
                 </Link>
-
-                {/* Show Explore for non-logged in or Students */}
-                {(!user || user.role !== "LANDLORD") && (
-                  <Link
-                    href="/explore"
-                    className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
-                  >
-                    Explore
-                  </Link>
-                )}
+                <Link
+                  href="/explore"
+                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                >
+                  PG
+                </Link>
+                <Link
+                  href="/explore"
+                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                >
+                  Rooms
+                </Link>
+                <Link
+                  href="/explore"
+                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                >
+                  Nearby
+                </Link>
+                <Link
+                  href="/explore"
+                  className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                >
+                  Contact
+                </Link>
 
                 {/* Show Dashboard for Landlords */}
                 {user && user.role === "LANDLORD" && (
                   <Link
                     href="/landlord/dashboard"
-                    className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                    className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
                   >
                     Dashboard
                   </Link>
@@ -263,15 +284,15 @@ export default function Navbar() {
                     <>
                       <button
                         onClick={handleOpenLoginModal}
-                        className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                        className="text-zinc-600 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
                       >
                         Login
                       </button>
                       <button
                         onClick={openSignupModal}
-                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/50"
+                        className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm"
                       >
-                        Sign Up
+                        Login/Sign Up
                       </button>
                     </>
                   )}
@@ -280,15 +301,15 @@ export default function Navbar() {
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle mobile menu"
                 aria-expanded={isMobileMenuOpen}
-                className="text-zinc-600 hover:text-blue-600 focus:outline-none transition-colors"
+                className="text-zinc-600 hover:text-blue-600 focus:outline-none transition-colors p-2"
               >
                 <svg
-                  className="h-6 w-6"
+                  className="h-5 w-5 sm:h-6 sm:w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -306,30 +327,52 @@ export default function Navbar() {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden pb-4">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 backdrop-blur-xl bg-white/95 rounded-2xl mt-2 shadow-lg border border-gray-200">
+            <div className="lg:hidden pb-3 sm:pb-4">
+              <div className="px-2 pt-2 pb-3 space-y-1 backdrop-blur-xl bg-white/95 rounded-2xl mt-2 shadow-lg border border-gray-200">
                 <Link
                   href="/"
-                  className="text-zinc-900 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                  className="text-zinc-900 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Home
+                  Rent
                 </Link>
 
-                {(!user || user.role !== "LANDLORD") && (
-                  <Link
-                    href="/explore"
-                    className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Explore
-                  </Link>
-                )}
+                <Link
+                  href="/explore"
+                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  PG
+                </Link>
+
+                <Link
+                  href="/explore"
+                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Rooms
+                </Link>
+
+                <Link
+                  href="/explore"
+                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Nearby
+                </Link>
+
+                <Link
+                  href="/explore"
+                  className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
 
                 {user && user.role === "LANDLORD" && (
                   <Link
                     href="/landlord/dashboard"
-                    className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                    className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
@@ -344,7 +387,8 @@ export default function Navbar() {
                         {user.role === "LANDLORD" || user.role === "STUDENT" ? (
                           // Landlord & Student mobile menu
                           <>
-                            <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                            <div className="border-t border-gray-200 my-2"></div>
+                            <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3">
                               {(user.role === "LANDLORD" &&
                                 user.landlordProfile?.profileImage) ||
                               (user.role === "STUDENT" &&
@@ -356,7 +400,7 @@ export default function Navbar() {
                                       : user.studentProfile.profileImage
                                   }
                                   alt={user.name}
-                                  className={`w-12 h-12 rounded-full object-cover border-2 ${
+                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 ${
                                     user.role === "LANDLORD"
                                       ? "border-blue-500"
                                       : "border-indigo-500"
@@ -364,26 +408,26 @@ export default function Navbar() {
                                 />
                               ) : (
                                 <div
-                                  className={`w-12 h-12 rounded-full bg-gradient-to-br ${
+                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${
                                     user.role === "LANDLORD"
                                       ? "from-blue-500 to-indigo-600 border-blue-500"
                                       : "from-indigo-500 to-purple-600 border-indigo-500"
                                   } flex items-center justify-center border-2`}
                                 >
-                                  <span className="text-base font-bold text-white">
+                                  <span className="text-sm sm:text-base font-bold text-white">
                                     {getInitials(user.name)}
                                   </span>
                                 </div>
                               )}
                               <div>
-                                <p className="text-sm font-semibold text-gray-900">
+                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
                                   {user.name}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-[10px] sm:text-xs text-gray-500">
                                   {user.email}
                                 </p>
                                 <span
-                                  className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${
+                                  className={`text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded-full mt-1 inline-block ${
                                     user.role === "LANDLORD"
                                       ? "bg-blue-50 text-blue-600"
                                       : "bg-indigo-50 text-indigo-600"
@@ -399,7 +443,7 @@ export default function Navbar() {
                                   ? "/landlord/profile"
                                   : "/student/profile"
                               }
-                              className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                              className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
                               View Profile
@@ -410,7 +454,7 @@ export default function Navbar() {
                                   ? "/landlord/profile/edit"
                                   : "/student/profile/edit"
                               }
-                              className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                              className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
                               Edit Profile
@@ -420,7 +464,7 @@ export default function Navbar() {
                                 setIsMobileMenuOpen(false);
                                 handleLogout();
                               }}
-                              className="text-red-600 hover:text-red-700 block w-full text-left px-4 py-3 text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
+                              className="text-red-600 hover:text-red-700 block w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
                             >
                               Logout
                             </button>
@@ -428,16 +472,17 @@ export default function Navbar() {
                         ) : (
                           // Admin or other roles mobile menu
                           <>
+                            <div className="border-t border-gray-200 my-2"></div>
                             {user.role === "ADMIN" ? (
                               <Link
                                 href="/admin"
-                                className="text-zinc-600 hover:text-blue-600 block px-4 py-3 text-base font-medium hover:bg-blue-50 transition-colors"
+                                className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium hover:bg-blue-50 transition-colors rounded-xl"
                                 onClick={() => setIsMobileMenuOpen(false)}
                               >
                                 Admin Panel
                               </Link>
                             ) : (
-                              <div className="text-zinc-600 block px-4 py-3 text-base font-medium">
+                              <div className="text-zinc-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium">
                                 Hi, {user.name}
                               </div>
                             )}
@@ -446,7 +491,7 @@ export default function Navbar() {
                                 setIsMobileMenuOpen(false);
                                 handleLogout();
                               }}
-                              className="text-red-600 hover:text-red-700 block w-full text-left px-4 py-3 text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
+                              className="text-red-600 hover:text-red-700 block w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
                             >
                               Logout
                             </button>
@@ -456,15 +501,16 @@ export default function Navbar() {
                     ) : (
                       // Logged out state (mobile)
                       <>
+                        <div className="border-t border-gray-200 my-2"></div>
                         <button
                           onClick={handleOpenLoginModal}
-                          className="text-zinc-600 hover:text-blue-600 block w-full text-left px-4 py-3 text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                          className="text-zinc-600 hover:text-blue-600 block w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
                         >
                           Login
                         </button>
                         <button
                           onClick={openSignupModal}
-                          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white block w-full text-left px-4 py-3 rounded-xl text-base font-semibold mt-2"
+                          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white block w-full text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold mt-2"
                         >
                           Sign Up
                         </button>
