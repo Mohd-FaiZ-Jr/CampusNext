@@ -56,7 +56,7 @@ export default function HomeContent() {
   return (
     <main className="bg-[#f8fafc]">
       {/* HERO */}
-      <section className="relative h-screen">
+      <section className="relative min-h-[100vh] md:min-h-screen">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600"
@@ -181,11 +181,15 @@ export default function HomeContent() {
         </div>
 
         {/* MOST VIEWED */}
-        <section className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
-          <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.06)] p-6">
+        <div className="max-w-7xl mx-auto px-6 mt-8 md:-mt-10 relative z-10">
+          <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.06)] p-4 md:p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900 font-raleway">Most Viewed</h2>
-              <span className="text-sm text-gray-500 font-raleway">Swipe to explore</span>
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900 font-raleway">
+                Most Viewed
+              </h2>
+              <span className="hidden sm:block text-sm text-gray-500 font-raleway">
+                Swipe to explore
+              </span>
             </div>
 
             {loading ? (
@@ -306,7 +310,7 @@ export default function HomeContent() {
 
             )}
           </div>
-        </section>
+        </div>
       </section>
       <section className="max-w-7xl mx-auto px-6 py-20">
         {/* Section Header */}
