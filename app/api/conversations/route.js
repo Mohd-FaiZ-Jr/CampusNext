@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/app/backend/db/connect";
 import Conversation from "@/app/backend/models/Conversation.model";
+import Message from "@/app/backend/models/Message.model";
+import User from "@/app/backend/models/User.model";
+import Property from "@/app/backend/models/Property.model";
 import { getUserFromRequest } from "@/app/lib/auth";
+import mongoose from "mongoose";
 
 // GET all conversations for current user
 export async function GET(req) {
@@ -19,9 +23,18 @@ export async function GET(req) {
             .populate("participants", "name email role landlordProfile")
             .populate("property", "title images address")
             .populate("lastMessage")
-            .sort({ lastMessageAt: -1 });
+            .sort({ lastMessageAt: -1 })
+            .lean(); // Use lean() to get plain JavaScript objects
 
-        return NextResponse.json({ conversations }, { status: 200 });
+        // Convert Map to plain object for JSON serialization
+        const conversationsWithUnread = conversations.map(conv => ({
+            ...conv,
+            unreadCount: conv.unreadCount instanceof Map 
+                ? Object.fromEntries(conv.unreadCount)
+                : conv.unreadCount || {}
+        }));
+
+        return NextResponse.json({ conversations: conversationsWithUnread }, { status: 200 });
     } catch (error) {
         console.error("GET /api/conversations error:", error);
         return NextResponse.json(
@@ -33,18 +46,17 @@ export async function GET(req) {
 
 // POST create new conversation
 export async function POST(req) {
+    let user, landlordId, propertyId; // Declare at function scope for catch block access
+    
     try {
-        const user = await getUserFromRequest(req);
-        console.log("User from request:", user);
+        user = await getUserFromRequest(req);
 
         if (!user) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
         const body = await req.json();
-        console.log("Request body:", body);
-
-        const { propertyId, landlordId } = body;
+        ({ propertyId, landlordId } = body);
 
         if (!propertyId || !landlordId) {
             return NextResponse.json(
@@ -53,46 +65,104 @@ export async function POST(req) {
             );
         }
 
-        await connectDB();
-
-        // Check if conversation already exists
-        let conversation = await Conversation.findOne({
-            participants: { $all: [user.id, landlordId] },
-            property: propertyId,
-        })
-            .populate("participants", "name email role landlordProfile")
-            .populate("property", "title images address");
-
-        console.log("Existing conversation:", conversation);
-
-        if (!conversation) {
-            // Create new conversation
-            console.log("Creating new conversation with:", {
-                participants: [user.id, landlordId],
-                property: propertyId,
-            });
-
-            conversation = await Conversation.create({
-                participants: [user.id, landlordId],
-                property: propertyId,
-                unreadCount: {
-                    [user.id]: 0,
-                    [landlordId]: 0,
-                },
-            });
-
-            conversation = await conversation.populate([
-                { path: "participants", select: "name email role landlordProfile" },
-                { path: "property", select: "title images address" },
-            ]);
-
-            console.log("Created conversation:", conversation);
+        // Validate that landlordId is not the same as current user
+        if (landlordId === user.id) {
+            return NextResponse.json(
+                { message: "Cannot create conversation with yourself" },
+                { status: 400 }
+            );
         }
 
-        return NextResponse.json({ conversation }, { status: 200 });
+        // Validate ObjectId formats
+        if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+            return NextResponse.json(
+                { message: "Invalid property ID format" },
+                { status: 400 }
+            );
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(landlordId)) {
+            return NextResponse.json(
+                { message: "Invalid landlord ID format" },
+                { status: 400 }
+            );
+        }
+
+        await connectDB();
+
+        // Check if conversation already exists between these EXACT two users for this property
+        let conversation = await Conversation.findOne({
+            participants: { $all: [user.id, landlordId], $size: 2 },
+            property: propertyId,
+            isGroup: { $ne: true }
+        })
+            .populate("participants", "name email role landlordProfile")
+            .populate("property", "title images address")
+            .lean();
+
+        if (conversation) {
+            // Convert Map to plain object for JSON serialization
+            if (conversation.unreadCount instanceof Map) {
+                conversation.unreadCount = Object.fromEntries(conversation.unreadCount);
+            } else if (!conversation.unreadCount) {
+                conversation.unreadCount = {};
+            }
+            return NextResponse.json({ conversation }, { status: 200 });
+        }
+
+        // Create new conversation
+        conversation = await Conversation.create({
+            participants: [user.id, landlordId],
+            property: propertyId,
+            isGroup: false,
+            unreadCount: {
+                [user.id]: 0,
+                [landlordId]: 0,
+            },
+        });
+
+        conversation = await conversation.populate([
+            { path: "participants", select: "name email role landlordProfile" },
+            { path: "property", select: "title images address" },
+        ]);
+
+        // Convert Map to plain object for JSON serialization
+        const conversationObj = conversation.toObject();
+        if (conversationObj.unreadCount instanceof Map) {
+            conversationObj.unreadCount = Object.fromEntries(conversationObj.unreadCount);
+        }
+
+        return NextResponse.json({ conversation: conversationObj }, { status: 200 });
     } catch (error) {
         console.error("POST /api/conversations error:", error);
-        console.error("Error stack:", error.stack);
+
+        // Handle duplicate key error (shouldn't happen anymore, but keep as safety)
+        if (error.code === 11000) {
+            try {
+                const existingConversation = await Conversation.findOne({
+                    participants: { $all: [user.id, landlordId], $size: 2 },
+                    property: propertyId,
+                    isGroup: { $ne: true }
+                })
+                    .populate("participants", "name email role landlordProfile")
+                    .populate("property", "title images address")
+                    .lean();
+
+                if (existingConversation) {
+                    // Convert Map to plain object
+                    if (existingConversation.unreadCount instanceof Map) {
+                        existingConversation.unreadCount = Object.fromEntries(existingConversation.unreadCount);
+                    }
+                    return NextResponse.json(
+                        { conversation: existingConversation },
+                        { status: 200 }
+                    );
+                }
+            } catch (fetchError) {
+                console.error("Error fetching existing conversation:", fetchError);
+            }
+        }
+
         return NextResponse.json(
             { message: "Internal Server Error", error: error.message },
             { status: 500 }

@@ -37,10 +37,17 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                 const data = await res.json();
                 setConversations(data.conversations || []);
 
-                // Update unread count
+                // Update unread count - check both user.id and user._id
                 if (onUpdateUnread && user) {
+                    const userId = user._id || user.id;
                     const total = (data.conversations || []).reduce(
-                        (sum, conv) => sum + (conv.unreadCount?.[user._id || user.id] || 0),
+                        (sum, conv) => {
+                            // Check for unreadCount as both object property and Map
+                            const unread = conv.unreadCount?.[userId] || 
+                                         conv.unreadCount?.get?.(userId) || 
+                                         0;
+                            return sum + unread;
+                        },
                         0
                     );
                     onUpdateUnread(total);
@@ -56,7 +63,8 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
 
     const getOtherParticipant = (conversation) => {
         if (!conversation?.participants || !user) return null;
-        return conversation.participants.find((p) => p._id !== (user._id || user.id));
+        const userId = user._id || user.id;
+        return conversation.participants.find((p) => p._id !== userId);
     };
 
     const formatTime = (date) => {
@@ -154,13 +162,19 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                 ) : (
                     filteredConversations.map((conversation) => {
                         const other = getOtherParticipant(conversation);
-                        const unread = conversation.unreadCount?.[user?.id] || 0;
+                        const userId = user?._id || user?.id;
+                        // Check for unreadCount as both object property and Map
+                        const unread = conversation.unreadCount?.[userId] || 
+                                      conversation.unreadCount?.get?.(userId) || 
+                                      0;
 
                         return (
                             <button
                                 key={conversation._id}
                                 onClick={() => setSelectedConversation(conversation)}
-                                className="w-full p-4 border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 text-left group"
+                                className={`w-full p-4 border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 text-left group relative ${
+                                    unread > 0 ? 'bg-blue-50/50 border-l-4 border-l-blue-600' : ''
+                                }`}
                             >
                                 <div className="flex items-start gap-3">
                                     {/* Avatar */}
@@ -168,10 +182,14 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                                         <img
                                             src={other.landlordProfile.profileImage}
                                             alt={other.name || "User"}
-                                            className="w-14 h-14 rounded-full object-cover ring-2 ring-gray-200"
+                                            className={`w-14 h-14 rounded-full object-cover ring-2 ${
+                                                unread > 0 ? 'ring-blue-600' : 'ring-gray-200'
+                                            }`}
                                         />
                                     ) : (
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center ring-2 ring-gray-200">
+                                        <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center ring-2 ${
+                                            unread > 0 ? 'ring-blue-600' : 'ring-gray-200'
+                                        }`}>
                                             <span className="text-white font-bold text-lg">
                                                 {(other?.name || "U").charAt(0).toUpperCase()}
                                             </span>
@@ -182,32 +200,42 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between mb-1">
                                             <h3
-                                                className={`font-semibold truncate ${unread > 0 ? "text-gray-900" : "text-gray-700"
-                                                    }`}
+                                                className={`font-semibold truncate ${
+                                                    unread > 0 ? "text-gray-900 font-bold" : "text-gray-700"
+                                                }`}
                                             >
                                                 {other?.name || "Unknown User"}
                                             </h3>
                                             <div className="flex items-center gap-2">
                                                 {conversation.lastMessageAt && (
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className={`text-xs ${
+                                                        unread > 0 ? 'text-blue-600 font-semibold' : 'text-gray-500'
+                                                    }`}>
                                                         {formatTime(conversation.lastMessageAt)}
                                                     </span>
                                                 )}
                                                 {unread > 0 && (
-                                                    <span className="bg-blue-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
+                                                    <span className="bg-blue-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5 shadow-md animate-pulse">
                                                         {unread > 99 ? "99+" : unread}
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <p className="text-xs text-gray-500 truncate mb-1 flex items-center gap-1">
-                                            <span>🏠</span>
-                                            {conversation.property?.title || "Property"}
-                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <p className={`text-xs truncate mb-1 flex items-center gap-1 ${
+                                                unread > 0 ? 'text-gray-700 font-medium' : 'text-gray-500'
+                                            }`}>
+                                                <span>🏠</span>
+                                                {conversation.property?.title || "Property"}
+                                            </p>
+                                            {unread > 0 && (
+                                                <span className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></span>
+                                            )}
+                                        </div>
                                         {conversation.lastMessage && (
                                             <p
                                                 className={`text-sm truncate ${unread > 0
-                                                    ? "text-gray-900 font-medium"
+                                                    ? "text-gray-900 font-semibold"
                                                     : "text-gray-500"
                                                     }`}
                                             >

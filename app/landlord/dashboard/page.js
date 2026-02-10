@@ -8,11 +8,13 @@ import { useRouter } from "next/navigation";
 
 export default function LandlordDashboard() {
     const [properties, setProperties] = useState([]);
+    const [bookings, setBookings] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
         fetchMyProperties();
+        fetchBookings();
     }, []);
 
     const fetchMyProperties = async () => {
@@ -33,6 +35,18 @@ export default function LandlordDashboard() {
             console.error("Error fetching properties", error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const fetchBookings = async () => {
+        try {
+            const res = await fetch("/api/bookings/me");
+            if (res.ok) {
+                const data = await res.json();
+                setBookings(data);
+            }
+        } catch (error) {
+            console.error("Error fetching bookings", error);
         }
     };
 
@@ -77,7 +91,7 @@ export default function LandlordDashboard() {
                     </div>
 
                     {/* Metrics Overview (Optional but "Production Level") */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                             <div className="text-zinc-500 font-semibold mb-2">Total Listings</div>
                             <div className="text-3xl font-bold text-blue-600">{properties.length}</div>
@@ -93,6 +107,16 @@ export default function LandlordDashboard() {
                             <div className="text-3xl font-bold text-yellow-500">
                                 {properties.filter(p => !p.verified).length}
                             </div>
+                        </div>
+                        <div 
+                            onClick={() => router.push('/landlord/bookings')}
+                            className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100 shadow-sm cursor-pointer hover:shadow-md transition-all hover:scale-105"
+                        >
+                            <div className="text-blue-600 font-semibold mb-2">Booking Requests</div>
+                            <div className="text-3xl font-bold text-blue-600">
+                                {bookings.filter(b => b.status === 'PENDING').length}
+                            </div>
+                            <div className="text-xs text-blue-500 mt-1">Click to view all</div>
                         </div>
                     </div>
 
