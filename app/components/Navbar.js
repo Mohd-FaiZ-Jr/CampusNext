@@ -117,19 +117,19 @@ export default function Navbar() {
                   Home
                 </Link>
                 <Link
-                  href="/"
+                  href="/explore"
                   className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
                   Explore
                 </Link>
                 <Link
-                  href="/explore"
+                  href="/about"
                   className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
                   About Us
                 </Link>
                 <Link
-                  href="/explore"
+                  href="/contact"
                   className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
                 >
                   Contact
