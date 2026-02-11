@@ -479,76 +479,124 @@ export default function ChatWindow({ conversation, onBack }) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-white overflow-hidden">
+        <div className="flex flex-col h-full bg-white overflow-hidden font-nunito">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white p-4 flex items-center justify-between shadow-xl">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center justify-between px-5 py-4 
+                border-b border-gray-100 bg-white">
+
+                <div className="flex items-center gap-3 min-w-0">
                     <button
                         onClick={onBack}
-                        className="hover:bg-white/20 p-2 rounded-full transition-all duration-200 flex-shrink-0 hover:scale-105 active:scale-95"
+                        className="p-2 rounded-full hover:bg-gray-100 transition"
                     >
-                        <ArrowLeft className="w-5 h-5" />
+                        <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
+
+                    {/* Avatar */}
                     {otherParticipant?.landlordProfile?.profileImage ? (
                         <img
                             src={otherParticipant.landlordProfile.profileImage}
-                            alt={otherParticipant.name || "User"}
-                            className="w-11 h-11 rounded-full object-cover ring-2 ring-white/60 flex-shrink-0 shadow-md"
+                            alt={otherParticipant.name}
+                            className="w-10 h-10 rounded-full object-cover"
                         />
                     ) : (
-                        <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/60 flex-shrink-0 shadow-md">
-                            <span className="font-bold text-lg">
-                                {(otherParticipant?.name || "U").charAt(0).toUpperCase()}
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span className="font-semibold text-gray-700">
+                                {(otherParticipant?.name || "U")[0]}
                             </span>
                         </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base truncate">
+
+                    {/* Name + Status */}
+                    <div className="min-w-0">
+                        <h3 className="text-sm font-semibold text-gray-900 truncate font-raleway">
                             {otherParticipant?.name || "Unknown User"}
                         </h3>
-                        <p className="text-xs opacity-95 truncate font-medium flex items-center gap-1.5">
-                            {userStatus.isOnline ? (
-                                <>
-                                    <span className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_8px_rgba(74,222,128,0.6)] animate-pulse"></span>
-                                    <span>Online</span>
-                                </>
-                            ) : userStatus.lastSeen ? (
-                                <span className="opacity-90">Last seen {formatLastSeen(userStatus.lastSeen)}</span>
-                            ) : (
-                                <span className="opacity-90">{conversation?.property?.title || "Property"}</span>
-                            )}
-                        </p>
+
+                        <div className="flex items-center font-nunito">
+                            <span className="text-xs text-gray-500">
+                                {userStatus.isOnline
+                                    ? "Online"
+                                    : userStatus.lastSeen
+                                        ? `Last seen ${formatLastSeen(userStatus.lastSeen)}`
+                                        : "Offline"}
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div className="relative flex-shrink-0">
-                    <button
-                        onClick={() => setShowMenu(!showMenu)}
-                        className="hover:bg-white/20 p-2 rounded-full transition-colors"
-                    >
-                        <MoreVertical className="w-5 h-5" />
-                    </button>
-                    {showMenu && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-10"
-                                onClick={() => setShowMenu(false)}
-                            ></div>
-                            <div className="absolute right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20 min-w-[160px]">
-                                <button
-                                    onClick={handleDeleteChat}
-                                    className="flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 w-full text-left transition-colors"
+
+                <button
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="p-2 rounded-full hover:bg-gray-100 transition"
+                >
+                    <div className="relative">
+                        {/* Trigger Button */}
+                        <button
+                            onClick={() => setShowMenu(!showMenu)}
+                            className="
+      p-2 rounded-full
+      text-gray-800
+      hover:bg-white/15
+      active:scale-95
+      transition-all duration-150
+      focus:outline-none focus:ring-2 focus:ring-white/40
+    "
+                            aria-label="Chat options"
+                        >
+                            <MoreVertical className="w-5 h-5" />
+                        </button>
+
+                        {showMenu && (
+                            <>
+                                {/* Backdrop */}
+                                <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setShowMenu(false)}
+                                />
+
+                                {/* Dropdown */}
+                                <div
+                                    className="
+          absolute right-0 mt-2
+          w-48
+          bg-white
+          rounded-xl
+          border border-gray-200/80
+          shadow-[0_10px_40px_rgba(0,0,0,0.12)]
+          backdrop-blur-xl
+          py-2
+          z-50
+          animate-fadeIn
+        "
                                 >
-                                    <Trash2 className="w-4 h-4" />
-                                    Delete Chat
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
+                                    {/* Delete Option */}
+                                    <button
+                                        onClick={handleDeleteChat}
+                                        className="
+            w-full flex items-center gap-3
+            px-4 py-2.5
+            text-sm font-medium
+            text-red-600
+            hover:bg-red-50
+            active:bg-red-100
+            transition-colors duration-150
+          "
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                        <span>Delete Chat</span>
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                </button>
             </div>
 
+
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-50 to-gray-100 chat-scrollbar">
+            <div className="flex-1 overflow-y-auto px-5 py-6 bg-gray-50 space-y-4">
+
                 {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent shadow-lg"></div>
@@ -577,57 +625,51 @@ export default function ChatWindow({ conversation, onBack }) {
                             />
                         ))}
                         {isTyping && (
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="bg-gray-200 rounded-2xl px-4 py-2 flex items-center gap-1">
+                            <div className="flex justify-start">
+                                <div className="bg-gray-200 px-4 py-2 rounded-2xl text-xs text-gray-500 flex gap-1">
                                     <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                                    <span
-                                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                        style={{ animationDelay: "0.1s" }}
-                                    ></span>
-                                    <span
-                                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                                        style={{ animationDelay: "0.2s" }}
-                                    ></span>
+                                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></span>
+                                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></span>
                                 </div>
                             </div>
                         )}
+
                         <div ref={messagesEndRef} />
                     </>
                 )}
             </div>
-
             {/* Input Area */}
-            <div className="bg-white border-t border-gray-100 relative shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+            <div className="relative bg-white border-t border-gray-200 z-20">
+
                 {/* Editing Indicator */}
                 {editingMessage && (
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 p-3 flex items-center justify-between text-sm text-blue-700">
-                        <span className="flex items-center gap-2 font-medium">
+                    <div className="flex items-center justify-between px-4 py-2 bg-blue-50 border-b border-blue-100 text-sm">
+                        <div className="flex items-center gap-2 text-blue-700 font-medium">
                             <Edit2 className="w-4 h-4" />
-                            Editing message...
-                        </span>
+                            Editing message
+                        </div>
                         <button
                             onClick={() => {
                                 setEditingMessage(null);
                                 setNewMessage("");
-                                if (textareaRef.current) textareaRef.current.style.height = 'auto';
+                                if (textareaRef.current) textareaRef.current.style.height = "auto";
                             }}
-                            className="hover:bg-blue-100 p-1 rounded-full transition-colors"
+                            className="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
                         >
                             <X className="w-4 h-4" />
                         </button>
                     </div>
                 )}
 
-
                 {/* Emoji Picker */}
                 {showEmojiPicker && (
-                    <div className="absolute bottom-full right-0 mb-4 mr-4 z-50 shadow-2xl rounded-xl overflow-hidden animate-fadeIn">
+                    <div className="absolute bottom-16 right-4 z-50 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden bg-white">
                         <EmojiPicker
                             onEmojiClick={(emojiData) => {
                                 setNewMessage((prev) => prev + emojiData.emoji);
                                 setShowEmojiPicker(false);
                             }}
-                            width={300}
+                            width={320}
                             height={400}
                         />
                     </div>
@@ -642,79 +684,92 @@ export default function ChatWindow({ conversation, onBack }) {
                     className="hidden"
                 />
 
-                {/* Main Input Row */}
-                <div className="p-3 flex items-end gap-2">
-                    {/* Textarea Input */}
-                    <div className="flex-1 bg-gray-50 rounded-full flex items-end transition-all duration-200 shadow-sm hover:shadow-md">
+                {/* MAIN ROW */}
+                <div className="flex items-center gap-3 px-4 py-3">
+
+                    {/* Input Container */}
+                    <div className="flex items-center flex-1 bg-gray-100 rounded-full px-4 h-11 focus-within:ring-2 focus-within:ring-blue-500 transition">
+
                         <textarea
                             ref={textareaRef}
                             rows={1}
                             value={newMessage}
                             onChange={(e) => {
                                 setNewMessage(e.target.value);
-                                e.target.style.height = 'auto';
-                                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                                e.target.style.height = "auto";
+                                e.target.style.height =
+                                    Math.min(e.target.scrollHeight, 120) + "px";
                                 handleTyping();
                             }}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
+                                if (e.key === "Enter" && !e.shiftKey) {
                                     e.preventDefault();
                                     if (newMessage.trim() && !isSending) {
                                         handleSendMessage(e);
-                                        e.target.style.height = 'auto';
+                                        e.target.style.height = "auto";
                                     }
                                 }
                             }}
-                            placeholder={editingMessage ? "Edit message..." : "Type a message..."}
+                            placeholder={editingMessage ? "Edit message..." : "Type a message"}
                             disabled={isSending}
-                            className="w-full bg-transparent border-none outline-none focus:ring-0 px-5 py-3 max-h-32 resize-none text-[15px] text-gray-800 placeholder:text-gray-400 leading-relaxed scrollbar-hide"
+                            className="flex-1 font-nunito bg-transparent resize-none outline-none text-sm leading-normal text-gray-800 placeholder:text-gray-400 max-h-32 py-2"
                         />
-                        <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="p-2.5 text-gray-400 hover:text-blue-500 transition-all duration-200 mb-0.5 hover:scale-110 active:scale-95"
-                        >
-                            <ImageIcon className="w-5 h-5" />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                            className="p-2.5 text-gray-400 hover:text-amber-500 transition-all duration-200 mb-0.5 mr-1 hover:scale-110 active:scale-95"
-                        >
-                            <Smile className="w-5 h-5" />
-                        </button>
-                    </div>
 
-                    {/* Send / Mic Button */}
-                    <div className="pb-1">
-                        {newMessage.trim() === "" && !editingMessage ? (
+                        {/* Icons */}
+                        <div className="flex items-center gap-1">
+
                             <button
                                 type="button"
-                                onClick={() => setShowVoiceRecorder(true)}
-                                disabled={isSending}
-                                className="p-3 text-blue-600 hover:bg-blue-50 rounded-full transition-all duration-200 disabled:opacity-50 hover:scale-110 active:scale-95 shadow-sm"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition"
                             >
-                                <Mic className="w-6 h-6" />
+                                <ImageIcon className="w-5 h-5" />
                             </button>
-                        ) : (
+
                             <button
-                                onClick={(e) => {
-                                    handleSendMessage(e);
-                                    if (textareaRef.current) textareaRef.current.style.height = 'auto';
-                                }}
-                                disabled={!newMessage.trim() || isSending}
-                                className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex-shrink-0"
+                                type="button"
+                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition"
                             >
-                                {isSending ? (
-                                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    editingMessage ? <Edit2 className="w-5 h-5" /> : <Send className="w-5 h-5 ml-0.5" />
-                                )}
+                                <Smile className="w-5 h-5" />
                             </button>
-                        )}
+
+                        </div>
                     </div>
+
+                    {/* Send / Mic */}
+                    {newMessage.trim() === "" && !editingMessage ? (
+                        <button
+                            type="button"
+                            onClick={() => setShowVoiceRecorder(true)}
+                            disabled={isSending}
+                            className="flex items-center justify-center w-11 h-11 rounded-full text-gray-500 hover:bg-gray-100 transition disabled:opacity-50"
+                        >
+                            <Mic className="w-5 h-5" />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={(e) => {
+                                handleSendMessage(e);
+                                if (textareaRef.current) textareaRef.current.style.height = "auto";
+                            }}
+                            disabled={!newMessage.trim() || isSending}
+                            className="flex items-center justify-center w-11 h-11 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isSending ? (
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : editingMessage ? (
+                                <Edit2 className="w-5 h-5" />
+                            ) : (
+                                <Send className="w-5 h-5" />
+                            )}
+                        </button>
+                    )}
+
                 </div>
             </div>
+
+
 
             {/* Voice Recorder Modal */}
             {showVoiceRecorder && (
