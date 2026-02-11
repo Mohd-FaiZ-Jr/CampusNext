@@ -187,9 +187,11 @@ export default function HomeContent() {
               <h2 className="text-xl md:text-2xl font-semibold text-gray-900 font-raleway">
                 Most Viewed
               </h2>
+
               <span className="hidden sm:block text-sm text-gray-500 font-raleway">
-                Swipe to explore
+                Swipe to explore &rarr;
               </span>
+
             </div>
 
             {loading ? (
@@ -200,8 +202,8 @@ export default function HomeContent() {
                   {properties.map((p) => (
                     <a
                       key={p.id}
-                      href="/explore"
-                      onClick={(e) => handleProtectedNav(e, "/explore")}
+                      href={`/explore/${p.id}`}
+                      onClick={(e) => handleProtectedNav(e, `/explore/${p.id}`)}
                       className="group"
                     >
                       <div
@@ -225,21 +227,6 @@ export default function HomeContent() {
                 transition-transform duration-500
               "
                           />
-
-                          {/* Wishlist */}
-                          <button
-                            type="button"
-                            className="
-                absolute top-4 right-4
-                bg-white/90 backdrop-blur-md
-                rounded-full p-2.5
-                shadow-sm hover:bg-white
-                transition
-              "
-                          >
-                            <Heart className="w-4 h-4 text-gray-700" />
-                          </button>
-
                           {/* Verified */}
                           {p.verified && (
                             <span
@@ -289,14 +276,14 @@ export default function HomeContent() {
                               </div>
 
                               {/* Occupancy */}
-                              <div className="flex items-center gap-1">
+                              {/* <div className="flex items-center gap-1">
                                 <Users className="w-4 h-4 text-blue-600" />
                                 <span>2</span>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                           {/* PRICE */}
-                          <div className="text-lg  text-gray-900 font-nunito mt-1">
+                          <div className="text-lg  text-gray-900 font-poppins mt-1">
                             ₹{p.price?.toLocaleString("en-IN")}
                             <span className="text-sm font-normal text-gray-500">/month</span>
                           </div>

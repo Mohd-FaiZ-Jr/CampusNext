@@ -235,7 +235,7 @@ export default function ExplorePage() {
     <Layout>
       <div className="min-h-screen bg-white pt-16">
         {/* Breadcrumb */}
-        <div className="border-b border-gray-200 bg-white">
+        <div className="border-b border-gray-200 bg-white font-nunito">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <a href="/" className="hover:text-blue-600 transition-colors">Home</a>
@@ -315,7 +315,7 @@ export default function ExplorePage() {
 
               {/* Results Count */}
               <div className="mb-6">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-montserrat">
                   {isLoading
                     ? "Loading properties..."
                     : `${properties.length} ${properties.length === 1 ? "property" : "properties"} found`}
@@ -327,24 +327,24 @@ export default function ExplorePage() {
                 <div className="flex items-center justify-center py-20">
                   <div className="text-center">
                     <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-                    <p className="mt-4 text-gray-600">Loading properties...</p>
+                    <p className="mt-4 text-gray-600 font-montserrat">Loading properties...</p>
                   </div>
                 </div>
               )}
 
               {/* Empty State */}
               {!isLoading && properties.length === 0 && (
-                <div className="text-center py-20">
+                <div className="text-center py-20 ">
                   <div className="text-6xl mb-4">🏠</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1 font-montserrat">
                     No properties found
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-gray-600 mb-5 font-montserrat">
                     Try adjusting your filters or search criteria
                   </p>
                   <button
                     onClick={handleClearFilters}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+                    className="bg-blue-600 font-nunito hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
                   >
                     Clear All Filters
                   </button>

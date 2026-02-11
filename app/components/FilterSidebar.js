@@ -92,10 +92,25 @@ export default function FilterSidebar({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 sticky top-24 font-nunito">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
+
+        <h2 className="text-xl font-bold text-zinc-900 flex items-center gap-2 font-montserrat">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-blue-600"
+          >
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
           Filters
           {activeFilterCount > 0 && (
             <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
@@ -103,6 +118,7 @@ export default function FilterSidebar({
             </span>
           )}
         </h2>
+
         {activeFilterCount > 0 && (
           <button
             onClick={onClearFilters}
@@ -116,7 +132,7 @@ export default function FilterSidebar({
       <div className="space-y-6">
         {/* Price Range */}
         <div>
-          <label className="text-sm font-semibold text-zinc-700 mb-3 block">
+          <label className="text-sm font-bold text-zinc-700 mb-3 block">
             Price Range
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -125,9 +141,9 @@ export default function FilterSidebar({
                 key={range.label}
                 onClick={() => handlePriceChange(range)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${filters.priceMin === range.min &&
-                    filters.priceMax === range.max
-                    ? "bg-blue-600 text-white shadow-lg"
-                    : "bg-gray-100 text-zinc-700 hover:bg-gray-200"
+                  filters.priceMax === range.max
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-gray-100 text-zinc-700 hover:bg-gray-200"
                   }`}
               >
                 {range.label}
@@ -138,7 +154,7 @@ export default function FilterSidebar({
 
         {/* Distance */}
         <div>
-          <label className="text-sm font-semibold text-zinc-700 mb-3 block">
+          <label className="text-sm font-bold text-zinc-700 mb-3 block">
             Distance from Campus
           </label>
           <div className="space-y-2">
@@ -164,7 +180,7 @@ export default function FilterSidebar({
 
         {/* Gender Preference */}
         <div>
-          <label className="text-sm font-semibold text-zinc-700 mb-3 block">
+          <label className="text-sm font-bold text-zinc-700 mb-3 block">
             Gender Preference
           </label>
           <div className="space-y-2">
@@ -190,7 +206,7 @@ export default function FilterSidebar({
 
         {/* Amenities */}
         <div>
-          <label className="text-sm font-semibold text-zinc-700 mb-3 block">
+          <label className="text-sm font-bold text-zinc-700 mb-3 block">
             Amenities
           </label>
           <div className="space-y-2">
@@ -215,7 +231,7 @@ export default function FilterSidebar({
 
         {/* Verified Only */}
         <div>
-          <label className="flex items-center gap-3 cursor-pointer group p-3 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors">
+          <label className="flex items-start gap-3 cursor-pointer group p-3 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors">
             <input
               type="checkbox"
               checked={filters.verified !== false} // Checked by default (true), unchecked only if explicitly false
@@ -223,19 +239,21 @@ export default function FilterSidebar({
               className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
             />
             <div className="flex-1">
-              <span className="text-sm font-semibold text-zinc-900 block">
+              <span className="text-sm font-bold text-zinc-900 block leading-none">
                 Verified Properties Only
               </span>
-              <span className="text-xs text-zinc-600">
-                {filters.verified ? "Showing only verified listings" : "Showing all listings"}
+
+              <span className="text-xs text-zinc-600 leading-none block mt-2">
+                {filters.verified !== false ? "Showing only verified listings" : "Showing all listings"}
               </span>
+
             </div>
           </label>
         </div>
 
         {/* Nearby Me */}
         <div className="border-t border-gray-200 pt-6">
-          <label className="text-sm font-semibold text-zinc-700 mb-3 block">
+          <label className="text-sm font-bold text-zinc-700 mb-3 block">
             Location-Based Search
           </label>
           <button
@@ -243,16 +261,16 @@ export default function FilterSidebar({
             onClick={onNearbyMe}
             disabled={isLocating}
             className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-300 ${isLocating
-                ? "bg-gray-100 cursor-not-allowed text-gray-400"
-                : userLocation
-                  ? "bg-green-500 hover:bg-green-600 text-white shadow-md"
-                  : "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+              ? "bg-gray-100 cursor-not-allowed text-gray-400"
+              : userLocation
+                ? "bg-green-500 hover:bg-green-600 text-white shadow-md"
+                : "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
               }`}
           >
             {isLocating ? (
               <>
                 <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                <span>Locating...</span>
+                <span className="font-montserrat">Locating...</span>
               </>
             ) : userLocation ? (
               <>

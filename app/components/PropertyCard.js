@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BedDouble, Bath, Ruler, Car } from "lucide-react";
 
 export default function PropertyCard({ property }) {
   const {
@@ -35,88 +36,74 @@ export default function PropertyCard({ property }) {
   return (
     <Link
       href={`/explore/${id}`}
-      className="group block bg-white rounded-2xl
-             border border-gray-100
-             shadow-[0_8px_28px_rgba(0,0,0,0.06)]
-             hover:shadow-[0_14px_40px_rgba(0,0,0,0.08)]
-             transition-all duration-300 overflow-hidden"
+      className="group block bg-white rounded-xl overflow-hidden
+             shadow-sm hover:shadow-lg transition duration-300"
     >
       {/* IMAGE */}
-      <div className="relative h-48 bg-gray-100 overflow-hidden">
-        {images.length > 0 ? (
-          <img
-            src={images[0]}
-            alt={title}
-            className="h-full w-full object-cover
-                   group-hover:scale-[1.03]
-                   transition-transform duration-500"
-          />
-        ) : (
-          <div className="h-full flex items-center justify-center text-5xl">
-            🏠
-          </div>
-        )}
+      <div className="relative h-52 overflow-hidden">
+        <img
+          src={images?.[0]}
+          alt={title}
+          className="w-full h-full object-cover
+                 group-hover:scale-105 transition duration-500"
+        />
 
-        {/* VERIFIED */}
-        {verified && (
-          <span
-            className="absolute top-3 left-3
-                   bg-white/90 backdrop-blur
-                   text-green-700 text-xs font-ui font-semibold
-                   px-2.5 py-1 rounded-full
-                   flex items-center gap-1 shadow-sm"
-          >
-            ✓ Verified
-          </span>
-        )}
+        {/* RENT BADGE */}
+        {/* <span className="absolute top-4 left-4
+                     bg-blue-600 text-white
+                     text-xs font-semibold
+                     px-3 py-1 rounded-md shadow">
+          Rent
+        </span> */}
       </div>
 
       {/* CONTENT */}
-      <div className="p-5 font-body">
-        {/* PRICE */}
-        <div className="font-heading text-xl text-gray-900 mb-1">
-          {formattedPrice}
-          <span className="text-sm text-gray-500 font-normal"> / month</span>
-        </div>
-
+      <div className="p-5 bg-white">
         {/* TITLE */}
-        <h3 className="font-heading text-base text-gray-900 line-clamp-1 mb-2">
+        <h3 className="text-lg font-semibold text-gray-900 mb-1 font-poppins">
           {title}
         </h3>
 
         {/* LOCATION */}
-        {college && (
-          <div className="flex items-center gap-1.5 text-sm text-gray-600 mb-3">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span className="line-clamp-1">Near {college}</span>
-          </div>
-        )}
+        <p className="text-sm text-gray-500 mb-4 font-poppins">
+          {college}
+        </p>
 
-        {/* META INFO */}
-        <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
-          {formattedDistance && (
-            <span>{formattedDistance} from campus</span>
-          )}
-          {displayAmenities.includes("WiFi") && <span>Wi-Fi</span>}
-          {displayAmenities.includes("Furnished") && <span>Furnished</span>}
+        {/* PROPERTY META */}
+        <div className="grid grid-cols-2 gap-y-2 text-xs text-gray-600 mb-4 font-poppins">
+          <div className="flex items-center gap-2">
+            <BedDouble className="w-4 h-4 text-gray-500" />
+            <span>4 Bedrooms</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Bath className="w-4 h-4 text-gray-500" />
+            <span>2 Bathrooms</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Ruler className="w-4 h-4 text-gray-500" />
+            <span>720 sq ft</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Car className="w-4 h-4 text-gray-500" />
+            <span>1 Garage</span>
+          </div>
         </div>
 
-        {/* CTA */}
-        <button
-          className="w-full mt-2 py-2.5 rounded-xl
-                 bg-blue-600 hover:bg-blue-700
-                 text-white text-sm font-ui font-semibold
-                 transition-colors"
-        >
-          View Details
-        </button>
+        {/* PRICE + BUTTON */}
+        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+          <span className="text-lg font-bold text-gray-900 font-poppins">
+            {formattedPrice}
+          </span>
+
+          <button className="bg-blue-500 hover:bg-blue-600
+                         text-white text-xs font-semibold
+                         px-4 py-2 rounded-md transition font-nunito">
+            View Property
+          </button>
+        </div>
       </div>
     </Link>
+
 
   );
 }
