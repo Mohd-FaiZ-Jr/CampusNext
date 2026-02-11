@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { MessageCircle, Search } from "lucide-react";
+import { MessageCircle, Search, ArrowLeft, X } from "lucide-react";
 import dynamic from "next/dynamic";
 
 // Dynamic import for ChatWindow to avoid SSR issues
@@ -43,9 +43,9 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                     const total = (data.conversations || []).reduce(
                         (sum, conv) => {
                             // Check for unreadCount as both object property and Map
-                            const unread = conv.unreadCount?.[userId] || 
-                                         conv.unreadCount?.get?.(userId) || 
-                                         0;
+                            const unread = conv.unreadCount?.[userId] ||
+                                conv.unreadCount?.get?.(userId) ||
+                                0;
                             return sum + unread;
                         },
                         0
@@ -106,57 +106,65 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
     }
 
     return (
-        <div className="flex flex-col h-full bg-white">
-            {/* Header - Instagram Style */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex items-center justify-between shadow-md z-10">
-                <div className="flex items-center gap-3">
+        <div className="flex flex-col h-full bg-white border-r border-gray-100">
+
+            {/* Header */}
+            <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-100">
+                <div className="flex items-center justify-between px-5 py-4">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={onClose}
+                            className="md:hidden p-2 hover:bg-gray-100 rounded-full transition active:scale-95"
+                        >
+                            <ArrowLeft className="w-5 h-5 text-gray-700" />
+                        </button>
+
+                        <h2 className="text-lg font-semibold text-gray-900 tracking-tight font-raleway">
+                            Messages
+                        </h2>
+                    </div>
+
                     <button
                         onClick={onClose}
-                        className="md:hidden p-2 hover:bg-white/20 rounded-full transition-colors active:scale-95"
+                        className="hidden md:flex p-2 hover:bg-gray-100 rounded-full transition"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                        <X className="w-5 h-5 text-gray-600" />
                     </button>
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                        <MessageCircle className="w-6 h-6" />
-                        Messages
-                    </h2>
                 </div>
-                <button
-                    onClick={onClose}
-                    className="hidden md:block p-2 hover:bg-white/20 rounded-full transition-colors"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                </button>
-            </div>
 
-            {/* Search Bar */}
-            <div className="p-3 border-b border-gray-100 bg-white">
-                <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search conversations..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-11 pr-4 py-2.5 bg-gray-50 rounded-full outline-none text-sm placeholder:text-gray-400 shadow-sm transition-all duration-200 hover:shadow-md focus:bg-white"
-                    />
+                {/* Search */}
+                <div className="px-5 pb-4">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search conversations"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-11 pr-4 py-2.5 bg-gray-100 hover:bg-gray-200 focus:bg-white
+                     rounded-xl text-sm outline-none border border-transparent
+                     focus:border-blue-500 transition-all duration-200 font-poppins"
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Conversations List */}
-            <div className="flex-1 overflow-y-auto">
+
+            {/* Conversations */}
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 font-montserrat">
+
                 {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                         <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
                     </div>
                 ) : filteredConversations.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-500 p-6 animate-fadeIn">
-                        <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mb-4">
-                            <MessageCircle className="w-10 h-10 text-gray-400 opacity-50" />
+                    <div className="flex flex-col items-center justify-center h-full text-gray-500 px-6 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                            <MessageCircle className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="text-sm font-medium text-gray-900">No conversations yet</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                            Start chatting with landlords!
+                        <p className="font-medium text-gray-900">No conversations yet</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Start chatting with landlords to see messages here.
                         </p>
                     </div>
                 ) : (
@@ -164,78 +172,70 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                         const other = getOtherParticipant(conversation);
                         const userId = user?._id || user?.id;
                         // Check for unreadCount as both object property and Map
-                        const unread = conversation.unreadCount?.[userId] || 
-                                      conversation.unreadCount?.get?.(userId) || 
-                                      0;
+                        const unread = conversation.unreadCount?.[userId] ||
+                            conversation.unreadCount?.get?.(userId) ||
+                            0;
 
                         return (
                             <button
                                 key={conversation._id}
                                 onClick={() => setSelectedConversation(conversation)}
-                                className={`w-full p-4 border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200 text-left group relative ${
-                                    unread > 0 ? 'bg-blue-50/50 border-l-4 border-l-blue-600' : ''
-                                }`}
+                                className="w-full px-5 py-4 border-b border-gray-50
+                       hover:bg-gray-50 transition-all duration-200 text-left group"
                             >
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-4">
+
                                     {/* Avatar */}
-                                    {other?.landlordProfile?.profileImage ? (
-                                        <img
-                                            src={other.landlordProfile.profileImage}
-                                            alt={other.name || "User"}
-                                            className={`w-14 h-14 rounded-full object-cover ring-2 ${
-                                                unread > 0 ? 'ring-blue-600' : 'ring-gray-200'
-                                            }`}
-                                        />
-                                    ) : (
-                                        <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center ring-2 ${
-                                            unread > 0 ? 'ring-blue-600' : 'ring-gray-200'
-                                        }`}>
-                                            <span className="text-white font-bold text-lg">
-                                                {(other?.name || "U").charAt(0).toUpperCase()}
-                                            </span>
-                                        </div>
-                                    )}
+                                    <div className="relative">
+                                        {other?.landlordProfile?.profileImage ? (
+                                            <img
+                                                src={other.landlordProfile.profileImage}
+                                                alt={other.name}
+                                                className="w-12 h-12 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                                                <span className="text-gray-900 font-semibold text-sm font-raleway">
+                                                    {(other?.name || "U").charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Unread dot */}
+                                        {unread > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full ring-2 ring-white"></span>
+                                        )}
+                                    </div>
 
                                     {/* Content */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-1">
+
+                                        {/* Top row */}
+                                        <div className="flex items-center justify-between">
                                             <h3
-                                                className={`font-semibold truncate ${
-                                                    unread > 0 ? "text-gray-900 font-bold" : "text-gray-700"
-                                                }`}
+                                                className={`text-sm font-semibold font-raleway truncate ${unread > 0 ? "text-gray-900" : "text-gray-700"
+                                                    }`}
                                             >
                                                 {other?.name || "Unknown User"}
                                             </h3>
-                                            <div className="flex items-center gap-2">
-                                                {conversation.lastMessageAt && (
-                                                    <span className={`text-xs ${
-                                                        unread > 0 ? 'text-blue-600 font-semibold' : 'text-gray-500'
-                                                    }`}>
-                                                        {formatTime(conversation.lastMessageAt)}
-                                                    </span>
-                                                )}
-                                                {unread > 0 && (
-                                                    <span className="bg-blue-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5 shadow-md animate-pulse">
-                                                        {unread > 99 ? "99+" : unread}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <p className={`text-xs truncate mb-1 flex items-center gap-1 ${
-                                                unread > 0 ? 'text-gray-700 font-medium' : 'text-gray-500'
-                                            }`}>
-                                                <span>🏠</span>
-                                                {conversation.property?.title || "Property"}
-                                            </p>
-                                            {unread > 0 && (
-                                                <span className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></span>
+
+                                            {conversation.lastMessageAt && (
+                                                <span className="text-xs text-gray-400">
+                                                    {formatTime(conversation.lastMessageAt)}
+                                                </span>
                                             )}
                                         </div>
+
+                                        {/* Property */}
+                                        <p className="text-xs text-gray-400 truncate mb-1 font-nunito">
+                                            {conversation.property?.title || "Property"}
+                                        </p>
+
+                                        {/* Last message */}
                                         {conversation.lastMessage && (
                                             <p
-                                                className={`text-sm truncate ${unread > 0
-                                                    ? "text-gray-900 font-semibold"
+                                                className={`text-sm truncate font-montserrat ${unread > 0
+                                                    ? "text-gray-900 font-medium"
                                                     : "text-gray-500"
                                                     }`}
                                             >
@@ -254,5 +254,6 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                 )}
             </div>
         </div>
+
     );
 }

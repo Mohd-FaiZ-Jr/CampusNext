@@ -140,36 +140,62 @@ export default function EditStudentProfile() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-linear-to-r from-blue-600 to-indigo-600 px-8 py-6">
-              <h1 className="text-2xl font-bold text-white">Edit Profile</h1>
-              <p className="text-blue-100 mt-1">
-                Update your student information
-              </p>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+
+          <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+
+            {/* Header */}
+            <div className="relative overflow-hidden px-10 py-12 border-b border-gray-200">
+
+              {/* Background Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: "url('https://thumbs.dreamstime.com/b/grungy-dark-room-background-old-brick-wall-concrete-floor-as-36332180.jpg')",
+                }}
+              />
+
+              {/* Dark Overlay for Readability */}
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+
+              {/* Content */}
+              <div className="relative">
+                <h1 className="text-3xl font-bold text-white tracking-tight font-montserrat">
+                  Edit Profile
+                </h1>
+                <p className="text-gray-200 mt-2 text-sm font-raleway">
+                  Keep your information accurate and up to date
+                </p>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-8 space-y-8">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 shrink-0" />
-                  <p>{error}</p>
+
+
+
+            <form onSubmit={handleSubmit} className="px-10 py-10 space-y-12">
+
+              {/* Alerts */}
+              {(error || success) && (
+                <div className="space-y-4">
+                  {error && (
+                    <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+                      <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+                      <p className="text-sm font-nunito">{error}</p>
+                    </div>
+                  )}
+
+                  {success && (
+                    <div className="flex items-start gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
+                      <CheckCircle className="w-5 h-5 mt-0.5 shrink-0" />
+                      <p className="text-sm font-nunito">{success}</p>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {success && (
-                <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-xl flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 shrink-0" />
-                  <p>{success}</p>
-                </div>
-              )}
-
-              {/* Profile Image */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Profile Photo
-                </label>
+              {/* Profile Photo */}
+              <Section title="Profile Photo">
                 <ImageUpload
                   onImagesChange={handleImagesChange}
                   existingImages={
@@ -177,199 +203,140 @@ export default function EditStudentProfile() {
                   }
                   maxImages={1}
                 />
-              </div>
+              </Section>
 
-              {/* Academic Info */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2 pb-2 border-b border-gray-100">
-                  <GraduationCap className="w-5 h-5 text-blue-600" />
-                  Academic Details
-                </h2>
+              {/* Academic Section */}
+              <Section
+                title="Academic Information"
+                icon={<GraduationCap className="w-5 h-5 text-blue-600" />}
+              >
+                <div className="grid md:grid-cols-2 gap-8">
+                  <InputField
+                    label="University Name"
+                    name="universityName"
+                    value={formData.universityName}
+                    onChange={handleChange}
+                    placeholder="e.g. Stanford University"
+                    icon={<GraduationCap className="w-5 h-5 text-gray-400" />}
+                  />
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      University Name
-                    </label>
-                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        name="universityName"
-                        value={formData.universityName}
-                        onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none"
-                        placeholder="e.g. Stanford University"
-                      />
-                    </div>
-                  </div>
+                  <InputField
+                    label="Student ID"
+                    name="studentId"
+                    value={formData.studentId}
+                    onChange={handleChange}
+                    placeholder="e.g. ST123456"
+                    icon={<User className="w-5 h-5 text-gray-400" />}
+                  />
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Student ID
-                    </label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        name="studentId"
-                        value={formData.studentId}
-                        onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none"
-                        placeholder="e.g. ST123456"
-                      />
-                    </div>
-                  </div>
+                  <InputField
+                    label="Course / Major"
+                    name="course"
+                    value={formData.course}
+                    onChange={handleChange}
+                    placeholder="e.g. Computer Science"
+                    icon={<BookOpen className="w-5 h-5 text-gray-400" />}
+                  />
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Course / Major
-                    </label>
-                    <div className="relative">
-                      <BookOpen className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        name="course"
-                        value={formData.course}
-                        onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none"
-                        placeholder="e.g. Computer Science"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Year of Study
-                    </label>
-                    <select
-                      name="yearOfStudy"
-                      value={formData.yearOfStudy}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none bg-white"
-                    >
-                      <option value="">Select Year</option>
-                      <option value="1st Year">1st Year</option>
-                      <option value="2nd Year">2nd Year</option>
-                      <option value="3rd Year">3rd Year</option>
-                      <option value="4th Year">4th Year</option>
-                      <option value="5th Year">5th Year</option>
-                      <option value="Postgraduate">Postgraduate</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
+                  <SelectField
+                    label="Year of Study"
+                    name="yearOfStudy"
+                    value={formData.yearOfStudy}
+                    onChange={handleChange}
+                  />
                 </div>
-              </div>
+              </Section>
 
               {/* Bio */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  About Me
-                  <span className="text-xs font-normal text-gray-500 ml-2">
-                    ({formData.bio.length}/500)
-                  </span>
-                </label>
-                <textarea
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                  rows={4}
-                  maxLength={500}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none resize-none"
-                  placeholder="Tell landlords a bit about yourself..."
-                />
-              </div>
-
-              {/* Address & Emergency Contact */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2 pb-2 border-b border-gray-100">
-                  <User className="w-5 h-5 text-blue-600" />
-                  Personal Information
-                </h2>
-
+              <Section title="About You">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Permanent Address
+                  <label className="flex justify-between text-sm font-medium text-gray-700 mb-2 font-raleway">
+                    <span>Short Bio</span>
+                    <span className="text-xs text-gray-400">
+                      {formData.bio.length}/500
+                    </span>
                   </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="permanentAddress"
-                      value={formData.permanentAddress}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition outline-none"
-                      placeholder="Your home address"
-                    />
-                  </div>
-                </div>
 
-                <div className="bg-red-50 p-6 rounded-xl border border-red-100">
-                  <h3 className="text-sm font-semibold text-red-800 flex items-center gap-2 mb-4">
-                    <ShieldAlert className="w-4 h-4" />
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleChange}
+                    rows={5}
+                    maxLength={500}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none resize-none font-nunito"
+                    placeholder="Tell landlords a bit about yourself..."
+                  />
+                </div>
+              </Section>
+
+              {/* Personal Info */}
+              <Section
+                title="Personal Information"
+                icon={<User className="w-5 h-5 text-blue-600" />}
+              >
+                <InputField
+                  label="Permanent Address"
+                  name="permanentAddress"
+                  value={formData.permanentAddress}
+                  onChange={handleChange}
+                  placeholder="Your home address"
+                  icon={<MapPin className="w-5 h-5 text-gray-400" />}
+                />
+
+                {/* Emergency */}
+                <div className="mt-8 bg-gray-50 border border-gray-200 rounded-2xl p-6">
+                  <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-6 font-poppins">
+                    <ShieldAlert className="w-4 h-4 text-red-500" />
                     Emergency Contact
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-red-700 mb-1 uppercase">
-                        Name
-                      </label>
-                      <input
-                        type="text"
-                        name="emergencyContactName"
-                        value={formData.emergencyContactName}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:ring-2 focus:ring-red-100 transition outline-none"
-                        placeholder="Contact Person Name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-red-700 mb-1 uppercase">
-                        Relation
-                      </label>
-                      <input
-                        type="text"
-                        name="emergencyContactRelation"
-                        value={formData.emergencyContactRelation}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:ring-2 focus:ring-red-100 transition outline-none"
-                        placeholder="e.g. Parent, Guardian"
-                      />
-                    </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <InputField
+                      label="Contact Name"
+                      name="emergencyContactName"
+                      value={formData.emergencyContactName}
+                      onChange={handleChange}
+                      placeholder="Contact Person Name"
+                    />
+
+                    <InputField
+                      label="Relation"
+                      name="emergencyContactRelation"
+                      value={formData.emergencyContactRelation}
+                      onChange={handleChange}
+                      placeholder="Parent, Guardian"
+                    />
+
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-medium text-red-700 mb-1 uppercase">
-                        Phone Number
-                      </label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-2.5 w-4 h-4 text-red-400" />
-                        <input
-                          type="tel"
-                          name="emergencyContactPhone"
-                          value={formData.emergencyContactPhone}
-                          onChange={handleChange}
-                          className="w-full pl-9 pr-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:ring-2 focus:ring-red-100 transition outline-none"
-                          placeholder="xxxxxxxxxx"
-                        />
-                      </div>
+                      <InputField
+                        label="Phone Number"
+                        name="emergencyContactPhone"
+                        value={formData.emergencyContactPhone}
+                        onChange={handleChange}
+                        placeholder="xxxxxxxxxx"
+                        icon={<Phone className="w-4 h-4 text-gray-400" />}
+                        type="tel"
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
+              </Section>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-100">
+              {/* Action Footer */}
+              <div className="flex items-center justify-between pt-8 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => router.back()}
-                  className="px-6 py-2.5 text-gray-700 font-medium hover:bg-gray-100 rounded-xl transition"
+                  className="px-6 py-2.5 text-gray-600 hover:text-gray-900 font-medium transition font-nunito"
                   disabled={saving}
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition shadow-md disabled:opacity-70 flex items-center gap-2"
+                  className="px-8 py-3 bg-blue-600 text-white font-semibold font-nunito rounded-2xl hover:bg-blue-700 transition shadow-md disabled:opacity-70 flex items-center gap-2 font-montserrat"
                 >
                   {saving ? (
                     <>
@@ -381,10 +348,71 @@ export default function EditStudentProfile() {
                   )}
                 </button>
               </div>
+
             </form>
           </div>
         </div>
       </div>
     </Layout>
+
   );
 }
+const SelectField = ({ label, ...props }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2 font-raleway">
+      {label}
+    </label>
+    <select
+      {...props}
+      className="w-full px-4 py-2.5 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none bg-white font-nunito"
+    >
+      <option value="">Select Year</option>
+      <option value="1st Year">1st Year</option>
+      <option value="2nd Year">2nd Year</option>
+      <option value="3rd Year">3rd Year</option>
+      <option value="4th Year">4th Year</option>
+      <option value="5th Year">5th Year</option>
+      <option value="Postgraduate">Postgraduate</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+);
+
+const InputField = ({
+  label,
+  icon,
+  type = "text",
+  ...props
+}) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2 font-raleway">
+      {label}
+    </label>
+    <div className="relative">
+      {icon && (
+        <div className="absolute left-3 top-3">
+          {icon}
+        </div>
+      )}
+      <input
+        type={type}
+        {...props}
+        className={`w-full ${icon ? "pl-10" : "pl-4"
+          } pr-4 py-2.5 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition outline-none font-nunito`}
+      />
+    </div>
+  </div>
+);
+
+const Section = ({ title, icon, children }) => (
+  <div className="space-y-6">
+    <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+      {icon}
+      <h2 className="text-lg font-semibold text-gray-900 font-poppins">
+        {title}
+      </h2>
+    </div>
+    {children}
+  </div>
+);
+

@@ -81,19 +81,28 @@ export default function ChatIcon() {
             {/* Floating Chat Button - Works on Mobile */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/50 hover:scale-110 transition-all duration-300"
+                className="fixed bottom-6 right-6 z-40 w-14 h-14
+             bg-white text-gray-800
+             border border-gray-200
+             rounded-full
+             shadow-lg
+             hover:shadow-xl
+             hover:scale-105
+             active:scale-95
+             transition-all duration-200
+             flex items-center justify-center"
                 aria-label="Open chat"
                 style={{ minWidth: '56px', minHeight: '56px' }}
             >
                 {isOpen ? (
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5" />
                 ) : (
                     <>
-                        <MessageCircle className="w-6 h-6" />
+                        <MessageCircle className="w-5 h-5" />
+
+                        {/* Unread Indicator */}
                         {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
-                                {unreadCount > 99 ? "99+" : unreadCount}
-                            </span>
+                            <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-blue-600 rounded-full ring-2 ring-white"></span>
                         )}
                     </>
                 )}
