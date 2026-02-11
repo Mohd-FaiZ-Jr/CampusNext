@@ -5,7 +5,15 @@ import { useState, useEffect, useRef } from "react";
 import SignupModal from "./SignupModal";
 import LoginModal from "./LoginModal";
 import { useAuth } from "../context/AuthContext";
-import { User, LogOut, Edit } from "lucide-react";
+import {
+  User, LogOut, Edit, Home,
+  Compass,
+  Info,
+  Phone,
+  LayoutDashboard,
+  CalendarCheck,
+  CalendarDays,
+} from "lucide-react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -85,6 +93,18 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
 
   return (
     <>
@@ -360,213 +380,228 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Navigation */}
-          {isMobileMenuOpen && (
-            <div className="lg:hidden pb-3 sm:pb-4 font-poppins">
-              <div className="mt-3 mx-3 rounded-2xl bg-white/95 backdrop-blur-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="py-2">
+          {/* ================= MOBILE RIGHT DRAWER ================= */}
+          <div
+            className={`fixed inset-0 z-[9999] lg:hidden transition-all duration-300 ${isMobileMenuOpen ? "visible" : "invisible"
+              }`}
+          >
+            {/* Overlay */}
+            <div
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? "opacity-100" : "opacity-0"
+                }`}
+            />
+
+            {/* Drawer Panel */}
+            <div
+              className={`absolute top-0 right-0 h-full w-[88%] max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+                }`}
+            >
+              {/* ================= DRAWER HEADER ================= */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-semibold text-gray-800 tracking-wide font-orbitron">
+                  CampusNest.
+                </h2>
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5 text-gray-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto px-5 py-6 font-poppins">
+
+                {/* ================= PROFILE CARD ================= */}
+                {user && (user.role === "LANDLORD" || user.role === "STUDENT") && (
+                  <Link
+                    href={
+                      user.role === "LANDLORD"
+                        ? "/landlord/profile"
+                        : "/student/profile"
+                    }
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block mb-8"
+                  >
+                    <div className="group flex items-center gap-4 px-4 py-4 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-pointer">
+
+                      {/* Avatar */}
+                      {(user.role === "LANDLORD" &&
+                        user.landlordProfile?.profileImage) ||
+                        (user.role === "STUDENT" &&
+                          user.studentProfile?.profileImage) ? (
+                        <img
+                          src={
+                            user.role === "LANDLORD"
+                              ? user.landlordProfile.profileImage
+                              : user.studentProfile.profileImage
+                          }
+                          alt={user.name}
+                          className="w-12 h-12 rounded-full object-cover ring-1 ring-gray-200 group-hover:ring-gray-300 transition"
+                        />
+                      ) : (
+                        <div
+                          className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold tracking-wide shadow-sm transition-all duration-300 ${user.role === "LANDLORD"
+                            ? "bg-gradient-to-br from-blue-600 to-indigo-600"
+                            : "bg-gradient-to-br from-indigo-600 to-purple-600"
+                            }`}
+                        >
+                          {getInitials(user.name)}
+                        </div>
+                      )}
+
+                      {/* User Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
+                          {user.name}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate mt-0.5">
+                          {user.email}
+                        </p>
+
+                        <span
+                          className={`mt-2 inline-flex items-center text-[10px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-full ${user.role === "LANDLORD"
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-indigo-50 text-indigo-600"
+                            }`}
+                        >
+                          {user.role}
+                        </span>
+                      </div>
+
+                      {/* Chevron */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-transform duration-300 group-hover:translate-x-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+
+                  </Link>
+                )}
+
+                {/* ================= NAVIGATION LINKS ================= */}
+                <div className="space-y-1">
+
+                  {/* ================= MAIN NAV ================= */}
                   <Link
                     href="/"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
                   >
+                    <Home className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
                     <span>Home</span>
                   </Link>
 
                   <Link
                     href="/explore"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
                   >
+                    <Compass className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
                     <span>Explore</span>
                   </Link>
 
                   <Link
                     href="/about"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
                   >
+                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
                     <span>About Us</span>
                   </Link>
 
                   <Link
                     href="/contact"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
                   >
+                    <Phone className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
                     <span>Contact</span>
                   </Link>
 
-                  {user && user.role === "LANDLORD" && (
+                  {/* ================= LANDLORD SECTION ================= */}
+                  {user?.role === "LANDLORD" && (
                     <>
-                      <div className="h-px bg-gray-100 my-2" />
+                      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
+
                       <Link
                         href="/landlord/dashboard"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 active:bg-blue-100 transition-colors"
+                        className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-all duration-200"
                       >
+                        <LayoutDashboard className="w-4 h-4 text-blue-500 group-hover:scale-105 transition-transform" />
                         <span>Dashboard</span>
+                      </Link>
+
+                      <Link
+                        href="/landlord/bookings"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                      >
+                        <CalendarCheck className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                        <span>Bookings</span>
                       </Link>
                     </>
                   )}
+
+                  {/* ================= STUDENT SECTION ================= */}
+                  {user?.role === "STUDENT" && (
+                    <>
+                      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
+
+                      <Link
+                        href="/student/bookings"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                      >
+                        <CalendarDays className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                        <span>My Bookings</span>
+                      </Link>
+                    </>
+                  )}
+
+                </div>
+              </div>
+
+              {/* ================= LOGOUT ================= */}
+              {user && (
+                <div className="mt-auto border-t border-gray-100 p-5 bg-white">
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="group w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 active:bg-red-100 transition-all duration-200"
+                  >
+                    <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+                    <span>Logout</span>
+                  </button>
                 </div>
 
-                {!isLoading && (
-                  <>
-                    {user ? (
-                      // Logged in state (mobile)
-                      <>
-                        {user.role === "LANDLORD" || user.role === "STUDENT" ? (
-                          <>
-                            {/* Soft Divider */}
-                            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
 
-                            {/* User Card */}
-                            <div className="px-4">
-                              <div className="flex items-center gap-3 rounded-2xl bg-gray-50/70 backdrop-blur-sm px-4 py-4 border border-gray-100">
-
-                                {/* Avatar */}
-                                {(user.role === "LANDLORD" &&
-                                  user.landlordProfile?.profileImage) ||
-                                  (user.role === "STUDENT" &&
-                                    user.studentProfile?.profileImage) ? (
-                                  <img
-                                    src={
-                                      user.role === "LANDLORD"
-                                        ? user.landlordProfile.profileImage
-                                        : user.studentProfile.profileImage
-                                    }
-                                    alt={user.name}
-                                    className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
-                                  />
-                                ) : (
-                                  <div
-                                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm bg-gradient-to-br ${user.role === "LANDLORD"
-                                      ? "from-blue-500 to-indigo-600"
-                                      : "from-indigo-500 to-purple-600"
-                                      }`}
-                                  >
-                                    {getInitials(user.name)}
-                                  </div>
-                                )}
-
-                                {/* User Info */}
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-semibold text-gray-900 truncate">
-                                    {user.name}
-                                  </p>
-                                  <p className="text-xs text-gray-500 truncate">
-                                    {user.email}
-                                  </p>
-
-                                  <span
-                                    className={`mt-1 inline-flex items-center text-[10px] font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full ${user.role === "LANDLORD"
-                                      ? "bg-blue-100/70 text-blue-700"
-                                      : "bg-indigo-100/70 text-indigo-700"
-                                      }`}
-                                  >
-                                    {user.role}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="mt-4 px-3 font-nunito">
-
-                              <Link
-                                href={
-                                  user.role === "LANDLORD"
-                                    ? "/landlord/profile"
-                                    : "/student/profile"
-                                }
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all duration-200"
-                              >
-                                <span>View Profile</span>
-
-                              </Link>
-
-                              <Link
-                                href={
-                                  user.role === "LANDLORD"
-                                    ? "/landlord/profile/edit"
-                                    : "/student/profile/edit"
-                                }
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all duration-200"
-                              >
-                                <span>Edit Profile</span>
-
-                              </Link>
-
-                              <div className="">
-                                <button
-                                  onClick={() => {
-                                    setIsMobileMenuOpen(false);
-                                    handleLogout();
-                                  }}
-                                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 active:bg-red-100 transition-all duration-200"
-                                >
-                                  <span>Logout</span>
-
-                                </button>
-                              </div>
-                            </div>
-                          </>
-
-
-                        ) : (
-                          // Admin or other roles mobile menu
-                          <>
-                            <div className="border-t border-gray-200 my-2"></div>
-                            {user.role === "ADMIN" ? (
-                              <Link
-                                href="/admin"
-                                className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium hover:bg-blue-50 transition-colors rounded-xl"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                              >
-                                Admin Panel
-                              </Link>
-                            ) : (
-                              <div className="text-zinc-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium">
-                                Hi, {user.name}
-                              </div>
-                            )}
-                            <button
-                              onClick={() => {
-                                setIsMobileMenuOpen(false);
-                                handleLogout();
-                              }}
-                              className="text-red-600 hover:text-red-700 block w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
-                            >
-                              Logout
-                            </button>
-                          </>
-                        )}
-                      </>
-                    ) : (
-                      // Logged out state (mobile)
-                      <>
-                        <div className="border-t border-gray-200 my-2"></div>
-                        <button
-                          onClick={handleOpenLoginModal}
-                          className="text-zinc-600 hover:text-blue-600 block w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                        >
-                          Login
-                        </button>
-                        <button
-                          onClick={openSignupModal}
-                          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white block w-full text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold mt-2"
-                        >
-                          Sign Up
-                        </button>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
+              )}
             </div>
-          )}
+          </div>
+
+
         </div>
       </nav>
 

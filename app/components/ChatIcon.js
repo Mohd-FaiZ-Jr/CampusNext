@@ -81,8 +81,7 @@ export default function ChatIcon() {
             {/* Floating Chat Button - Works on Mobile */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 w-14 h-14
-           w-14 h-14
+                className="fixed bottom-6 right-6 z-40 w-14 h-14
              bg-white text-gray-800
              border border-gray-200
              rounded-full
