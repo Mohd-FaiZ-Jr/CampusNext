@@ -145,6 +145,26 @@ export default function Navbar() {
                   </Link>
                 )}
 
+                {/* Show Bookings for Landlords */}
+                {user && user.role === "LANDLORD" && (
+                  <Link
+                    href="/landlord/bookings"
+                    className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                  >
+                    Bookings
+                  </Link>
+                )}
+
+                {/* Show Bookings for Students */}
+                {user && user.role === "STUDENT" && (
+                  <Link
+                    href="/student/bookings"
+                    className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
+                  >
+                    My Bookings
+                  </Link>
+                )}
+
                 <>
                   {user ? (
                     // Logged in state

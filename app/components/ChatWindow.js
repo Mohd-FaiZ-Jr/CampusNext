@@ -181,9 +181,8 @@ export default function ChatWindow({ conversation, onBack }) {
                         channelRef.current.presence.leave().catch(() => { });
                     }
                 }
-                if (ablyClientRef.current) {
-                    ablyClientRef.current.close();
-                }
+                // Don't close the Ably client - let it manage its own lifecycle
+                // Closing here causes "Connection closed" errors when switching conversations
             } catch (e) {
                 // Ignore cleanup errors
             }
