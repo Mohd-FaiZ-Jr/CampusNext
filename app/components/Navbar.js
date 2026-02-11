@@ -152,13 +152,11 @@ export default function Navbar() {
                       {user.role === "LANDLORD" || user.role === "STUDENT" ? (
                         // Landlord & Student Profile Dropdown
                         <div className="relative" ref={dropdownRef}>
+                          {/* Avatar Button */}
                           <button
-                            onClick={() =>
-                              setIsProfileDropdownOpen(!isProfileDropdownOpen)
-                            }
-                            className="flex items-center gap-2 hover:opacity-80 transition-all duration-300 focus:outline-none"
+                            onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                            className="flex items-center gap-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
                           >
-                            {/* Determine Profile Image */}
                             {(user.role === "LANDLORD" &&
                               user.landlordProfile?.profileImage) ||
                               (user.role === "STUDENT" &&
@@ -170,37 +168,30 @@ export default function Navbar() {
                                     : user.studentProfile.profileImage
                                 }
                                 alt={user.name}
-                                className={`w-9 h-9 rounded-full object-cover border-2 ${user.role === "LANDLORD"
-                                  ? "border-blue-500"
-                                  : "border-indigo-500"
-                                  }`}
+                                className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm"
                               />
                             ) : (
-                              <div
-                                className={`w-9 h-9 rounded-full bg-gradient-to-br ${user.role === "LANDLORD"
-                                  ? "from-blue-500 to-indigo-600 border-blue-500"
-                                  : "from-indigo-500 to-purple-600 border-indigo-500"
-                                  } flex items-center justify-center border-2`}
-                              >
-                                <span className="text-xs font-bold text-white">
-                                  {getInitials(user.name)}
-                                </span>
+                              <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm font-semibold shadow-sm">
+                                {getInitials(user.name)}
                               </div>
                             )}
                           </button>
 
-                          {/* Dropdown Menu */}
+                          {/* Dropdown */}
                           {isProfileDropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                              <div className="px-4 py-3 border-b border-gray-100">
+                            <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+
+                              {/* User Info */}
+                              <div className="px-5 py-4 border-b border-gray-100">
                                 <p className="text-sm font-semibold text-gray-900">
                                   {user.name}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 mt-1 truncate">
                                   {user.email}
                                 </p>
+
                                 <span
-                                  className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${user.role === "LANDLORD"
+                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide mt-3 ${user.role === "LANDLORD"
                                     ? "bg-blue-50 text-blue-600"
                                     : "bg-indigo-50 text-indigo-600"
                                     }`}
@@ -208,37 +199,46 @@ export default function Navbar() {
                                   {user.role}
                                 </span>
                               </div>
-                              <Link
-                                href={
-                                  user.role === "LANDLORD"
-                                    ? "/landlord/profile"
-                                    : "/student/profile"
-                                }
-                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                                onClick={() => setIsProfileDropdownOpen(false)}
-                              >
-                                <User className="w-4 h-4" />
-                                View Profile
-                              </Link>
-                              <Link
-                                href={
-                                  user.role === "LANDLORD"
-                                    ? "/landlord/profile/edit"
-                                    : "/student/profile/edit"
-                                }
-                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                                onClick={() => setIsProfileDropdownOpen(false)}
-                              >
-                                <Edit className="w-4 h-4" />
-                                Edit Profile
-                              </Link>
-                              <div className="h-px bg-gray-100 my-1"></div>
+
+                              {/* Links */}
+                              <div className="py-1">
+                                <Link
+                                  href={
+                                    user.role === "LANDLORD"
+                                      ? "/landlord/profile"
+                                      : "/student/profile"
+                                  }
+                                  onClick={() => setIsProfileDropdownOpen(false)}
+                                  className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                                >
+                                  <User className="w-4 h-4 text-gray-400" />
+                                  View Profile
+                                </Link>
+
+                                <Link
+                                  href={
+                                    user.role === "LANDLORD"
+                                      ? "/landlord/profile/edit"
+                                      : "/student/profile/edit"
+                                  }
+                                  onClick={() => setIsProfileDropdownOpen(false)}
+                                  className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                                >
+                                  <Edit className="w-4 h-4 text-gray-400" />
+                                  Edit Profile
+                                </Link>
+                              </div>
+
+                              {/* Divider */}
+                              <div className="my-2 border-t border-gray-100"></div>
+
+                              {/* Logout */}
                               <button
                                 onClick={() => {
                                   setIsProfileDropdownOpen(false);
                                   handleLogout();
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                                className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition text-left rounded-b-2xl"
                               >
                                 <LogOut className="w-4 h-4" />
                                 Logout
@@ -246,28 +246,38 @@ export default function Navbar() {
                             </div>
                           )}
                         </div>
+
                       ) : (
                         // Admin or other roles
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-6">
+
                           {user.role === "ADMIN" ? (
                             <Link
                               href="/admin"
-                              className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
                             >
                               Admin Panel
                             </Link>
                           ) : (
-                            <span className="text-zinc-600 px-3 py-2 text-sm font-medium">
-                              Hi, {user.name}
+                            <span className="text-sm text-gray-600">
+                              <span className="text-gray-500">Hi,</span>{" "}
+                              <span className="font-semibold text-gray-900">
+                                {user.name}
+                              </span>
                             </span>
                           )}
+
+                          <div className="h-4 w-px bg-gray-200"></div>
+
                           <button
                             onClick={handleLogout}
-                            className="text-zinc-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
+                            className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors duration-200"
                           >
                             Logout
                           </button>
+
                         </div>
+
                       )}
                     </>
                   ) : (
@@ -297,63 +307,88 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle mobile menu"
                 aria-expanded={isMobileMenuOpen}
-                className="text-zinc-600 hover:text-blue-600 focus:outline-none transition-colors p-2"
+                className="relative w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
               >
-                <svg
-                  className="h-5 w-5 sm:h-6 sm:w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <span className="sr-only">Toggle Menu</span>
+
+                <div className="relative w-5 h-5">
+                  {/* Top Line */}
+                  <span
+                    className={`absolute left-0 top-1/2 h-0.5 w-5 bg-gray-800 rounded transition-all duration-300 origin-center ${isMobileMenuOpen
+                      ? "rotate-45 translate-y-0"
+                      : "-translate-y-2"
+                      }`}
+                  ></span>
+
+                  {/* Middle Line */}
+                  <span
+                    className={`absolute left-0 top-1/2 h-0.5 w-5 bg-gray-800 rounded transition-all duration-300 ${isMobileMenuOpen ? "opacity-0" : "opacity-100"
+                      }`}
+                  ></span>
+
+                  {/* Bottom Line */}
+                  <span
+                    className={`absolute left-0 top-1/2 h-0.5 w-5 bg-gray-800 rounded transition-all duration-300 origin-center ${isMobileMenuOpen
+                      ? "-rotate-45 translate-y-0"
+                      : "translate-y-2"
+                      }`}
+                  ></span>
+                </div>
               </button>
             </div>
+
           </div>
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden pb-3 sm:pb-4">
-              <div className="px-2 pt-2 pb-3 space-y-1 backdrop-blur-xl bg-white/95 rounded-2xl mt-2 shadow-lg border border-gray-200">
-                <Link
-                  href="/"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Explore
-                </Link>
-                <Link
-                  href="/explore"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  About Us
-                </Link>
-                <Link
-                  href="/explore"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Contact
-                </Link>
-
-                {user && user.role === "LANDLORD" && (
+            <div className="lg:hidden pb-3 sm:pb-4 font-poppins">
+              <div className="mt-3 mx-3 rounded-2xl bg-white/95 backdrop-blur-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div className="py-2">
                   <Link
-                    href="/landlord/dashboard"
-                    className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
+                    href="/"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
                   >
-                    Dashboard
+                    <span>Home</span>
                   </Link>
-                )}
+
+                  <Link
+                    href="/explore"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                  >
+                    <span>Explore</span>
+                  </Link>
+
+                  <Link
+                    href="/about"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                  >
+                    <span>About Us</span>
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                  >
+                    <span>Contact</span>
+                  </Link>
+
+                  {user && user.role === "LANDLORD" && (
+                    <>
+                      <div className="h-px bg-gray-100 my-2" />
+                      <Link
+                        href="/landlord/dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 active:bg-blue-100 transition-colors"
+                      >
+                        <span>Dashboard</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
 
                 {!isLoading && (
                   <>
@@ -361,87 +396,105 @@ export default function Navbar() {
                       // Logged in state (mobile)
                       <>
                         {user.role === "LANDLORD" || user.role === "STUDENT" ? (
-                          // Landlord & Student mobile menu
                           <>
-                            <div className="border-t border-gray-200 my-2"></div>
-                            <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3">
-                              {(user.role === "LANDLORD" &&
-                                user.landlordProfile?.profileImage) ||
-                                (user.role === "STUDENT" &&
-                                  user.studentProfile?.profileImage) ? (
-                                <img
-                                  src={
-                                    user.role === "LANDLORD"
-                                      ? user.landlordProfile.profileImage
-                                      : user.studentProfile.profileImage
-                                  }
-                                  alt={user.name}
-                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 ${user.role === "LANDLORD"
-                                    ? "border-blue-500"
-                                    : "border-indigo-500"
-                                    }`}
-                                />
-                              ) : (
-                                <div
-                                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${user.role === "LANDLORD"
-                                    ? "from-blue-500 to-indigo-600 border-blue-500"
-                                    : "from-indigo-500 to-purple-600 border-indigo-500"
-                                    } flex items-center justify-center border-2`}
-                                >
-                                  <span className="text-sm sm:text-base font-bold text-white">
+                            {/* Soft Divider */}
+                            <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
+
+                            {/* User Card */}
+                            <div className="px-4">
+                              <div className="flex items-center gap-3 rounded-2xl bg-gray-50/70 backdrop-blur-sm px-4 py-4 border border-gray-100">
+
+                                {/* Avatar */}
+                                {(user.role === "LANDLORD" &&
+                                  user.landlordProfile?.profileImage) ||
+                                  (user.role === "STUDENT" &&
+                                    user.studentProfile?.profileImage) ? (
+                                  <img
+                                    src={
+                                      user.role === "LANDLORD"
+                                        ? user.landlordProfile.profileImage
+                                        : user.studentProfile.profileImage
+                                    }
+                                    alt={user.name}
+                                    className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                  />
+                                ) : (
+                                  <div
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm bg-gradient-to-br ${user.role === "LANDLORD"
+                                      ? "from-blue-500 to-indigo-600"
+                                      : "from-indigo-500 to-purple-600"
+                                      }`}
+                                  >
                                     {getInitials(user.name)}
+                                  </div>
+                                )}
+
+                                {/* User Info */}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-semibold text-gray-900 truncate">
+                                    {user.name}
+                                  </p>
+                                  <p className="text-xs text-gray-500 truncate">
+                                    {user.email}
+                                  </p>
+
+                                  <span
+                                    className={`mt-1 inline-flex items-center text-[10px] font-semibold uppercase tracking-wide px-2.5 py-0.5 rounded-full ${user.role === "LANDLORD"
+                                      ? "bg-blue-100/70 text-blue-700"
+                                      : "bg-indigo-100/70 text-indigo-700"
+                                      }`}
+                                  >
+                                    {user.role}
                                   </span>
                                 </div>
-                              )}
-                              <div>
-                                <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                                  {user.name}
-                                </p>
-                                <p className="text-[10px] sm:text-xs text-gray-500">
-                                  {user.email}
-                                </p>
-                                <span
-                                  className={`text-[9px] sm:text-[10px] uppercase font-bold px-1.5 sm:px-2 py-0.5 rounded-full mt-1 inline-block ${user.role === "LANDLORD"
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "bg-indigo-50 text-indigo-600"
-                                    }`}
-                                >
-                                  {user.role}
-                                </span>
                               </div>
                             </div>
-                            <Link
-                              href={
-                                user.role === "LANDLORD"
-                                  ? "/landlord/profile"
-                                  : "/student/profile"
-                              }
-                              className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                              View Profile
-                            </Link>
-                            <Link
-                              href={
-                                user.role === "LANDLORD"
-                                  ? "/landlord/profile/edit"
-                                  : "/student/profile/edit"
-                              }
-                              className="text-zinc-600 hover:text-blue-600 block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-blue-50 transition-colors"
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                              Edit Profile
-                            </Link>
-                            <button
-                              onClick={() => {
-                                setIsMobileMenuOpen(false);
-                                handleLogout();
-                              }}
-                              className="text-red-600 hover:text-red-700 block w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium rounded-xl hover:bg-red-50 transition-colors"
-                            >
-                              Logout
-                            </button>
+
+                            {/* Actions */}
+                            <div className="mt-4 px-3 font-nunito">
+
+                              <Link
+                                href={
+                                  user.role === "LANDLORD"
+                                    ? "/landlord/profile"
+                                    : "/student/profile"
+                                }
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all duration-200"
+                              >
+                                <span>View Profile</span>
+
+                              </Link>
+
+                              <Link
+                                href={
+                                  user.role === "LANDLORD"
+                                    ? "/landlord/profile/edit"
+                                    : "/student/profile/edit"
+                                }
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-all duration-200"
+                              >
+                                <span>Edit Profile</span>
+
+                              </Link>
+
+                              <div className="">
+                                <button
+                                  onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                    handleLogout();
+                                  }}
+                                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 active:bg-red-100 transition-all duration-200"
+                                >
+                                  <span>Logout</span>
+
+                                </button>
+                              </div>
+                            </div>
                           </>
+
+
                         ) : (
                           // Admin or other roles mobile menu
                           <>

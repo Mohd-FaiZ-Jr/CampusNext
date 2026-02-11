@@ -82,191 +82,180 @@ export default function StudentProfile() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header Section */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+
+          {/* ================= HEADER CARD ================= */}
+          <div className="bg-white rounded-3xl shadow-md border border-gray-100 overflow-hidden mb-8">
+
+            {/* Cover */}
+
+            <div className="relative h-40 w-full overflow-hidden">
+              <img
+                src="https://t3.ftcdn.net/jpg/02/95/16/52/360_F_295165234_HNUr5ZJ33hf04b4G3qBUnlKY0YB5Kq8R.jpg"
+                alt="Cover"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
+            </div>
+
             <div className="px-8 pb-8">
-              <div className="relative flex flex-col sm:flex-row justify-between items-center sm:items-end -mt-12 mb-6 gap-4">
-                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6">
+              <div className="relative flex flex-col lg:flex-row justify-between lg:items-end -mt-16 gap-6">
+
+                {/* Profile Info */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
+
                   {studentProfile.profileImage ? (
                     <img
                       src={studentProfile.profileImage}
                       alt={profile.name}
-                      className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg shrink-0"
+                      className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-xl"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-white shadow-lg shrink-0">
-                      <span className="text-4xl font-bold text-white">
+                    <div className="w-36 h-36 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-white shadow-xl">
+                      <span className="text-5xl font-semibold text-white font-poppins">
                         {getInitials(profile.name)}
                       </span>
                     </div>
                   )}
-                  <div className="mb-1 text-center sm:text-left">
-                    <h1 className="text-3xl font-bold text-gray-900">
+
+                  <div className="text-center sm:text-left">
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-poppins">
                       {profile.name}
                     </h1>
-                    <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2">
-                      <Mail className="w-4 h-4" />
+                    <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2 font-nunito">
+                      {/* <Mail className="w-4 h-4" /> */}
                       {profile.email}
                     </p>
                   </div>
                 </div>
+
+                {/* CTA */}
+
                 <button
                   onClick={() => router.push("/student/profile/edit")}
-                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition shadow-sm flex items-center justify-center gap-2"
+                  className="px-5 py-2.5 bg-white border border-gray-200 text-gray-600 font-nunito rounded-xl font-medium hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all shadow-sm flex items-center justify-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
                   Edit Profile
                 </button>
+
+
               </div>
 
-              {/* Bio Section */}
-              {studentProfile.bio ? (
-                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
-                    About Me
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    {studentProfile.bio}
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center">
-                  <p className="text-blue-800 font-medium mb-2">
-                    Complete your profile
-                  </p>
-                  <p className="text-blue-600 text-sm mb-4">
-                    Add a bio and details to help landlords get to know you
-                    better.
-                  </p>
-                  <button
-                    onClick={() => router.push("/student/profile/edit")}
-                    className="text-sm px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg border border-blue-200 hover:bg-blue-50 transition"
-                  >
-                    Add Details
-                  </button>
-                </div>
-              )}
+              {/* Bio */}
+              <div className="mt-8">
+                {studentProfile.bio ? (
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3 font-poppins">
+                      About
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed font-nunito">
+                      {studentProfile.bio}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-center">
+                    <p className="text-blue-900 font-semibold mb-1 font-poppins">
+                      Complete your profile
+                    </p>
+                    <p className="text-blue-600 text-sm mb-4 font-nunito">
+                      Add a bio to help landlords understand you better.
+                    </p>
+                    <button
+                      onClick={() => router.push("/student/profile/edit")}
+                      className="px-4 py-2 font-nunito bg-white text-blue-600 font-medium rounded-lg border border-blue-200 hover:bg-blue-100 transition"
+                    >
+                      Add Details
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Academic Information */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          {/* ================= CONTENT GRID ================= */}
+          <div className="grid lg:grid-cols-2 gap-8">
+
+            {/* Academic Info */}
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
+              <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-3 font-poppins">
                 <GraduationCap className="w-5 h-5 text-blue-600" />
                 Academic Information
               </h2>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <User className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase">
-                      Student ID
-                    </label>
-                    <p className="text-gray-900 font-medium">
-                      {studentProfile.studentId || "Not added"}
-                    </p>
-                  </div>
-                </div>
+              <div className="space-y-6 text-sm font-nunito">
 
-                <div className="flex items-start gap-3">
-                  <GraduationCap className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase">
-                      University
-                    </label>
-                    <p className="text-gray-900 font-medium">
-                      {studentProfile.universityName || "Not added"}
-                    </p>
-                  </div>
-                </div>
+                <InfoItem
+                  icon={<User className="w-5 h-5 text-gray-400" />}
+                  label="Student ID"
+                  value={studentProfile.studentId || "Not added"}
+                />
 
-                <div className="flex items-start gap-3">
-                  <BookOpen className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase">
-                      Course & Year
-                    </label>
-                    <p className="text-gray-900 font-medium">
-                      {studentProfile.course ? (
-                        <>
-                          {studentProfile.course}
-                          {studentProfile.yearOfStudy && (
-                            <span className="text-gray-500 font-normal">
-                              {" • "}
-                              {studentProfile.yearOfStudy}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        "Not added"
-                      )}
-                    </p>
-                  </div>
-                </div>
+                <InfoItem
+                  icon={<GraduationCap className="w-5 h-5 text-gray-400" />}
+                  label="University"
+                  value={studentProfile.universityName || "Not added"}
+                />
+
+                <InfoItem
+                  icon={<BookOpen className="w-5 h-5 text-gray-400" />}
+                  label="Course & Year"
+                  value={
+                    studentProfile.course
+                      ? `${studentProfile.course}${studentProfile.yearOfStudy
+                        ? ` • ${studentProfile.yearOfStudy}`
+                        : ""
+                      }`
+                      : "Not added"
+                  }
+                />
               </div>
             </div>
 
-            {/* Personal & Emergency Contact */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            {/* Right Column */}
+            <div className="space-y-8">
+
+              {/* Address */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-3 font-poppins">
                   <MapPin className="w-5 h-5 text-blue-600" />
                   Address
                 </h2>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase">
-                      Permanent Address
-                    </label>
-                    <p className="text-gray-900">
-                      {studentProfile.permanentAddress || "Not added"}
-                    </p>
-                  </div>
-                </div>
+
+                <InfoItem
+                  icon={<MapPin className="w-5 h-5 text-gray-400" />}
+                  label="Permanent Address"
+                  value={studentProfile.permanentAddress || "Not added"}
+                />
               </div>
 
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              {/* Emergency */}
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-3 font-poppins">
                   <ShieldAlert className="w-5 h-5 text-red-500" />
                   Emergency Contact
                 </h2>
-                {studentProfile.emergencyContact &&
-                studentProfile.emergencyContact.name ? (
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <User className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 uppercase">
-                          Contact Person
-                        </label>
-                        <p className="text-gray-900 font-medium">
-                          {studentProfile.emergencyContact.name}
-                          {studentProfile.emergencyContact.relation && (
-                            <span className="text-gray-500 font-normal text-sm ml-2">
-                              ({studentProfile.emergencyContact.relation})
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <label className="block text-xs font-medium text-gray-500 uppercase">
-                          Phone Number
-                        </label>
-                        <p className="text-gray-900 font-medium">
-                          {studentProfile.emergencyContact.phoneNumber ||
-                            "Not added"}
-                        </p>
-                      </div>
-                    </div>
+
+                {studentProfile.emergencyContact?.name ? (
+                  <div className="space-y-6 text-sm">
+                    <InfoItem
+                      icon={<User className="w-5 h-5 text-gray-400" />}
+                      label="Contact Person"
+                      value={`${studentProfile.emergencyContact.name}${studentProfile.emergencyContact.relation
+                        ? ` (${studentProfile.emergencyContact.relation})`
+                        : ""
+                        }`}
+                    />
+
+                    <InfoItem
+                      icon={<Phone className="w-5 h-5 text-gray-400" />}
+                      label="Phone Number"
+                      value={
+                        studentProfile.emergencyContact.phoneNumber ||
+                        "Not added"
+                      }
+                    />
                   </div>
                 ) : (
                   <p className="text-gray-500 italic">
@@ -274,10 +263,25 @@ export default function StudentProfile() {
                   </p>
                 )}
               </div>
+
             </div>
           </div>
         </div>
       </div>
     </Layout>
+
   );
 }
+const InfoItem = ({ icon, label, value }) => (
+  <div className="flex items-start gap-4">
+    <div className="mt-1">{icon}</div>
+    <div className="font-nunito">
+      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide font-montserrat">
+        {label}
+      </p>
+      <p className="text-gray-900 font-medium">
+        {value}
+      </p>
+    </div>
+  </div>
+);
