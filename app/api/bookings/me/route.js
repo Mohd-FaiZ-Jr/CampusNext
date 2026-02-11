@@ -25,14 +25,14 @@ export async function GET(req) {
     if (user.role === "STUDENT") {
       // Students see their own booking requests
       bookings = await Booking.find({ student: user.id })
-        .populate("property", "title price location college verified")
+        .populate("property", "title price location college verified images address")
         .populate("landlord", "name email")
         .sort({ createdAt: -1 });
     } else if (user.role === "LANDLORD") {
-      // Landlords see bookings for their properties
+      // Landlords see bookings for their properties with detailed student info
       bookings = await Booking.find({ landlord: user.id })
-        .populate("property", "title price location college verified")
-        .populate("student", "name email")
+        .populate("property", "title price location college verified images address")
+        .populate("student", "name email studentProfile")
         .sort({ createdAt: -1 });
     } else if (user.role === "ADMIN") {
       // Admins see all bookings

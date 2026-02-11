@@ -37,10 +37,17 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                 const data = await res.json();
                 setConversations(data.conversations || []);
 
-                // Update unread count
+                // Update unread count - check both user.id and user._id
                 if (onUpdateUnread && user) {
+                    const userId = user._id || user.id;
                     const total = (data.conversations || []).reduce(
-                        (sum, conv) => sum + (conv.unreadCount?.[user._id || user.id] || 0),
+                        (sum, conv) => {
+                            // Check for unreadCount as both object property and Map
+                            const unread = conv.unreadCount?.[userId] ||
+                                conv.unreadCount?.get?.(userId) ||
+                                0;
+                            return sum + unread;
+                        },
                         0
                     );
                     onUpdateUnread(total);
@@ -56,7 +63,8 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
 
     const getOtherParticipant = (conversation) => {
         if (!conversation?.participants || !user) return null;
-        return conversation.participants.find((p) => p._id !== (user._id || user.id));
+        const userId = user._id || user.id;
+        return conversation.participants.find((p) => p._id !== userId);
     };
 
     const formatTime = (date) => {
@@ -162,7 +170,11 @@ export default function ChatList({ onClose, onUpdateUnread, initialConversation 
                 ) : (
                     filteredConversations.map((conversation) => {
                         const other = getOtherParticipant(conversation);
-                        const unread = conversation.unreadCount?.[user?.id] || 0;
+                        const userId = user?._id || user?.id;
+                        // Check for unreadCount as both object property and Map
+                        const unread = conversation.unreadCount?.[userId] ||
+                            conversation.unreadCount?.get?.(userId) ||
+                            0;
 
                         return (
                             <button

@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Layout from "../../components/Layout";
 import PropertyMap from "../../components/PropertyMap";
+import BookingModal from "../../components/BookingModal";
 import { useAuth } from "../../context/AuthContext";
 import { getPublicLandlordProfile } from "../../services/landlordService";
 import { CheckCircle, Calendar } from "lucide-react";
@@ -20,6 +21,8 @@ export default function PropertyDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   // Check authentication - redirect if not logged in
   useEffect(() => {
@@ -48,8 +51,9 @@ export default function PropertyDetailPage() {
         try {
           const landlordData = await getPublicLandlordProfile(data.owner);
           const landlordInfo = landlordData.profile || landlordData;
-          if (landlordInfo && !landlordInfo._id && data.owner) {
-            landlordInfo._id = data.owner;
+          // Ensure we have the _id field 
+          if (landlordInfo) {
+            landlordInfo._id = landlordInfo._id || landlordInfo.id || data.owner;
           }
           setLandlord(landlordInfo);
         } catch (err) {
@@ -74,6 +78,44 @@ export default function PropertyDetailPage() {
       </Layout>
     );
   }
+
+  const handleBookNow = async () => {
+    if (!user) {
+      alert("Please login to book this property");
+      return;
+    }
+    if (user.role !== "STUDENT") {
+      alert("Only students can book properties");
+      return;
+    }
+    setShowBookingModal(true);
+  };
+
+  const confirmBooking = async () => {
+    try {
+      setBookingLoading(true);
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: property._id }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setShowBookingModal(false);
+        alert("Booking request sent successfully! The landlord will review your request.");
+        router.push("/student/bookings");
+      } else {
+        alert(data.message || "Failed to create booking request");
+      }
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Failed to create booking request");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
 
   const getInitials = (name) => {
     if (!name) return "LL";
@@ -450,38 +492,79 @@ export default function PropertyDetailPage() {
                       </p>
                     </div>
                   </div>
-
-                  <button className="w-full py-2.5 rounded-xl font-nunito border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition">
-                    View Profile
-                  </button>
+                  {landlord?._id ? (
+                    <Link
+                      href={`/landlord/profile/${landlord._id}`}
+                      className="block w-full text-center bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      View Profile
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className="w-full bg-white border border-gray-200 text-gray-400 py-2 rounded-lg font-medium cursor-not-allowed"
+                      disabled
+                    >
+                      View Profile
+                    </button>
+                  )}
                 </div>
               )}
 
-
-
-              {/* ===== BOOKING CARD (STICKY CTA) ===== */}
-              <div className="sticky top-24">
-
-                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
-
-                  {/* Price Section */}
-                  <div className="pb-5 border-b border-gray-100 mb-5">
-                    <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
-                      Monthly Rent
-                    </p>
-
-                    <div className="text-3xl font-bold text-gray-900 tracking-tight">
-                      ₹{property.price?.toLocaleString("en-IN")}
-                      <span className="text-base font-normal text-gray-500"> / month</span>
-                    </div>
-                  </div>
-
-
-                  {/* CTA Buttons */}
-                  <div className="space-y-2">
-
-                    <button className="w-full py-3 font-nunito rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shadow-sm hover:shadow-md">
+              {/* Interested Card */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 sticky top-24">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Interested?</h3>
+                <div className="text-3xl font-bold text-gray-900 mb-4">
+                  ₹{property.price?.toLocaleString("en-IN")}
+                  <span className="text-base font-normal text-gray-600">/mo</span>
+                </div>
+                <div className="space-y-3">
+                  {user && user.role === 'STUDENT' && (
+                    <button 
+                      onClick={handleBookNow}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors"
+                    >
                       Book Now
+                    </button>
+                  )}
+                  {user && landlord && landlord._id && user.role !== 'LANDLORD' && user.role !== 'landlord' && (user._id !== landlord._id && user.id !== landlord._id) && (
+                    <button
+                      onClick={async () => {
+                        if (!user) {
+                          alert("Please login to contact the landlord");
+                          return;
+                        }
+                        if (!landlord || !landlord._id) {
+                          alert("Landlord information not available");
+                          return;
+                        }
+                        try {
+                          const res = await fetch("/api/conversations", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              propertyId: property._id,
+                              landlordId: landlord._id,
+                            }),
+                          });
+                          if (res.ok) {
+                            const data = await res.json();
+                            const event = new CustomEvent("openChat", {
+                              detail: { conversation: data.conversation }
+                            });
+                            window.dispatchEvent(event);
+                          } else {
+                            const error = await res.json();
+                            alert(`Failed to start conversation: ${error.message || 'Unknown error'}`);
+                          }
+                        } catch (error) {
+                          console.error("Error starting conversation:", error);
+                          alert("Failed to start conversation");
+                        }
+                      }}
+                      className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors"
+                    >
+                      Contact Landlord
                     </button>
 
                     {user &&
@@ -525,7 +608,7 @@ export default function PropertyDetailPage() {
                               console.error("Error starting conversation:", error);
                               alert("Failed to start conversation");
                             }
-                          }}
+                          }
                           className="w-full py-3 font-nunito rounded-xl border border-gray-300 text-gray-700 font-semibold hover:border-blue-600 hover:text-blue-600 transition"
                         >
                           Contact Landlord
@@ -547,6 +630,16 @@ export default function PropertyDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      {property && (
+        <BookingModal
+          isOpen={showBookingModal}
+          onClose={() => setShowBookingModal(false)}
+          property={property}
+          onConfirm={confirmBooking}
+        />
+      )}
     </Layout>
   );
 }
