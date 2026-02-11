@@ -51,9 +51,10 @@ export default function PropertyDetailPage() {
         try {
           const landlordData = await getPublicLandlordProfile(data.owner);
           const landlordInfo = landlordData.profile || landlordData;
-          // Ensure we have the _id field 
+          // Ensure we have the _id field
           if (landlordInfo) {
-            landlordInfo._id = landlordInfo._id || landlordInfo.id || data.owner;
+            landlordInfo._id =
+              landlordInfo._id || landlordInfo.id || data.owner;
           }
           setLandlord(landlordInfo);
         } catch (err) {
@@ -104,7 +105,9 @@ export default function PropertyDetailPage() {
 
       if (res.ok) {
         setShowBookingModal(false);
-        alert("Booking request sent successfully! The landlord will review your request.");
+        alert(
+          "Booking request sent successfully! The landlord will review your request.",
+        );
         router.push("/student/bookings");
       } else {
         alert(data.message || "Failed to create booking request");
@@ -168,15 +171,11 @@ export default function PropertyDetailPage() {
   const totalImages = property?.images?.length || 0;
 
   const goToNext = () => {
-    setCurrentImageIndex((prev) =>
-      prev === totalImages - 1 ? 0 : prev + 1
-    );
+    setCurrentImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
   };
 
   const goToPrev = () => {
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? totalImages - 1 : prev - 1
-    );
+    setCurrentImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
   };
 
   return (
@@ -184,10 +183,7 @@ export default function PropertyDetailPage() {
       <div className="bg-gray-50 min-h-screen pt-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 space-y-10">
           <div className="relative rounded-3xl overflow-hidden border border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-
-            <div
-              className="relative h-[420px] md:h-[520px] bg-black"
-            >
+            <div className="relative h-[420px] md:h-[520px] bg-black">
               {/* Image */}
               <img
                 key={currentImageIndex}
@@ -239,16 +235,16 @@ export default function PropertyDetailPage() {
             {/* Thumbnails Strip */}
             {totalImages > 1 && (
               <div className="bg-white px-6 py-4 flex gap-3 overflow-x-auto scrollbar-hide">
-
                 {property.images.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`relative w-24 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all duration-300
-            ${currentImageIndex === index
-                        ? "border-blue-600 scale-105"
-                        : "border-gray-200 opacity-70 hover:opacity-100"
-                      }`}
+            ${
+              currentImageIndex === index
+                ? "border-blue-600 scale-105"
+                : "border-gray-200 opacity-70 hover:opacity-100"
+            }`}
                   >
                     <img
                       src={img}
@@ -257,13 +253,9 @@ export default function PropertyDetailPage() {
                     />
                   </button>
                 ))}
-
               </div>
             )}
-
           </div>
-
-
 
           {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-poppins">
@@ -271,7 +263,6 @@ export default function PropertyDetailPage() {
               {/* ===== TITLE SECTION ===== */}
               <div className="pb-6 border-b border-gray-200">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-
                   <div>
                     <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 leading-tight">
                       {property.title}
@@ -279,14 +270,29 @@ export default function PropertyDetailPage() {
 
                     <div className="mt-1 flex items-center gap-3 text-gray-600">
                       <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <svg
+                          className="w-5 h-5 text-gray-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
                         </svg>
                         <span className="text-sm sm:text-base font-montserrat">
-                          {property.location?.address || property.address || "Location not specified"}
+                          {property.location?.address ||
+                            property.address ||
+                            "Location not specified"}
                         </span>
                       </div>
                     </div>
@@ -300,10 +306,8 @@ export default function PropertyDetailPage() {
                       </span>
                     </div>
                   )}
-
                 </div>
               </div>
-
 
               {/* ===== PROPERTY HIGHLIGHTS ===== */}
               <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
@@ -312,13 +316,21 @@ export default function PropertyDetailPage() {
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 font-nunito">
-
                   {/* Gender */}
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z" />
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1z"
+                        />
                       </svg>
                     </div>
                     <div>
@@ -329,7 +341,7 @@ export default function PropertyDetailPage() {
                         {property.gender === "UNISEX"
                           ? "Co-ed"
                           : property.gender?.charAt(0) +
-                          property.gender?.slice(1).toLowerCase() || "Any"}
+                              property.gender?.slice(1).toLowerCase() || "Any"}
                       </p>
                     </div>
                   </div>
@@ -337,9 +349,18 @@ export default function PropertyDetailPage() {
                   {/* Availability */}
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     </div>
                     <div>
@@ -355,9 +376,18 @@ export default function PropertyDetailPage() {
                   {/* Distance */}
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
                       </svg>
                     </div>
                     <div>
@@ -369,10 +399,8 @@ export default function PropertyDetailPage() {
                       </p>
                     </div>
                   </div>
-
                 </div>
               </div>
-
 
               {/* ===== ABOUT SECTION ===== */}
               <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
@@ -383,7 +411,6 @@ export default function PropertyDetailPage() {
                   {property.description}
                 </p>
               </div>
-
 
               {/* ===== AMENITIES ===== */}
               {property.amenities?.length > 0 && (
@@ -420,7 +447,6 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
-
               {/* ===== MAP ===== */}
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-100">
@@ -431,7 +457,7 @@ export default function PropertyDetailPage() {
 
                 <div className="h-72">
                   {property.location?.coordinates &&
-                    property.location.coordinates.length === 2 ? (
+                  property.location.coordinates.length === 2 ? (
                     <PropertyMap
                       coordinates={property.location.coordinates}
                       title={property.title}
@@ -443,23 +469,18 @@ export default function PropertyDetailPage() {
                   )}
                 </div>
               </div>
-
             </div>
-
 
             {/* Right Column - Sidebar */}
             <div className="space-y-6">
-
               {/* ===== PROPERTY OWNER CARD ===== */}
               {landlord && (
                 <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-
                   <h3 className="text-base font-semibold text-gray-900 mb-5">
                     Property Owner
                   </h3>
 
                   <div className="flex items-center gap-4 mb-5 font-nunito">
-
                     {landlord.profileImage ? (
                       <img
                         src={landlord.profileImage}
@@ -488,7 +509,8 @@ export default function PropertyDetailPage() {
 
                       <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3.5 h-3.5" />
-                        Member since {formatDate(landlord.memberSince || landlord.createdAt)}
+                        Member since{" "}
+                        {formatDate(landlord.memberSince || landlord.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -513,13 +535,17 @@ export default function PropertyDetailPage() {
 
               {/* Interested Card */}
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 sticky top-24">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Interested?</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  Interested?
+                </h3>
                 <div className="text-3xl font-bold text-gray-900 mb-4">
                   ₹{property.price?.toLocaleString("en-IN")}
-                  <span className="text-base font-normal text-gray-600">/mo</span>
+                  <span className="text-base font-normal text-gray-600">
+                    /mo
+                  </span>
                 </div>
                 <div className="space-y-3">
-                  {user && user.role === 'STUDENT' && (
+                  {user && user.role === "STUDENT" && (
                     <button
                       onClick={handleBookNow}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors"
@@ -527,7 +553,6 @@ export default function PropertyDetailPage() {
                       Book Now
                     </button>
                   )}
-
                   {user &&
                     landlord &&
                     landlord._id &&
@@ -541,7 +566,10 @@ export default function PropertyDetailPage() {
                             alert("Please login to contact the landlord");
                             return;
                           }
-
+                          if (!landlord || !landlord._id) {
+                            alert("Landlord information not available");
+                            return;
+                          }
                           try {
                             const res = await fetch("/api/conversations", {
                               method: "POST",
@@ -551,7 +579,6 @@ export default function PropertyDetailPage() {
                                 landlordId: landlord._id,
                               }),
                             });
-
                             if (res.ok) {
                               const data = await res.json();
                               const event = new CustomEvent("openChat", {
@@ -561,16 +588,18 @@ export default function PropertyDetailPage() {
                             } else {
                               const error = await res.json();
                               alert(
-                                `Failed to start conversation: ${error.message || "Unknown error"
-                                }`
+                                `Failed to start conversation: ${error.message || "Unknown error"}`,
                               );
                             }
                           } catch (error) {
-                            console.error("Error starting conversation:", error);
+                            console.error(
+                              "Error starting conversation:",
+                              error,
+                            );
                             alert("Failed to start conversation");
                           }
                         }}
-                        className="w-full py-3 font-nunito rounded-xl border border-gray-300 text-gray-700 font-semibold hover:border-blue-600 hover:text-blue-600 transition"
+                        className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors"
                       >
                         Contact Landlord
                       </button>
@@ -583,9 +612,7 @@ export default function PropertyDetailPage() {
                   <p>Verified landlord profile</p>
                 </div>
               </div>
-
             </div>
-
           </div>
         </div>
       </div>
