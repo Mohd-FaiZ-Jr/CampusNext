@@ -608,7 +608,7 @@ export default function PropertyDetailPage() {
                               console.error("Error starting conversation:", error);
                               alert("Failed to start conversation");
                             }
-                          }}
+                          }
                           className="w-full py-3 font-nunito rounded-xl border border-gray-300 text-gray-700 font-semibold hover:border-blue-600 hover:text-blue-600 transition"
                         >
                           Contact Landlord
