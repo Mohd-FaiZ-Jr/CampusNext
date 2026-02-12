@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import AuthModal from "./AuthModal";
 import { useAuth } from "../context/AuthContext";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2, Mail, Lock, User, ArrowRight } from "lucide-react";
 
 
 export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
@@ -58,7 +58,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     setApiError("");
   };
@@ -108,17 +107,11 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
         throw new Error(data.message || "Signup failed");
       }
 
-      console.log("Signup success, response:", data);
-
-      // Explicitly prevent any auto-closing here
       setApiError("");
-      setSuccessMessage("Verification code sent to your email!");
-
-      console.log("Setting step to 2 (OTP)");
-      setStep(2); // Move to OTP step
-      setCountdown(30); // Reset timer
+      setSuccessMessage("Code sent!");
+      setStep(2);
+      setCountdown(30);
     } catch (error) {
-      console.error("Signup error:", error);
       setApiError(error.message);
     } finally {
       setIsLoading(false);
@@ -147,12 +140,11 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
         throw new Error(data.message || "Verification failed");
       }
 
-      setSuccessMessage("Email verified successfully! Logging in...");
+      setSuccessMessage("Verified! Logging in...");
 
-      // Complete signup & login
       setTimeout(() => {
-        login(); // Refresh auth context
-        onClose(); // Close modal
+        login();
+        onClose();
       }, 1500);
 
     } catch (error) {
@@ -185,261 +177,361 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
     }
   };
 
-  console.log("Rendering SignupModal, Step:", step, "IsOpen:", isOpen);
-
   return (
     <AuthModal isOpen={isOpen} onClose={onClose}>
-      <div className="px-8 py-10 font-poppins">
 
-        {step === 1 ? (
-          <>
-            {/* ================= HEADER ================= */}
-            <div className="mb-8 text-center">
-              <h2 className="text-3xl font-raleway font-bold text-gray-900 tracking-tight">
-                Create Your Account
+      {step === 1 ? (
+        <>
+          {/* ================= STEP 1: SIGNUP FORM ================= */}
+          <div className="p-6 sm:p-8">
+
+            {/* Header with Compact Progress */}
+            <div className="mb-6">
+              {/* Compact Progress Indicator */}
+              <div className="flex justify-center mb-4">
+                <div className="flex items-center gap-2 w-24">
+                  <div className="flex-1 h-1 bg-gray-900 rounded-full"></div>
+                  <div className="flex-1 h-1 bg-gray-200 rounded-full"></div>
+                </div>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-semibold font-raleway text-gray-900 text-center">
+                Create Account
               </h2>
-              <p className="mt-2 text-sm text-gray-500 max-w-sm mx-auto">
-                Join CampusNest to explore verified student stays and manage bookings effortlessly.
+              <p className="mt-2 text-sm text-gray-500 font-poppins text-center">
+                Step 1 of 2
               </p>
             </div>
 
-            {/* API Error */}
+            {/* Messages */}
             {apiError && (
-              <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm text-center font-medium">
-                {apiError}
+              <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-r">
+                <p className="text-red-700 text-sm font-medium font-poppins">{apiError}</p>
               </div>
             )}
 
-            <form onSubmit={handleSignupSubmit} className="space-y-5">
+            {successMessage && (
+              <div className="mb-4 p-3 bg-emerald-50 border-l-4 border-emerald-500 rounded-r">
+                <p className="text-emerald-700 text-sm font-medium font-poppins">{successMessage}</p>
+              </div>
+            )}
 
-              {/* ================= ROLE SWITCH ================= */}
-              <div className="bg-gray-100 p-1.5 rounded-xl flex">
-                <button
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, role: "STUDENT" }))}
-                  className={`flex-1 py-2.5 text-sm font-montserrat font-semibold rounded-lg transition-all duration-300 ${formData.role === "STUDENT"
-                    ? "bg-white shadow-sm text-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                    }`}
-                >
-                  Student
-                </button>
+            <form onSubmit={handleSignupSubmit} className="space-y-4">
 
-                <button
-                  type="button"
-                  onClick={() => setFormData((prev) => ({ ...prev, role: "LANDLORD" }))}
-                  className={`flex-1 py-2.5 text-sm font-montserrat font-semibold rounded-lg transition-all duration-300 ${formData.role === "LANDLORD"
-                    ? "bg-white shadow-sm text-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                    }`}
-                >
-                  Landlord
-                </button>
+              {/* Role Selection - Compact */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 font-poppins">
+                  I am a
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, role: "STUDENT" }))}
+                    className={`relative p-3 rounded-lg border-2 transition-all ${formData.role === "STUDENT"
+                        ? "border-gray-900 bg-gray-50"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                      }`}
+                  >
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${formData.role === "STUDENT" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
+                        }`}>
+                        <User className="w-4 h-4" />
+                      </div>
+                      <span className={`text-xs font-semibold font-montserrat ${formData.role === "STUDENT" ? "text-gray-900" : "text-gray-600"
+                        }`}>
+                        Student
+                      </span>
+                    </div>
+                    {formData.role === "STUDENT" && (
+                      <div className="absolute top-2 right-2 w-4 h-4 bg-gray-900 rounded-full flex items-center justify-center">
+                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, role: "LANDLORD" }))}
+                    className={`relative p-3 rounded-lg border-2 transition-all ${formData.role === "LANDLORD"
+                        ? "border-gray-900 bg-gray-50"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                      }`}
+                  >
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${formData.role === "LANDLORD" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
+                        }`}>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                      </div>
+                      <span className={`text-xs font-semibold font-montserrat ${formData.role === "LANDLORD" ? "text-gray-900" : "text-gray-600"
+                        }`}>
+                        Landlord
+                      </span>
+                    </div>
+                    {formData.role === "LANDLORD" && (
+                      <div className="absolute top-2 right-2 w-4 h-4 bg-gray-900 rounded-full flex items-center justify-center">
+                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {/* ================= INPUT FIELD STYLING ================= */}
-              {/* Name */}
+              {/* Name Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                   Full Name
                 </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className={`w-full px-4 py-3 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.name
-                    ? "border-red-300 focus:ring-red-200"
-                    : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                    }`}
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className={`w-full font-nunito pl-10 pr-4 py-3 text-sm rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.name
+                        ? "border-red-300 focus:ring-red-100 focus:border-red-500"
+                        : "border-gray-300 focus:ring-gray-900/5 focus:border-gray-900"
+                      }`}
+                  />
+                </div>
                 {errors.name && (
-                  <p className="text-xs text-red-600 mt-1">{errors.name}</p>
+                  <p className="mt-1.5 text-xs text-red-600 font-poppins">{errors.name}</p>
                 )}
               </div>
 
-              {/* Email */}
+              {/* Email Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="john@university.edu"
-                  className={`w-full px-4 py-3 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.email
-                    ? "border-red-300 focus:ring-red-200"
-                    : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                    }`}
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="john@university.edu"
+                    className={`w-full font-nunito pl-10 pr-4 py-3 text-sm rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.email
+                        ? "border-red-300 focus:ring-red-100 focus:border-red-500"
+                        : "border-gray-300 focus:ring-gray-900/5 focus:border-gray-900"
+                      }`}
+                  />
+                </div>
                 {errors.email && (
-                  <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+                  <p className="mt-1.5 text-xs text-red-600 font-poppins">{errors.email}</p>
                 )}
               </div>
 
-              {/* Password */}
-              {/* ================= PASSWORD ================= */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5 font-poppins">
-                  Password
-                </label>
-
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className={`w-full px-4 py-3 pr-14 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.password
-                      ? "border-red-300 focus:ring-red-200"
-                      : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                      }`}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
+              {/* Password Inputs - Side by Side */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="••••••••"
+                      className={`w-full font-nunito pl-10 pr-10 py-3 text-sm rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.password
+                          ? "border-red-300 focus:ring-red-100 focus:border-red-500"
+                          : "border-gray-300 focus:ring-gray-900/5 focus:border-gray-900"
+                        }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="mt-1.5 text-xs text-red-600 font-poppins">{errors.password}</p>
+                  )}
                 </div>
 
-                {errors.password && (
-                  <p className="text-xs text-red-600 mt-1 font-poppins">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              {/* ================= CONFIRM PASSWORD ================= */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5 font-poppins">
-                  Confirm Password
-                </label>
-
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className={`w-full px-4 py-3 pr-14 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.confirmPassword
-                      ? "border-red-300 focus:ring-red-200"
-                      : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
-                      }`}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
+                {/* Confirm Password */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="••••••••"
+                      className={`w-full font-nunito pl-10 pr-10 py-3 text-sm rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.confirmPassword
+                          ? "border-red-300 focus:ring-red-100 focus:border-red-500"
+                          : "border-gray-300 focus:ring-gray-900/5 focus:border-gray-900"
+                        }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="mt-1.5 text-xs text-red-600 font-poppins">{errors.confirmPassword}</p>
+                  )}
                 </div>
-
-                {errors.confirmPassword && (
-                  <p className="text-xs text-red-600 mt-1 font-poppins">
-                    {errors.confirmPassword}
-                  </p>
-                )}
               </div>
 
-
-              {/* CTA */}
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-montserrat font-semibold shadow-sm hover:shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50"
+                className="w-full mt-2 py-3 rounded-xl bg-gray-900 text-white font-semibold font-montserrat text-sm hover:bg-black transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] shadow-sm group"
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    Continue
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </>
+                )}
               </button>
             </form>
 
-            {/* Switch */}
-            <div className="mt-6 text-center text-sm text-gray-500">
-              Already have an account?{" "}
-              <button
-                onClick={onSwitchToLogin}
-                className="text-blue-600 font-semibold hover:text-blue-700 transition"
-              >
-                Log in
-              </button>
+            {/* Footer */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <p className="text-sm text-center text-gray-600 font-poppins">
+                Already have an account?{" "}
+                <button
+                  onClick={onSwitchToLogin}
+                  className="text-gray-900 font-semibold hover:underline"
+                >
+                  Sign in
+                </button>
+              </p>
             </div>
-          </>
-        ) : (
-          <>
-            {/* ================= OTP SECTION ================= */}
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center shadow-inner">
-                <svg className="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8" />
-                </svg>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* ================= STEP 2: OTP VERIFICATION ================= */}
+          <div className="p-6 sm:p-8">
+
+            {/* Header with Compact Progress */}
+            <div className="mb-6">
+              {/* Compact Progress Indicator - Both Filled */}
+              <div className="flex justify-center mb-4">
+                <div className="flex items-center gap-2 w-24">
+                  <div className="flex-1 h-1 bg-gray-900 rounded-full"></div>
+                  <div className="flex-1 h-1 bg-gray-900 rounded-full"></div>
+                </div>
               </div>
 
-              <h2 className="text-2xl font-raleway font-bold text-gray-900">
-                Verify Your Email
+              <h2 className="text-2xl sm:text-3xl font-semibold font-raleway text-gray-900 text-center">
+                Verify Email
               </h2>
-
-              <p className="mt-2 text-sm text-gray-500">
-                Enter the 6-digit code sent to
-                <br />
-                <span className="font-semibold text-gray-800">
-                  {formData.email}
-                </span>
+              <p className="mt-2 text-sm text-gray-500 font-poppins text-center">
+                Step 2 of 2
               </p>
             </div>
 
+            {/* Email Icon */}
+            <div className="flex justify-center mb-5">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center">
+                <Mail className="w-8 h-8 text-gray-900" />
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="text-center mb-6">
+              <p className="text-sm text-gray-600 font-poppins">
+                Enter the 6-digit code sent to
+              </p>
+              <p className="mt-1 text-sm font-semibold text-gray-900 font-poppins">
+                {formData.email}
+              </p>
+            </div>
+
+            {/* Messages */}
             {apiError && (
-              <div className="mb-6 p-3 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm text-center">
-                {apiError}
+              <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-r">
+                <p className="text-red-700 text-sm font-medium font-poppins">{apiError}</p>
               </div>
             )}
 
-            <form onSubmit={handleVerifySubmit} className="space-y-6">
-              <input
-                type="text"
-                name="otp"
-                maxLength="6"
-                value={formData.otp}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/[^0-9]/g, "");
-                  setFormData(prev => ({ ...prev, otp: val }));
-                }}
-                placeholder="000000"
-                autoFocus
-                className="w-full text-center text-3xl tracking-[0.5em] font-montserrat font-bold px-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
-              />
+            {successMessage && (
+              <div className="mb-4 p-3 bg-emerald-50 border-l-4 border-emerald-500 rounded-r">
+                <p className="text-emerald-700 text-sm font-medium font-poppins">{successMessage}</p>
+              </div>
+            )}
 
+            <form onSubmit={handleVerifySubmit} className="space-y-5">
+              {/* OTP Input */}
+              <div>
+                <input
+                  type="text"
+                  name="otp"
+                  maxLength="6"
+                  value={formData.otp}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "");
+                    setFormData(prev => ({ ...prev, otp: val }));
+                  }}
+                  placeholder="000000"
+                  autoFocus
+                  className="w-full text-center text-3xl tracking-[0.5em] font-montserrat font-bold px-4 py-4 rounded-xl border-2 border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/5 focus:border-gray-900 transition-all"
+                />
+                <p className="mt-2 text-xs text-center text-gray-500 font-poppins">
+                  {formData.otp.length}/6 digits
+                </p>
+              </div>
+
+              {/* Verify Button */}
               <button
                 type="submit"
                 disabled={isLoading || formData.otp.length !== 6}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-montserrat font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50"
+                className="w-full py-3 rounded-xl bg-gray-900 text-white font-semibold font-montserrat text-sm hover:bg-black transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] shadow-sm"
               >
-                {isLoading ? "Verifying..." : "Verify & Continue"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  "Verify & Continue"
+                )}
               </button>
             </form>
 
-            <div className="mt-6 text-center text-sm text-gray-500 space-y-3">
-              <p>
-                Didn’t receive the code?{" "}
+            {/* Resend Section */}
+            <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
+              <p className="text-sm text-center text-gray-600 font-poppins">
+                Didn't receive the code?{" "}
                 {countdown > 0 ? (
                   <span className="text-gray-400 font-medium">
                     Resend in {countdown}s
@@ -447,7 +539,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
                 ) : (
                   <button
                     onClick={handleResendOtp}
-                    className="text-blue-600 font-semibold hover:text-blue-700"
+                    className="text-gray-900 font-semibold hover:underline"
                   >
                     Resend Code
                   </button>
@@ -456,15 +548,14 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
 
               <button
                 onClick={() => setStep(1)}
-                className="text-gray-400 hover:text-gray-600 underline transition"
+                className="w-full text-sm text-gray-500 hover:text-gray-700 underline font-poppins"
               >
-                Use a different email
+                ← Change email
               </button>
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </AuthModal>
-
   );
 }

@@ -38,10 +38,10 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-montserrat">
           Dashboard
         </h1>
-        <p className="text-sm sm:text-base text-gray-600 mt-2">
+        <p className="text-sm sm:text-base text-gray-600 mt-2 font-poppins">
           Welcome to the admin panel
         </p>
       </div>
@@ -136,31 +136,31 @@ export default function AdminDashboard() {
       {/* User Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 font-montserrat">
             User Breakdown
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3 font-poppins">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Students</span>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 font-montserrat">
                 {stats?.users?.students || 0}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Landlords</span>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 font-montserrat">
                 {stats?.users?.landlords || 0}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Admins</span>
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 font-montserrat">
                 {stats?.users?.admins || 0}
               </span>
             </div>
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">
               <span className="text-gray-600">Suspended</span>
-              <span className="font-semibold text-red-600">
+              <span className="font-semibold text-red-600 font-montserrat">
                 {stats?.users?.suspended || 0}
               </span>
             </div>
@@ -168,25 +168,25 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 font-montserrat">
             Property Status
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3 font-poppins">
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Verified</span>
-              <span className="font-semibold text-green-600">
+              <span className="font-semibold text-green-600 font-montserrat">
                 {stats?.properties?.verified || 0}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Pending</span>
-              <span className="font-semibold text-yellow-600">
+              <span className="font-semibold text-yellow-600 font-montserrat">
                 {stats?.properties?.pending || 0}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Rejected</span>
-              <span className="font-semibold text-red-600">
+              <span className="font-semibold text-red-600 font-montserrat">
                 {stats?.properties?.rejected || 0}
               </span>
             </div>
@@ -197,10 +197,10 @@ export default function AdminDashboard() {
       {/* Recent Activity */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-gray-900">Recent Properties</h3>
+          <h3 className="text-lg font-bold text-gray-900 font-montserrat">Recent Properties</h3>
           <Link
             href="/admin/properties"
-            className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
+            className="text-blue-600 hover:text-blue-700 font-semibold text-sm font-poppins"
           >
             View All →
           </Link>
@@ -213,10 +213,10 @@ export default function AdminDashboard() {
               className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate font-poppins">
                   {property.title}
                 </h4>
-                <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate font-poppins">
                   by {property.owner?.name} ({property.owner?.email})
                 </p>
               </div>
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
                 <StatusBadge
                   status={property.verified ? "verified" : "pending"}
                 />
-                <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+                <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap font-poppins">
                   {new Date(property.createdAt).toLocaleDateString()}
                 </span>
               </div>
@@ -256,8 +256,8 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900">Review Properties</h4>
-              <p className="text-sm text-gray-600 mt-1">
+              <h4 className="font-bold text-gray-900 font-montserrat">Review Properties</h4>
+              <p className="text-sm text-gray-600 mt-1 font-poppins">
                 {stats?.properties?.pending || 0} pending
               </p>
             </div>
@@ -285,8 +285,8 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900">Manage Users</h4>
-              <p className="text-sm text-gray-600 mt-1">
+              <h4 className="font-bold text-gray-900 font-montserrat">Manage Users</h4>
+              <p className="text-sm text-gray-600 mt-1 font-poppins">
                 {stats?.users?.total || 0} total users
               </p>
             </div>
@@ -314,8 +314,8 @@ export default function AdminDashboard() {
               </svg>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900">All Properties</h4>
-              <p className="text-sm text-gray-600 mt-1">
+              <h4 className="font-bold text-gray-900 font-montserrat">All Properties</h4>
+              <p className="text-sm text-gray-600 mt-1 font-poppins">
                 {stats?.properties?.total || 0} listings
               </p>
             </div>

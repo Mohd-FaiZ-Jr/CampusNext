@@ -13,13 +13,13 @@ export default function StatsCard({ title, value, icon, change, changeType }) {
       <div className="flex items-center justify-between mb-4">
         <div className="p-3 bg-blue-50 rounded-xl">{icon}</div>
         {change && (
-          <span className={`text-sm font-semibold ${changeColor}`}>
+          <span className={`text-sm font-semibold font-poppins ${changeColor}`}>
             {change}
           </span>
         )}
       </div>
-      <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
+      <h3 className="text-gray-600 text-sm font-medium mb-1 font-poppins">{title}</h3>
+      <p className="text-3xl font-bold text-gray-900 font-montserrat">{value}</p>
     </div>
   );
 }

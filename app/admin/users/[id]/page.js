@@ -116,7 +116,7 @@ export default function AdminUserProfilePage({ params }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-6 font-poppins"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Users
@@ -135,14 +135,14 @@ export default function AdminUserProfilePage({ params }) {
       <div className="mb-8">
         <button
           onClick={() => router.back()}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+          className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors font-poppins"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Users
         </button>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3 font-montserrat">
               {user.name}
               {user.role === "LANDLORD" && user.landlordProfile?.isVerified && (
                 <ShieldCheck
@@ -151,15 +151,14 @@ export default function AdminUserProfilePage({ params }) {
                 />
               )}
             </h1>
-            <div className="flex items-center gap-3 mt-2 text-gray-500">
+            <div className="flex items-center gap-3 mt-2 text-gray-500 font-poppins">
               <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  user.role === "LANDLORD"
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.role === "LANDLORD"
                     ? "bg-purple-100 text-purple-800"
                     : user.role === "ADMIN"
                       ? "bg-red-100 text-red-800"
                       : "bg-blue-100 text-blue-800"
-                }`}
+                  }`}
               >
                 {user.role}
               </span>
@@ -183,7 +182,7 @@ export default function AdminUserProfilePage({ params }) {
               ) : (
                 <button
                   onClick={() => handleVerifyLandlord(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm text-sm font-medium flex items-center gap-2"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm text-sm font-medium flex items-center gap-2 font-montserrat"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   Verify Landlord
@@ -196,16 +195,15 @@ export default function AdminUserProfilePage({ params }) {
                   user.suspended
                     ? handleUnsuspendUser()
                     : setConfirmDialog({
-                        isOpen: true,
-                        action: "suspend",
-                        data: "",
-                      })
+                      isOpen: true,
+                      action: "suspend",
+                      data: "",
+                    })
                 }
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition border flex items-center gap-2 ${
-                  user.suspended
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition border flex items-center gap-2 ${user.suspended
                     ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
                     : "bg-white text-red-600 border-red-200 hover:bg-red-50"
-                }`}
+                  }`}
               >
                 {user.suspended ? (
                   <>
@@ -230,9 +228,9 @@ export default function AdminUserProfilePage({ params }) {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex flex-col items-center text-center">
               {user.profileImage ||
-              (user.role === "LANDLORD"
-                ? user.landlordProfile?.profileImage
-                : user.studentProfile?.profileImage) ? (
+                (user.role === "LANDLORD"
+                  ? user.landlordProfile?.profileImage
+                  : user.studentProfile?.profileImage) ? (
                 <img
                   src={
                     user.profileImage ||
@@ -248,11 +246,11 @@ export default function AdminUserProfilePage({ params }) {
                   {user.name.charAt(0).toUpperCase()}
                 </div>
               )}
-              <h3 className="text-xl font-bold text-gray-900">{user.name}</h3>
-              <p className="text-sm text-gray-500">{user.email}</p>
+              <h3 className="text-xl font-bold text-gray-900 font-montserrat">{user.name}</h3>
+              <p className="text-sm text-gray-500 font-poppins">{user.email}</p>
 
               <div className="w-full mt-6 pt-6 border-t border-gray-100 space-y-3 text-left">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
+                <div className="flex items-center gap-3 text-sm text-gray-600 font-poppins">
                   <Mail className="w-4 h-4 text-gray-400" />
                   {user.email}
                 </div>
@@ -276,8 +274,8 @@ export default function AdminUserProfilePage({ params }) {
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Account Status</h3>
-            <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 mb-4 font-montserrat">Account Status</h3>
+            <div className="space-y-4 font-poppins">
               <div>
                 <label className="text-xs text-gray-500 uppercase tracking-wide">
                   Status
@@ -315,25 +313,25 @@ export default function AdminUserProfilePage({ params }) {
           {/* Role Specific Details */}
           {user.role === "LANDLORD" && user.landlordProfile && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 font-montserrat">
                 <Building className="w-5 h-5 text-gray-500" />
                 Landlord Details
               </h3>
 
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                  <label className="block text-sm font-medium text-gray-500 mb-1 font-poppins">
                     Company Name
                   </label>
-                  <p className="text-gray-900 font-medium">
+                  <p className="text-gray-900 font-medium font-poppins">
                     {user.landlordProfile.companyName || "N/A"}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                  <label className="block text-sm font-medium text-gray-500 mb-1 font-poppins">
                     Experience
                   </label>
-                  <p className="text-gray-900 font-medium">
+                  <p className="text-gray-900 font-medium font-poppins">
                     {user.landlordProfile.yearsOfExperience
                       ? `${user.landlordProfile.yearsOfExperience} years`
                       : "N/A"}
@@ -364,7 +362,7 @@ export default function AdminUserProfilePage({ params }) {
 
           {user.role === "STUDENT" && user.studentProfile && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 font-montserrat">
                 <GraduationCap className="w-5 h-5 text-gray-500" />
                 Student Details
               </h3>

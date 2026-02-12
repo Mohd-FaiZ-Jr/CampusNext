@@ -86,10 +86,10 @@ export default function AdminUsersPage() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-montserrat">
           User Management
         </h1>
-        <p className="text-sm sm:text-base text-gray-600 mt-2">
+        <p className="text-sm sm:text-base text-gray-600 mt-2 font-poppins">
           Manage all users and their accounts
         </p>
       </div>
@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
           placeholder="Search by name or email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-poppins"
         />
       </div>
 
@@ -111,11 +111,10 @@ export default function AdminUsersPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition-colors relative whitespace-nowrap ${
-              activeTab === tab.id
+            className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold transition-colors relative whitespace-nowrap font-poppins ${activeTab === tab.id
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-600 hover:text-gray-900"
-            }`}
+              }`}
           >
             {tab.label}
           </button>
@@ -130,7 +129,7 @@ export default function AdminUsersPage() {
       ) : users.length === 0 ? (
         <div className="text-center py-20">
           <div className="text-6xl mb-4">👥</div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 font-montserrat">
             No users found
           </h3>
           <p className="text-gray-600">
@@ -141,7 +140,7 @@ export default function AdminUsersPage() {
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 border-b border-gray-200 font-poppins">
                 <tr>
                   <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     User
@@ -180,7 +179,7 @@ export default function AdminUsersPage() {
                               alt=""
                             />
                           ) : (
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200 font-montserrat">
                               {user.name.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -188,7 +187,7 @@ export default function AdminUsersPage() {
                         {/* User Info */}
                         <div>
                           <div className="flex items-center gap-2">
-                            <div className="text-sm sm:text-base font-semibold text-gray-900">
+                            <div className="text-sm sm:text-base font-semibold text-gray-900 font-montserrat">
                               {user.name}
                             </div>
                             {user.role === "LANDLORD" && user.isVerified && (
@@ -198,7 +197,7 @@ export default function AdminUsersPage() {
                               />
                             )}
                           </div>
-                          <div className="text-xs sm:text-sm text-gray-500">
+                          <div className="text-xs sm:text-sm text-gray-500 font-poppins">
                             {user.email}
                           </div>
                         </div>
@@ -206,19 +205,18 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          user.role === "LANDLORD"
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-poppins ${user.role === "LANDLORD"
                             ? "bg-purple-100 text-purple-800"
                             : user.role === "ADMIN"
                               ? "bg-red-100 text-red-800"
                               : "bg-blue-100 text-blue-800"
-                        }`}
+                          }`}
                       >
                         {user.role}
                       </span>
                     </td>
                     <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4">
-                      <span className="text-gray-900 font-medium">
+                      <span className="text-gray-900 font-medium font-montserrat">
                         {user.propertyCount}
                       </span>
                     </td>
@@ -235,7 +233,7 @@ export default function AdminUsersPage() {
                         </div>
                       )}
                     </td>
-                    <td className="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-600">
+                    <td className="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-600 font-poppins">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 text-right">
@@ -254,16 +252,15 @@ export default function AdminUsersPage() {
                               user.suspended
                                 ? handleUnsuspend(user.id)
                                 : setConfirmDialog({
-                                    isOpen: true,
-                                    action: "suspend",
-                                    userId: user.id,
-                                  })
+                                  isOpen: true,
+                                  action: "suspend",
+                                  userId: user.id,
+                                })
                             }
-                            className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-colors ${
-                              user.suspended
+                            className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-colors font-poppins ${user.suspended
                                 ? "bg-green-50 text-green-600 hover:bg-green-100 border border-green-200"
                                 : "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-                            }`}
+                              }`}
                           >
                             {user.suspended ? "Unsuspend" : "Suspend"}
                           </button>
