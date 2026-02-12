@@ -67,6 +67,18 @@ export default function ChatIcon() {
         }
     }, [user, isMounted]);
 
+    // Prevent background scrolling when chat is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
     // Get current pathname
     const pathname = usePathname();
 
