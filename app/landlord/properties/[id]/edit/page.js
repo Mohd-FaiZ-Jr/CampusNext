@@ -132,74 +132,89 @@ export default function EditPropertyPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-20 pb-12">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-zinc-900 mb-8">
-            Edit Property
-          </h1>
+      <div className="min-h-screen bg-gray-50 pt-24 pb-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+          {/* ================= HEADER ================= */}
+          <div className="mb-12">
+            <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 font-montserrat tracking-tight">
+              Edit Property
+            </h1>
+            <p className="mt-2 text-gray-500 font-raleway text-sm md:text-base">
+              Update your property details and keep your listing accurate.
+            </p>
+          </div>
+
+          {/* ================= FORM CARD ================= */}
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 md:p-10">
+
+            {/* Error Message */}
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm font-semibold border border-red-200">
+              <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-600 font-nunito">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Reuse the exact same form fields as create page */}
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-bold text-zinc-700 mb-2">
-                  Property Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  required
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-10">
 
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-bold text-zinc-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  required
-                />
-              </div>
+              {/* ================= BASIC DETAILS ================= */}
+              <div className="space-y-6">
 
-              {/* Address */}
-              <div>
-                <label className="block text-sm font-bold text-zinc-700 mb-2">
-                  Property Address
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address || ""}
-                  onChange={handleChange}
-                  placeholder="Enter complete address (Street, Area, City, Pincode)"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  required
-                />
-                <p className="mt-1 text-xs text-zinc-500">
-                  Minimum 10 characters, maximum 200 characters
-                </p>
-              </div>
-
-              {/* Price & College */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Title */}
                 <div>
-                  <label className="block text-sm font-bold text-zinc-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Property Title
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
+                    required
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    rows={4}
+                    value={formData.description}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm resize-none"
+                    required
+                  />
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Property Address
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formData.address || ""}
+                    onChange={handleChange}
+                    placeholder="Street, Area, City, Pincode"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
+                    required
+                  />
+                  <p className="mt-2 text-xs text-gray-500 font-nunito">
+                    Minimum 10 characters • Maximum 200 characters
+                  </p>
+                </div>
+              </div>
+
+              {/* ================= RENT & COLLEGE ================= */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
                     Monthly Rent (₹)
                   </label>
                   <input
@@ -207,44 +222,47 @@ export default function EditPropertyPage() {
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
                     required
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-bold text-zinc-700 mb-2">
-                    Nearest College/University
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Nearest College / University
                   </label>
                   <input
                     type="text"
                     name="college"
                     value={formData.college}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
                     required
                   />
                 </div>
               </div>
 
-              {/* Gender & Amenities */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* ================= PREFERENCES ================= */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
                 <div>
-                  <label className="block text-sm font-bold text-zinc-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
                     Gender Preference
                   </label>
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
                   >
                     <option value="UNISEX">Any / Co-ed</option>
                     <option value="MALE">Male Only</option>
                     <option value="FEMALE">Female Only</option>
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-bold text-zinc-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
                     Amenities
                   </label>
                   <input
@@ -252,17 +270,19 @@ export default function EditPropertyPage() {
                     name="amenities"
                     value={formData.amenities}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    placeholder="Wifi, AC, Parking, Gym"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
                   />
                 </div>
               </div>
 
-              {/* Map Location */}
+              {/* ================= MAP SECTION ================= */}
               <div>
-                <label className="block text-sm font-bold text-zinc-700 mb-2">
-                  Location
+                <label className="block text-sm font-semibold text-gray-700 mb-4 font-nunito">
+                  Property Location
                 </label>
-                <div className="h-[500px] rounded-2xl overflow-hidden border-2 border-gray-200 shadow-inner group-hover:border-blue-400 transition-colors">
+
+                <div className="h-[450px] rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                   <Map
                     onLocationSelect={handleLocationSelect}
                     selectedLocation={formData.location}
@@ -271,41 +291,48 @@ export default function EditPropertyPage() {
                 </div>
               </div>
 
-              {/* Property Images */}
+              {/* ================= IMAGES ================= */}
               <div>
-                <label className="block text-sm font-bold text-zinc-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-4 font-nunito">
                   Property Images
                 </label>
+
                 <ImageUpload
                   onImagesChange={handleImagesChange}
                   existingImages={formData.images}
                 />
-                <p className="text-sm text-gray-500 mt-2">
+
+                <p className="mt-3 text-xs text-gray-500 font-nunito">
                   The first image will be used as the primary thumbnail.
                 </p>
               </div>
 
-              {/* Submit Button */}
-              <div className="flex gap-4">
+              {/* ================= ACTION BUTTONS ================= */}
+              <div className="pt-6 flex flex-col sm:flex-row gap-4">
+
                 <button
                   type="button"
                   onClick={() => router.back()}
-                  className="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold text-lg hover:bg-gray-200 transition"
+                  className="w-full sm:w-auto flex-1 bg-gray-100 text-gray-700 py-3 rounded-2xl font-semibold font-poppins text-sm hover:bg-gray-200 transition"
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50"
+                  className="w-full sm:w-auto flex-1 bg-gray-900 text-white py-3 rounded-2xl font-semibold font-poppins text-sm tracking-wide hover:bg-black transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? "Updating..." : "Update Property"}
                 </button>
+
               </div>
+
             </form>
           </div>
         </div>
       </div>
     </Layout>
+
   );
 }

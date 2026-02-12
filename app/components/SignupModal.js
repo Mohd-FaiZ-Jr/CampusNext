@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import AuthModal from "./AuthModal";
 import { useAuth } from "../context/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
+
 
 export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
   const { login } = useAuth();
@@ -187,235 +189,274 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
 
   return (
     <AuthModal isOpen={isOpen} onClose={onClose}>
-      <div className="p-8">
+      <div className="px-8 py-10 font-poppins">
+
         {step === 1 ? (
-          // STEP 1: SIGNUP FORM
           <>
-            <div className="mb-6">
-              <h2 className="text-3xl font-bold text-zinc-900 mb-2">
-                Create Account
+            {/* ================= HEADER ================= */}
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-raleway font-bold text-gray-900 tracking-tight">
+                Create Your Account
               </h2>
-              <p className="text-zinc-600">
-                Join our community to find your perfect home
+              <p className="mt-2 text-sm text-gray-500 max-w-sm mx-auto">
+                Join CampusNest to explore verified student stays and manage bookings effortlessly.
               </p>
             </div>
 
+            {/* API Error */}
             {apiError && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
+              <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm text-center font-medium">
                 {apiError}
               </div>
             )}
 
-            <form onSubmit={handleSignupSubmit} className="space-y-4">
-              {/* Role Selection */}
-              <div className="flex gap-4 p-1 bg-gray-100 rounded-xl mb-6">
+            <form onSubmit={handleSignupSubmit} className="space-y-5">
+
+              {/* ================= ROLE SWITCH ================= */}
+              <div className="bg-gray-100 p-1.5 rounded-xl flex">
                 <button
                   type="button"
                   onClick={() => setFormData((prev) => ({ ...prev, role: "STUDENT" }))}
-                  className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${formData.role === "STUDENT"
-                    ? "bg-white text-blue-600 shadow-md transform scale-105"
-                    : "text-zinc-500 hover:text-zinc-700"
+                  className={`flex-1 py-2.5 text-sm font-montserrat font-semibold rounded-lg transition-all duration-300 ${formData.role === "STUDENT"
+                    ? "bg-white shadow-sm text-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   Student
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setFormData((prev) => ({ ...prev, role: "LANDLORD" }))}
-                  className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${formData.role === "LANDLORD"
-                    ? "bg-white text-blue-600 shadow-md transform scale-105"
-                    : "text-zinc-500 hover:text-zinc-700"
+                  className={`flex-1 py-2.5 text-sm font-montserrat font-semibold rounded-lg transition-all duration-300 ${formData.role === "LANDLORD"
+                    ? "bg-white shadow-sm text-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   Landlord
                 </button>
               </div>
 
+              {/* ================= INPUT FIELD STYLING ================= */}
               {/* Name */}
               <div>
-                <label className="block text-sm font-semibold text-zinc-700 mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${errors.name ? "border-red-300 focus:border-red-500" : "border-gray-200 focus:border-blue-600"
-                    }`}
                   placeholder="John Doe"
+                  className={`w-full px-4 py-3 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.name
+                    ? "border-red-300 focus:ring-red-200"
+                    : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                    }`}
                 />
-                {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-xs text-red-600 mt-1">{errors.name}</p>
+                )}
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-zinc-700 mb-1">Email Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-all ${errors.email ? "border-red-300 focus:border-red-500" : "border-gray-200 focus:border-blue-600"
-                    }`}
                   placeholder="john@university.edu"
+                  className={`w-full px-4 py-3 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.email
+                    ? "border-red-300 focus:ring-red-200"
+                    : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                    }`}
                 />
-                {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+                )}
               </div>
 
               {/* Password */}
+              {/* ================= PASSWORD ================= */}
               <div>
-                <label className="block text-sm font-semibold text-zinc-700 mb-1">Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5 font-poppins">
+                  Password
+                </label>
+
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 pr-12 border-2 rounded-xl focus:outline-none transition-all ${errors.password ? "border-red-300 focus:border-red-500" : "border-gray-200 focus:border-blue-600"
-                      }`}
                     placeholder="••••••••"
+                    className={`w-full px-4 py-3 pr-14 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.password
+                      ? "border-red-300 focus:ring-red-200"
+                      : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                      }`}
                   />
+
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
                   >
                     {showPassword ? (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                      </svg>
+                      <EyeOff className="w-5 h-5" />
                     ) : (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
+                      <Eye className="w-5 h-5" />
                     )}
                   </button>
                 </div>
-                {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password}</p>}
+
+                {errors.password && (
+                  <p className="text-xs text-red-600 mt-1 font-poppins">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
-              {/* Confirm Password */}
+              {/* ================= CONFIRM PASSWORD ================= */}
               <div>
-                <label className="block text-sm font-semibold text-zinc-700 mb-1">Confirm Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5 font-poppins">
+                  Confirm Password
+                </label>
+
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 pr-12 border-2 rounded-xl focus:outline-none transition-all ${errors.confirmPassword ? "border-red-300 focus:border-red-500" : "border-gray-200 focus:border-blue-600"
-                      }`}
                     placeholder="••••••••"
+                    className={`w-full px-4 py-3 pr-14 rounded-xl border bg-white transition-all focus:outline-none focus:ring-2 ${errors.confirmPassword
+                      ? "border-red-300 focus:ring-red-200"
+                      : "border-gray-200 focus:border-blue-500 focus:ring-blue-100"
+                      }`}
                   />
+
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                    onClick={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
                   >
                     {showConfirmPassword ? (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                      </svg>
+                      <EyeOff className="w-5 h-5" />
                     ) : (
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
+                      <Eye className="w-5 h-5" />
                     )}
                   </button>
                 </div>
-                {errors.confirmPassword && <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>}
+
+                {errors.confirmPassword && (
+                  <p className="text-xs text-red-600 mt-1 font-poppins">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
 
+
+              {/* CTA */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all disabled:opacity-50 mt-4"
+                className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-montserrat font-semibold shadow-sm hover:shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50"
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-zinc-600">
-                Already have an account?{" "}
-                <button onClick={onSwitchToLogin} className="text-blue-600 hover:text-blue-700 font-semibold">
-                  Log in
-                </button>
-              </p>
+            {/* Switch */}
+            <div className="mt-6 text-center text-sm text-gray-500">
+              Already have an account?{" "}
+              <button
+                onClick={onSwitchToLogin}
+                className="text-blue-600 font-semibold hover:text-blue-700 transition"
+              >
+                Log in
+              </button>
             </div>
           </>
         ) : (
-          // STEP 2: OTP VERIFICATION
           <>
-            <div className="mb-6 text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            {/* ================= OTP SECTION ================= */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center shadow-inner">
+                <svg className="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-zinc-900 mb-2">Verify your Email</h2>
-              <p className="text-zinc-600 text-sm">
-                We sent a 6-digit code to <br />
-                <span className="font-semibold text-zinc-900">{formData.email}</span>
+
+              <h2 className="text-2xl font-raleway font-bold text-gray-900">
+                Verify Your Email
+              </h2>
+
+              <p className="mt-2 text-sm text-gray-500">
+                Enter the 6-digit code sent to
+                <br />
+                <span className="font-semibold text-gray-800">
+                  {formData.email}
+                </span>
               </p>
             </div>
 
-            {successMessage && (
-              <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm text-center">
-                {successMessage}
-              </div>
-            )}
-
             {apiError && (
-              <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm text-center">
+              <div className="mb-6 p-3 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm text-center">
                 {apiError}
               </div>
             )}
 
             <form onSubmit={handleVerifySubmit} className="space-y-6">
-              <div>
-                <input
-                  type="text"
-                  name="otp"
-                  maxLength="6"
-                  value={formData.otp}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, "");
-                    setFormData(prev => ({ ...prev, otp: val }));
-                  }}
-                  className="w-full px-4 py-4 text-center text-3xl font-bold tracking-[0.5em] border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 transition-all font-mono"
-                  placeholder="000000"
-                  autoFocus
-                />
-              </div>
+              <input
+                type="text"
+                name="otp"
+                maxLength="6"
+                value={formData.otp}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, "");
+                  setFormData(prev => ({ ...prev, otp: val }));
+                }}
+                placeholder="000000"
+                autoFocus
+                className="w-full text-center text-3xl tracking-[0.5em] font-montserrat font-bold px-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
+              />
 
               <button
                 type="submit"
                 disabled={isLoading || formData.otp.length !== 6}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all disabled:opacity-50"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-montserrat font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50"
               >
                 {isLoading ? "Verifying..." : "Verify & Continue"}
               </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-zinc-600">
-                Didn't receive the code?{" "}
+            <div className="mt-6 text-center text-sm text-gray-500 space-y-3">
+              <p>
+                Didn’t receive the code?{" "}
                 {countdown > 0 ? (
-                  <span className="text-zinc-400 font-medium">Resend in {countdown}s</span>
+                  <span className="text-gray-400 font-medium">
+                    Resend in {countdown}s
+                  </span>
                 ) : (
                   <button
                     onClick={handleResendOtp}
-                    className="text-blue-600 hover:text-blue-700 font-semibold"
+                    className="text-blue-600 font-semibold hover:text-blue-700"
                   >
                     Resend Code
                   </button>
                 )}
               </p>
+
               <button
                 onClick={() => setStep(1)}
-                className="mt-4 text-sm text-zinc-500 hover:text-zinc-700 underline"
+                className="text-gray-400 hover:text-gray-600 underline transition"
               >
                 Use a different email
               </button>
@@ -424,5 +465,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }) {
         )}
       </div>
     </AuthModal>
+
   );
 }

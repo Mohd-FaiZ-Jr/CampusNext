@@ -687,8 +687,7 @@ export default function ChatWindow({ conversation, onBack }) {
                 <div className="flex items-center gap-3 px-4 py-3">
 
                     {/* Input Container */}
-                    <div className="flex items-center flex-1 bg-gray-100 rounded-full px-4 h-11 focus-within:ring-2 focus-within:ring-blue-500 transition">
-
+                    <div className="flex items-end flex-1 bg-gray-100 rounded-[24px] px-4 py-1 min-h-[44px] focus-within:ring-2 focus-within:ring-blue-500 transition-all duration-200 overflow-hidden">
                         <textarea
                             ref={textareaRef}
                             rows={1}
@@ -696,8 +695,7 @@ export default function ChatWindow({ conversation, onBack }) {
                             onChange={(e) => {
                                 setNewMessage(e.target.value);
                                 e.target.style.height = "auto";
-                                e.target.style.height =
-                                    Math.min(e.target.scrollHeight, 120) + "px";
+                                e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
                                 handleTyping();
                             }}
                             onKeyDown={(e) => {
@@ -711,12 +709,10 @@ export default function ChatWindow({ conversation, onBack }) {
                             }}
                             placeholder={editingMessage ? "Edit message..." : "Type a message"}
                             disabled={isSending}
-                            className="flex-1 font-nunito bg-transparent resize-none outline-none text-sm leading-normal text-gray-800 placeholder:text-gray-400 max-h-32 py-2"
+                            className="flex-1 font-nunito bg-transparent resize-none outline-none text-sm leading-relaxed text-gray-800 placeholder:text-gray-400 py-2.5 max-h-32 overflow-y-auto"
                         />
 
-                        {/* Icons */}
-                        <div className="flex items-center gap-1">
-
+                        <div className="flex items-center gap-1 pb-1.5">
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
@@ -732,7 +728,6 @@ export default function ChatWindow({ conversation, onBack }) {
                             >
                                 <Smile className="w-5 h-5" />
                             </button>
-
                         </div>
                     </div>
 

@@ -188,7 +188,7 @@ export default function HomeContent() {
                 Most Viewed
               </h2>
 
-              <span className="hidden sm:block text-sm text-gray-500 font-raleway">
+              <span className="block text-sm text-gray-500 font-raleway">
                 Swipe to explore &rarr;
               </span>
 

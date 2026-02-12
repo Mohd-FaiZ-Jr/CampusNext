@@ -137,200 +137,236 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-24 pb-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-20 px-4">
+      <div className="max-w-4xl mx-auto">
+
+        {/* ================= MAIN CARD ================= */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+
+          {/* ================= HEADER ================= */}
+          <div className="px-10 py-8 border-b border-gray-100">
+            <h1 className="text-3xl font-raleway font-semibold text-gray-900 tracking-tight">
               Edit Profile
             </h1>
-            <p className="text-gray-600">
-              Update your professional information to help students know more
-              about you
+            <p className="mt-2 text-gray-500 font-poppins text-sm max-w-xl">
+              Keep your professional information updated to build trust and
+              improve booking confidence.
             </p>
           </div>
 
-          {/* Success Message */}
-          {success && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <p className="text-green-700 font-medium">
-                Profile updated successfully! Redirecting...
-              </p>
-            </div>
-          )}
+          <div className="px-10 py-8">
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-red-600 font-medium">{error}</p>
-            </div>
-          )}
+            {/* ================= SUCCESS MESSAGE ================= */}
+            {success && (
+              <div className="mb-8 flex items-center gap-3 p-4 rounded-2xl border border-emerald-200 bg-emerald-50">
+                <CheckCircle className="w-5 h-5 text-emerald-600" />
+                <p className="text-emerald-700 font-medium font-poppins">
+                  Profile updated successfully. Redirecting...
+                </p>
+              </div>
+            )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Profile Image */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Profile Image
-              </label>
-              <ImageUpload
-                onImagesChange={handleImagesChange}
-                existingImages={
-                  formData.profileImage ? [formData.profileImage] : []
-                }
-              />
-              <p className="mt-2 text-sm text-gray-500">
-                Upload a professional photo to build trust with students
-              </p>
-            </div>
+            {/* ================= ERROR MESSAGE ================= */}
+            {error && (
+              <div className="mb-8 p-4 rounded-2xl border border-red-200 bg-red-50">
+                <p className="text-red-600 font-medium font-poppins">
+                  {error}
+                </p>
+              </div>
+            )}
 
-            {/* Company Name */}
-            <div>
-              <label
-                htmlFor="companyName"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Company/Business Name
-              </label>
-              <input
-                type="text"
-                id="companyName"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                maxLength={100}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="e.g., ABC Properties"
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                {formData.companyName.length}/100 characters
-              </p>
-            </div>
+            {/* ================= FORM ================= */}
+            <form onSubmit={handleSubmit} className="space-y-10">
 
-            {/* Phone Number */}
-            <div>
-              <label
-                htmlFor="phoneNumber"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="phoneNumber"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                pattern="[0-9]{10}"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="1234567890"
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                10 digits only, no spaces or dashes
-              </p>
-            </div>
+              {/* ========== PROFILE IMAGE ========== */}
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 font-poppins">
+                    Profile Image
+                  </label>
+                  <p className="text-xs text-gray-400 mt-1">
+                    A professional photo increases student trust.
+                  </p>
+                </div>
 
-            {/* Years of Experience */}
-            <div>
-              <label
-                htmlFor="yearsOfExperience"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Years of Experience
-              </label>
-              <input
-                type="number"
-                id="yearsOfExperience"
-                name="yearsOfExperience"
-                value={formData.yearsOfExperience}
-                onChange={handleChange}
-                min="0"
-                max="100"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="e.g., 5"
-              />
-            </div>
+                <ImageUpload
+                  onImagesChange={handleImagesChange}
+                  existingImages={
+                    formData.profileImage ? [formData.profileImage] : []
+                  }
+                />
+              </div>
 
-            {/* Business Address */}
-            <div>
-              <label
-                htmlFor="businessAddress"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Business Address
-              </label>
-              <input
-                type="text"
-                id="businessAddress"
-                name="businessAddress"
-                value={formData.businessAddress}
-                onChange={handleChange}
-                maxLength={200}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="e.g., 123 Business Street, City, State"
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                {formData.businessAddress.length}/200 characters
-              </p>
-            </div>
+              {/* Divider */}
+              <div className="border-t border-gray-100" />
 
-            {/* Bio */}
-            <div>
-              <label
-                htmlFor="bio"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Bio / About
-              </label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                rows={5}
-                maxLength={500}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                placeholder="Tell students about yourself and your properties..."
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                {formData.bio.length}/500 characters
-              </p>
-            </div>
+              {/* ========== COMPANY NAME ========== */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="companyName"
+                  className="text-sm font-medium text-gray-700 font-poppins"
+                >
+                  Company / Business Name
+                </label>
 
-            {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5" />
-                    Save Changes
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push("/landlord/profile")}
-                disabled={saving}
-                className="px-6 py-3 border-2 border-gray-300 hover:border-gray-400 text-gray-700 rounded-xl font-semibold transition-all duration-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <X className="w-5 h-5" />
-                Cancel
-              </button>
-            </div>
-          </form>
+                <input
+                  type="text"
+                  id="companyName"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  maxLength={100}
+                  placeholder="e.g., ABC Properties"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                />
+
+                <p className="text-xs text-gray-400 text-right">
+                  {formData.companyName.length}/100
+                </p>
+              </div>
+
+              {/* ========== CONTACT ROW ========== */}
+              <div className="grid md:grid-cols-2 gap-8">
+
+                {/* Phone */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="phoneNumber"
+                    className="text-sm font-medium text-gray-700 font-poppins"
+                  >
+                    Phone Number
+                  </label>
+
+                  <input
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    pattern="[0-9]{10}"
+                    placeholder="1234567890"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                  />
+
+                  <p className="text-xs text-gray-400">
+                    10 digits only
+                  </p>
+                </div>
+
+                {/* Experience */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="yearsOfExperience"
+                    className="text-sm font-medium text-gray-700 font-poppins"
+                  >
+                    Years of Experience
+                  </label>
+
+                  <input
+                    type="number"
+                    id="yearsOfExperience"
+                    name="yearsOfExperience"
+                    value={formData.yearsOfExperience}
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                    placeholder="e.g., 5"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* ========== BUSINESS ADDRESS ========== */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="businessAddress"
+                  className="text-sm font-medium text-gray-700 font-poppins"
+                >
+                  Business Address
+                </label>
+
+                <input
+                  type="text"
+                  id="businessAddress"
+                  name="businessAddress"
+                  value={formData.businessAddress}
+                  onChange={handleChange}
+                  maxLength={200}
+                  placeholder="e.g., 123 Business Street, City, State"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                />
+
+                <p className="text-xs text-gray-400 text-right">
+                  {formData.businessAddress.length}/200
+                </p>
+              </div>
+
+              {/* ========== BIO ========== */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="bio"
+                  className="text-sm font-medium text-gray-700 font-poppins"
+                >
+                  Bio / About
+                </label>
+
+                <textarea
+                  id="bio"
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  rows={5}
+                  maxLength={500}
+                  placeholder="Tell students about yourself and your properties..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all resize-none"
+                />
+
+                <p className="text-xs text-gray-400 text-right">
+                  {formData.bio.length}/500
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-100 pt-6">
+
+                {/* ========== ACTIONS ========== */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-end">
+
+                  <button
+                    type="button"
+                    onClick={() => router.push("/landlord/profile")}
+                    disabled={saving}
+                    className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-montserrat font-medium hover:bg-gray-100 transition-all disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="px-6 py-3 rounded-xl bg-gray-900 text-white font-montserrat font-medium hover:bg-black transition-all active:scale-[0.98] shadow-sm disabled:opacity-50 flex items-center gap-2 justify-center"
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+
+                </div>
+              </div>
+
+            </form>
+          </div>
         </div>
       </div>
     </div>
+
   );
 }
