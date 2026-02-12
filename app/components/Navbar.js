@@ -6,30 +6,40 @@ import SignupModal from "./SignupModal";
 import LoginModal from "./LoginModal";
 import { useAuth } from "../context/AuthContext";
 import {
-  User, LogOut, Edit, Home,
+  User,
+  LogOut,
+  Edit,
+  Home,
   Compass,
   Info,
   Phone,
   LayoutDashboard,
   CalendarCheck,
   CalendarDays,
+  Menu,
+  X,
+  ChevronDown
 } from "lucide-react";
 
 export default function Navbar() {
+  // State Management
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+
+  // Refs
   const dropdownRef = useRef(null);
+
+  // Auth Context
   const {
     user,
-    isLoading,
     logout,
     isLoginModalOpen,
     openLoginModal,
     closeLoginModal,
   } = useAuth();
 
-  // Check if we should open login modal (from protected route redirect)
+  // Handle Login Modal from Session/Events
   useEffect(() => {
     const checkLoginModal = () => {
       const shouldShowLogin = sessionStorage.getItem("showLoginModal");
@@ -39,13 +49,8 @@ export default function Navbar() {
       }
     };
 
-    // Check on mount
     checkLoginModal();
-
-    // Listen for storage events (from other tabs/windows or manual triggers)
     window.addEventListener("storage", checkLoginModal);
-
-    // Listen for custom event (for same-window updates)
     window.addEventListener("checkLoginModal", checkLoginModal);
 
     return () => {
@@ -54,6 +59,31 @@ export default function Navbar() {
     };
   }, [openLoginModal]);
 
+  // Click Outside Handler for Dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Body Scroll Lock for Mobile Menu
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
+
+  // Modal Handlers
   const openSignupModal = () => {
     setIsSignupModalOpen(true);
     closeLoginModal();
@@ -72,6 +102,7 @@ export default function Navbar() {
     logout();
   };
 
+  // Helper
   const getInitials = (name) => {
     if (!name) return "LL";
     return name
@@ -82,528 +113,339 @@ export default function Navbar() {
       .slice(0, 2);
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsProfileDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isMobileMenuOpen]);
+  // Styles
+  const linkStyle = "text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200";
+  const activeLinkStyle = "text-blue-600 font-semibold"; // Can be expanded with usePathname if needed
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-20">
+
             {/* Logo */}
-            <div className="shrink-0">
-              <Link href="/">
-                <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer">
-                  {/* <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                    </svg>
-                  </div> */}
-                  <h1 className="text-base sm:text-2xl font-bold text-gray-900 font-orbitron">
-                    CampusNest.
-                  </h1>
-                </div>
+            <div className="shrink-0 flex items-center">
+              <Link href="/" className="flex items-center gap-2 group">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-orbitron tracking-tight group-hover:opacity-90 transition-opacity">
+                  CampusNest<span className="text-blue-600">.</span>
+                </h1>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:block font-poppins">
-              <div className="ml-10 flex items-center space-x-6 xl:space-x-8">
-                <Link
-                  href="/"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/explore"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Explore
-                </Link>
-                <Link
-                  href="/about"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  About Us
-                </Link>
-                <Link
-                  href="/contact"
-                  className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                >
-                  Contact
-                </Link>
+            <div className="hidden lg:flex items-center gap-8 xl:gap-10 font-poppins">
+              <Link href="/" className={linkStyle}>Home</Link>
+              <Link href="/explore" className={linkStyle}>Explore</Link>
+              <Link href="/about" className={linkStyle}>About Us</Link>
+              <Link href="/contact" className={linkStyle}>Contact</Link>
 
-                {/* Show Dashboard for Landlords */}
-                {user && user.role === "LANDLORD" && (
-                  <Link
-                    href="/landlord/dashboard"
-                    className="text-gray-700 hover:text-gray-800 px-2 py-2 text-sm font-medium transition-colors"
-                  >
-                    Dashboard
-                  </Link>
-                )}
-
-                {/* Show Bookings for Landlords */}
-                {user && user.role === "LANDLORD" && (
-                  <Link
-                    href="/landlord/bookings"
-                    className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
-                  >
-                    Bookings
-                  </Link>
-                )}
-
-                {/* Show Bookings for Students */}
-                {user && user.role === "STUDENT" && (
-                  <Link
-                    href="/student/bookings"
-                    className="text-gray-700 hover:text-blue-600 px-2 py-2 text-sm font-medium transition-colors"
-                  >
-                    My Bookings
-                  </Link>
-                )}
-
+              {/* Role Based Links */}
+              {user?.role === "LANDLORD" && (
                 <>
-                  {user ? (
-                    // Logged in state
-                    <>
-                      {user.role === "LANDLORD" || user.role === "STUDENT" ? (
-                        // Landlord & Student Profile Dropdown
-                        <div className="relative" ref={dropdownRef}>
-                          {/* Avatar Button */}
-                          <button
-                            onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                            className="flex items-center gap-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
-                          >
-                            {(user.role === "LANDLORD" &&
-                              user.landlordProfile?.profileImage) ||
-                              (user.role === "STUDENT" &&
-                                user.studentProfile?.profileImage) ? (
+                  <div className="w-px h-4 bg-gray-300 mx-2" />
+                  <Link href="/landlord/dashboard" className={linkStyle}>Dashboard</Link>
+                  <Link href="/landlord/bookings" className={linkStyle}>Bookings</Link>
+                </>
+              )}
+
+              {user?.role === "STUDENT" && (
+                <>
+                  <div className="w-px h-4 bg-gray-300 mx-2" />
+                  <Link href="/student/bookings" className={linkStyle}>My Bookings</Link>
+                </>
+              )}
+
+              {/* Auth Buttons / Profile */}
+              <div className="ml-4 pl-4 border-l border-gray-200">
+                {user ? (
+                  <div className="relative" ref={dropdownRef}>
+                    {user.role === "LANDLORD" || user.role === "STUDENT" ? (
+                      <div>
+                        {/* Profile Trigger */}
+                        <button
+                          onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                          className="flex items-center gap-3 pl-1 pr-2 py-1 rounded-full hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100 focus:outline-none"
+                        >
+                          <div className="relative">
+                            {(user.role === "LANDLORD" && user.landlordProfile?.profileImage) ||
+                              (user.role === "STUDENT" && user.studentProfile?.profileImage) ? (
                               <img
-                                src={
-                                  user.role === "LANDLORD"
-                                    ? user.landlordProfile.profileImage
-                                    : user.studentProfile.profileImage
-                                }
+                                src={user.role === "LANDLORD" ? user.landlordProfile.profileImage : user.studentProfile.profileImage}
                                 alt={user.name}
-                                className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm"
+                                className="w-9 h-9 rounded-full object-cover ring-2 ring-white shadow-sm"
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm font-semibold shadow-sm">
+                              <div className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold shadow-sm">
                                 {getInitials(user.name)}
                               </div>
                             )}
-                          </button>
+                            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                          </div>
+                          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
 
-                          {/* Dropdown */}
-                          {isProfileDropdownOpen && (
-                            <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                        {/* Dropdown Menu */}
+                        {isProfileDropdownOpen && (
+                          <div className="absolute right-0 mt-4 w-64 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 ring-1 ring-black/5 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/50">
+                              <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
+                              <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide mt-2 ${user.role === "LANDLORD" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"
+                                }`}>
+                                {user.role}
+                              </span>
+                            </div>
 
-                              {/* User Info */}
-                              <div className="px-5 py-4 border-b border-gray-100">
-                                <p className="text-sm font-semibold text-gray-900">
-                                  {user.name}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1 truncate">
-                                  {user.email}
-                                </p>
-
-                                <span
-                                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide mt-3 ${user.role === "LANDLORD"
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "bg-indigo-50 text-indigo-600"
-                                    }`}
-                                >
-                                  {user.role}
-                                </span>
-                              </div>
-
-                              {/* Links */}
-                              <div className="py-1">
-                                <Link
-                                  href={
-                                    user.role === "LANDLORD"
-                                      ? "/landlord/profile"
-                                      : "/student/profile"
-                                  }
-                                  onClick={() => setIsProfileDropdownOpen(false)}
-                                  className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
-                                >
-                                  <User className="w-4 h-4 text-gray-400" />
-                                  View Profile
-                                </Link>
-
-                                <Link
-                                  href={
-                                    user.role === "LANDLORD"
-                                      ? "/landlord/profile/edit"
-                                      : "/student/profile/edit"
-                                  }
-                                  onClick={() => setIsProfileDropdownOpen(false)}
-                                  className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
-                                >
-                                  <Edit className="w-4 h-4 text-gray-400" />
-                                  Edit Profile
-                                </Link>
-                              </div>
-
-                              {/* Divider */}
-                              <div className="my-2 border-t border-gray-100"></div>
-
-                              {/* Logout */}
-                              <button
-                                onClick={() => {
-                                  setIsProfileDropdownOpen(false);
-                                  handleLogout();
-                                }}
-                                className="w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition text-left rounded-b-2xl"
+                            <div className="py-2">
+                              <Link
+                                href={user.role === "LANDLORD" ? "/landlord/profile" : "/student/profile"}
+                                onClick={() => setIsProfileDropdownOpen(false)}
+                                className="flex items-center gap-3 px-6 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                               >
-                                <LogOut className="w-4 h-4" />
-                                Logout
+                                <User className="w-4 h-4" /> View Profile
+                              </Link>
+
+                              <Link
+                                href={user.role === "LANDLORD" ? "/landlord/profile/edit" : "/student/profile/edit"}
+                                onClick={() => setIsProfileDropdownOpen(false)}
+                                className="flex items-center gap-3 px-6 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                              >
+                                <Edit className="w-4 h-4" /> Edit Profile
+                              </Link>
+                            </div>
+
+                            <div className="border-t border-gray-100 mt-1">
+                              <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center gap-3 px-6 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left"
+                              >
+                                <LogOut className="w-4 h-4" /> Logout
                               </button>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      // Admin or Basic User
+                      <div className="flex items-center gap-4">
+                        {user.role === "ADMIN" ? (
+                          <Link href="/admin" className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-black transition shadow-sm">
+                            Admin Panel
+                          </Link>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-700">Hi, {user.name}</span>
+                        )}
+                        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-600 transition-colors font-medium">
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Guest State
 
-                      ) : (
-                        // Admin or other roles
-                        <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleOpenLoginModal}
+                      className="px-5 py-2.5 rounded-full text-sm font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
+                    >
+                      Login
+                    </button>
 
-                          {user.role === "ADMIN" ? (
-                            <Link
-                              href="/admin"
-                              className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
-                            >
-                              Admin Panel
-                            </Link>
-                          ) : (
-                            <span className="text-sm text-gray-600">
-                              <span className="text-gray-500">Hi,</span>{" "}
-                              <span className="font-semibold text-gray-900">
-                                {user.name}
-                              </span>
-                            </span>
-                          )}
+                    <button
+                      onClick={openSignupModal}
+                      className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/20 transition-all duration-200 active:scale-95"
+                    >
+                      Sign Up
+                    </button>
 
-                          <div className="h-4 w-px bg-gray-200"></div>
+                  </div>
 
-                          <button
-                            onClick={handleLogout}
-                            className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors duration-200"
-                          >
-                            Logout
-                          </button>
-
-                        </div>
-
-                      )}
-                    </>
-                  ) : (
-                    // Logged out state
-                    <>
-                      <button
-                        onClick={handleOpenLoginModal}
-                        className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm"
-                      >
-                        Login
-                      </button>
-                      {/* <button
-                        onClick={openSignupModal}
-                        className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-colors shadow-sm"
-                      >
-                        Login/Sign Up
-                      </button> */}
-                    </>
-                  )}
-                </>
+                )}
               </div>
             </div>
 
-            {/* Mobile menu button */}
-            <div className="lg:hidden">
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden flex items-center">
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="Toggle mobile menu"
-                aria-expanded={isMobileMenuOpen}
-                className="relative w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="p-2 rounded-xl text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
               >
-                <span className="sr-only">Toggle Menu</span>
-
-                <div className="relative w-5 h-5">
-                  {/* Top Line */}
-                  <span
-                    className={`absolute left-0 top-1/2 h-0.5 w-5 bg-gray-800 rounded transition-all duration-300 origin-center ${isMobileMenuOpen
-                      ? "rotate-45 translate-y-0"
-                      : "-translate-y-2"
-                      }`}
-                  ></span>
-
-                  {/* Middle Line */}
-                  <span
-                    className={`absolute left-0 top-1/2 h-0.5 w-5 bg-gray-800 rounded transition-all duration-300 ${isMobileMenuOpen ? "opacity-0" : "opacity-100"
-                      }`}
-                  ></span>
-
-                  {/* Bottom Line */}
-                  <span
-                    className={`absolute left-0 top-1/2 h-0.5 w-5 bg-gray-800 rounded transition-all duration-300 origin-center ${isMobileMenuOpen
-                      ? "-rotate-45 translate-y-0"
-                      : "translate-y-2"
-                      }`}
-                  ></span>
-                </div>
+                <Menu className="w-6 h-6" />
               </button>
             </div>
+          </div>
+        </div>
+      </nav>
 
+      {/* Mobile Drawer */}
+      <div className={`fixed inset-0 z-[60] lg:hidden transition-all duration-300 ${isMobileMenuOpen ? "visible" : "invisible"}`}>
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+
+        {/* Drawer Panel */}
+        <div className={`absolute top-0 right-0 h-full w-[85%] max-w-[320px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}>
+
+          {/* Header */}
+          <div className="flex items-center justify-between p-5 border-b border-gray-100">
+            <h2 className="text-lg font-bold font-orbitron text-gray-900">Menu</h2>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Mobile Navigation */}
-          {/* ================= MOBILE RIGHT DRAWER ================= */}
-          <div
-            className={`fixed inset-0 z-[9999] lg:hidden transition-all duration-300 ${isMobileMenuOpen ? "visible" : "invisible"
-              }`}
-          >
-            {/* Overlay */}
-            <div
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? "opacity-100" : "opacity-0"
-                }`}
-            />
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto py-6 px-5 font-poppins space-y-6">
 
-            {/* Drawer Panel */}
-            <div
-              className={`absolute top-0 right-0 h-full w-[88%] max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-                }`}
-            >
-              {/* ================= DRAWER HEADER ================= */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-800 tracking-wide font-orbitron">
-                  CampusNest.
-                </h2>
-
-                {/* Close Button */}
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5 text-gray-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto px-5 py-6 font-poppins">
-
-                {/* ================= PROFILE CARD ================= */}
-                {user && (user.role === "LANDLORD" || user.role === "STUDENT") && (
-                  <Link
-                    href={
-                      user.role === "LANDLORD"
-                        ? "/landlord/profile"
-                        : "/student/profile"
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block mb-8"
-                  >
-                    <div className="group flex items-center gap-4 px-4 py-4 rounded-2xl bg-white border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-pointer">
-
-                      {/* Avatar */}
-                      {(user.role === "LANDLORD" &&
-                        user.landlordProfile?.profileImage) ||
-                        (user.role === "STUDENT" &&
-                          user.studentProfile?.profileImage) ? (
-                        <img
-                          src={
-                            user.role === "LANDLORD"
-                              ? user.landlordProfile.profileImage
-                              : user.studentProfile.profileImage
-                          }
-                          alt={user.name}
-                          className="w-12 h-12 rounded-full object-cover ring-1 ring-gray-200 group-hover:ring-gray-300 transition"
-                        />
-                      ) : (
-                        <div
-                          className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-semibold tracking-wide shadow-sm transition-all duration-300 ${user.role === "LANDLORD"
-                            ? "bg-gradient-to-br from-blue-600 to-indigo-600"
-                            : "bg-gradient-to-br from-indigo-600 to-purple-600"
-                            }`}
-                        >
-                          {getInitials(user.name)}
-                        </div>
-                      )}
-
-                      {/* User Info */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
-                          {user.name}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate mt-0.5">
-                          {user.email}
-                        </p>
-
-                        <span
-                          className={`mt-2 inline-flex items-center text-[10px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-full ${user.role === "LANDLORD"
-                            ? "bg-blue-50 text-blue-600"
-                            : "bg-indigo-50 text-indigo-600"
-                            }`}
-                        >
-                          {user.role}
-                        </span>
-                      </div>
-
-                      {/* Chevron */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-transform duration-300 group-hover:translate-x-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
+            {/* User Profile Card Mobile */}
+            {user ? (
+              <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                <div className="flex items-center gap-4 mb-4">
+                  {(user.role === "LANDLORD" && user.landlordProfile?.profileImage) ||
+                    (user.role === "STUDENT" && user.studentProfile?.profileImage) ? (
+                    <img
+                      src={user.role === "LANDLORD" ? user.landlordProfile.profileImage : user.studentProfile.profileImage}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full object-cover border border-white shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                      {getInitials(user.name)}
                     </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                </div>
 
+                {(user.role === "LANDLORD" || user.role === "STUDENT") && (
+                  <Link
+                    href={user.role === "LANDLORD" ? "/landlord/profile" : "/student/profile"}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:border-gray-300 transition-colors"
+                  >
+                    View Profile
                   </Link>
                 )}
 
-                {/* ================= NAVIGATION LINKS ================= */}
-                <div className="space-y-1">
-
-                  {/* ================= MAIN NAV ================= */}
+                {user.role === "ADMIN" && (
                   <Link
-                    href="/"
+                    href="/admin"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                    className="block w-full text-center py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold shadow-sm hover:bg-black transition-colors"
                   >
-                    <Home className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                    <span>Home</span>
+                    Go to Admin Panel
                   </Link>
+                )}
+              </div>
+            ) : (
+              // Guest Card
+              <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-sm">
 
-                  <Link
-                    href="/explore"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg sm:text-xl font-semibold font-raleway text-gray-900">
+                    Welcome to CampusNest
+                  </h3>
+                  <p className="text-sm text-gray-500 font-poppins">
+                    Sign in to manage your bookings and properties
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="mt-6 flex flex-col sm:flex-row gap-3">
+
+                  {/* Login - Primary */}
+                  <button
+                    onClick={handleOpenLoginModal}
+                    className="flex-1 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-semibold font-nunito hover:bg-black transition-all duration-200 shadow-sm"
                   >
-                    <Compass className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                    <span>Explore</span>
-                  </Link>
+                    Login
+                  </button>
 
-                  <Link
-                    href="/about"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                  {/* Sign Up - Secondary */}
+                  <button
+                    onClick={openSignupModal}
+                    className="flex-1 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-sm font-semibold font-nunito hover:bg-gray-50 transition-all duration-200"
                   >
-                    <Info className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                    <span>About Us</span>
-                  </Link>
-
-                  <Link
-                    href="/contact"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                  >
-                    <Phone className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                    <span>Contact</span>
-                  </Link>
-
-                  {/* ================= LANDLORD SECTION ================= */}
-                  {user?.role === "LANDLORD" && (
-                    <>
-                      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
-
-                      <Link
-                        href="/landlord/dashboard"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-all duration-200"
-                      >
-                        <LayoutDashboard className="w-4 h-4 text-blue-500 group-hover:scale-105 transition-transform" />
-                        <span>Dashboard</span>
-                      </Link>
-
-                      <Link
-                        href="/landlord/bookings"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                      >
-                        <CalendarCheck className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                        <span>Bookings</span>
-                      </Link>
-                    </>
-                  )}
-
-                  {/* ================= STUDENT SECTION ================= */}
-                  {user?.role === "STUDENT" && (
-                    <>
-                      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-4" />
-
-                      <Link
-                        href="/student/bookings"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                      >
-                        <CalendarDays className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                        <span>My Bookings</span>
-                      </Link>
-                    </>
-                  )}
+                    Create Account
+                  </button>
 
                 </div>
+
               </div>
 
-              {/* ================= LOGOUT ================= */}
-              {user && (
-                <div className="mt-auto border-t border-gray-100 p-5 bg-white">
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="group w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 active:bg-red-100 transition-all duration-200"
-                  >
-                    <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-                    <span>Logout</span>
-                  </button>
-                </div>
+            )}
 
+            {/* Navigation Links */}
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-2 font-montserrat">Navigation</p>
 
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                <Home className="w-4 h-4 text-gray-400" /> Home
+              </Link>
+
+              <Link href="/explore" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                <Compass className="w-4 h-4 text-gray-400" /> Explore
+              </Link>
+
+              <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                <Info className="w-4 h-4 text-gray-400" /> About Us
+              </Link>
+
+              <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                <Phone className="w-4 h-4 text-gray-400" /> Contact
+              </Link>
+
+              {/* Role Specific Links */}
+              {user?.role === "LANDLORD" && (
+                <>
+                  <div className="h-px bg-gray-100 my-3 mx-2"></div>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-2 font-montserrat">Landlord Menu</p>
+                  <Link href="/landlord/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50/50 rounded-xl hover:bg-blue-50 transition-colors">
+                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                  </Link>
+                  <Link href="/landlord/bookings" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                    <CalendarCheck className="w-4 h-4 text-gray-400" /> Bookings
+                  </Link>
+                </>
+              )}
+
+              {user?.role === "STUDENT" && (
+                <>
+                  <div className="h-px bg-gray-100 my-3 mx-2"></div>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-2">Student Menu</p>
+                  <Link href="/student/bookings" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                    <CalendarDays className="w-4 h-4 text-gray-400" /> My Bookings
+                  </Link>
+                </>
               )}
             </div>
           </div>
 
+          {/* Footer Logout */}
+          {user && (
+            <div className="p-5 border-t border-gray-100 bg-gray-50/50">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="flex items-center justify-center gap-2 w-full py-3 text-sm font-semibold text-red-600 bg-white border border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-100 transition-all"
+              >
+                <LogOut className="w-4 h-4" /> Logout
+              </button>
+            </div>
+          )}
 
         </div>
-      </nav>
+      </div>
 
       {/* Modals */}
       <SignupModal

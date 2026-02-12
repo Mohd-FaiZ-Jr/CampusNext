@@ -79,154 +79,237 @@ export default function StudentBookingsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-20 pb-12">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 pt-24 pb-16 overflow-x-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Bookings</h1>
-            <p className="text-gray-600">Track your booking requests and approvals</p>
+
+          {/* ================= HEADER ================= */}
+          <div className="mb-10">
+            <h1 className="text-3xl sm:text-4xl font-semibold font-raleway text-gray-900 tracking-tight">
+              My Bookings
+            </h1>
+            <p className="mt-2 text-gray-600 font-poppins text-sm sm:text-base">
+              Track your booking requests and approvals in one place.
+            </p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Total Bookings</div>
-              <div className="text-3xl font-bold text-blue-600">{bookings.length}</div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Pending</div>
-              <div className="text-3xl font-bold text-yellow-500">
-                {bookings.filter((b) => b.status === "PENDING").length}
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Approved</div>
-              <div className="text-3xl font-bold text-green-600">
-                {bookings.filter((b) => b.status === "APPROVED").length}
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Cancelled</div>
-              <div className="text-3xl font-bold text-red-600">
-                {bookings.filter((b) => b.status === "CANCELLED" || b.status === "REJECTED").length}
-              </div>
-            </div>
-          </div>
-
-          {/* Filter Tabs */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 p-2 flex gap-2">
-            {["ALL", "PENDING", "APPROVED", "CANCELLED"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setFilter(tab)}
-                className={`flex-1 py-2 px-4 rounded-xl font-semibold transition-all ${
-                  filter === tab
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
+          {/* ================= STATS ================= */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            {[
+              {
+                label: "Total Bookings",
+                value: bookings.length,
+                accent: "bg-blue-50 text-blue-600",
+              },
+              {
+                label: "Pending",
+                value: bookings.filter((b) => b.status === "PENDING").length,
+                accent: "bg-amber-50 text-amber-600",
+              },
+              {
+                label: "Approved",
+                value: bookings.filter((b) => b.status === "APPROVED").length,
+                accent: "bg-emerald-50 text-emerald-600",
+              },
+              {
+                label: "Cancelled",
+                value: bookings.filter(
+                  (b) => b.status === "CANCELLED" || b.status === "REJECTED"
+                ).length,
+                accent: "bg-rose-50 text-rose-600",
+              },
+            ].map((stat, i) => (
+              <div
+                key={i}
+                className="group bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300"
               >
-                {tab.charAt(0) + tab.slice(1).toLowerCase()}
-              </button>
+                {/* Label */}
+                <p className="text-xs sm:text-sm text-gray-500 font-medium font-poppins tracking-wide">
+                  {stat.label}
+                </p>
+
+                {/* Value + Accent Indicator */}
+                <div className="flex items-end justify-between mt-4">
+                  <p className="text-2xl sm:text-3xl font-semibold font-montserrat text-gray-900">
+                    {stat.value}
+                  </p>
+
+                  <div
+                    className={`h-9 w-9 rounded-xl flex items-center justify-center text-sm font-semibold font-poppins ${stat.accent}`}
+                  >
+                    •
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
-          {/* Bookings List */}
+
+          {/* ================= FILTER TABS ================= */}
+          <div className="mb-8">
+            <div className="relative w-full overflow-x-auto">
+              <div className="inline-flex min-w-max sm:min-w-0 items-center gap-1 p-1 rounded-2xl bg-gray-50 border border-gray-200">
+                {["ALL", "PENDING", "APPROVED", "CANCELLED"].map((tab) => {
+                  const isActive = filter === tab;
+
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setFilter(tab)}
+                      className={`
+              relative px-5 py-2.5 text-sm font-medium font-poppins rounded-xl
+              whitespace-nowrap transition-all duration-200 ease-out
+              ${isActive
+                          ? "bg-gray-800 text-white shadow-sm"
+                          : "text-gray-500 hover:text-gray-800"
+                        }
+            `}
+                    >
+                      {tab.charAt(0) + tab.slice(1).toLowerCase()}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+
+          {/* ================= CONTENT ================= */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
+            <div className="flex items-center justify-center py-24">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
             </div>
           ) : filteredBookings.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-              <div className="text-6xl mb-4">📋</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {filter === "ALL" ? "No bookings yet" : `No ${filter.toLowerCase()} bookings`}
-              </h3>
-              <p className="text-gray-500 mb-6">
+            <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300 px-6">
+              <div className="text-5xl mb-4">📋</div>
+              <h3 className="text-xl font-semibold font-raleway text-gray-900">
                 {filter === "ALL"
-                  ? "Start booking properties to find your perfect student accommodation"
-                  : `You don't have any ${filter.toLowerCase()} bookings at the moment`}
+                  ? "No bookings yet"
+                  : `No ${filter.toLowerCase()} bookings`}
+              </h3>
+              <p className="mt-2 text-gray-500 font-poppins text-sm max-w-md mx-auto">
+                {filter === "ALL"
+                  ? "Start exploring properties and book your perfect accommodation."
+                  : `You don’t have any ${filter.toLowerCase()} bookings at the moment.`}
               </p>
               <button
                 onClick={() => router.push("/explore")}
-                className="text-blue-600 font-bold hover:underline"
+                className="mt-6 inline-flex items-center gap-2 text-blue-600 font-semibold hover:underline"
               >
                 Explore Properties →
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {filteredBookings.map((booking) => (
                 <div
                   key={booking._id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-6"
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
                 >
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Property Image */}
-                    {booking.property?.images && booking.property.images.length > 0 && (
-                      <img
-                        src={booking.property.images[0]}
-                        alt={booking.property.title}
-                        className="w-full lg:w-48 h-48 object-cover rounded-xl"
-                      />
+                  <div className="flex flex-col xl:flex-row">
+
+                    {/* ================= IMAGE ================= */}
+                    {booking.property?.images?.length > 0 && (
+                      <div className="w-full xl:w-64 h-56 xl:h-auto flex-shrink-0">
+                        <img
+                          src={booking.property.images[0]}
+                          alt={booking.property.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
 
-                    {/* Booking Details */}
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">
-                            {booking.property?.title}
-                          </h3>
-                          <div className="space-y-2 text-sm text-gray-600">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4" />
-                              <span>{booking.property?.address}</span>
+                    {/* ================= DETAILS ================= */}
+                    <div className="flex-1 p-6 flex flex-col justify-between">
+
+                      <div>
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+                          {/* LEFT CONTENT */}
+                          <div className="min-w-0 flex-1 space-y-4">
+
+                            {/* Title + Price */}
+                            <div className="space-y-2">
+                              <h3 className="text-xl sm:text-2xl font-semibold font-raleway text-gray-900 leading-snug truncate">
+                                {booking.property?.title}
+                              </h3>
+
+                              <p className="text-lg font-bold font-montserrat text-gray-900">
+                                ₹{booking.property?.price?.toLocaleString("en-IN")}
+                                <span className="text-sm font-medium text-gray-500"> / month</span>
+                              </p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <GraduationCap className="w-4 h-4" />
-                              <span>{booking.property?.college}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Home className="w-4 h-4" />
-                              <span className="text-lg font-bold text-blue-600">
-                                ₹{booking.property?.price?.toLocaleString("en-IN")}/mo
-                              </span>
+
+                            {/* Meta Info */}
+                            <div className="space-y-2 text-sm text-gray-600 font-poppins">
+
+                              <div className="flex items-center gap-2 truncate">
+                                <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                                <span className="truncate">
+                                  {booking.property?.address}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-2 truncate">
+                                <GraduationCap className="w-4 h-4 text-gray-400 shrink-0" />
+                                <span className="truncate">
+                                  {booking.property?.college}
+                                </span>
+                              </div>
+
                             </div>
                           </div>
+
+                          {/* STATUS BADGE */}
+                          <div className="flex-shrink-0 font-raleway">
+                            <StatusBadge status={getStatusBadge(booking.status)} />
+                          </div>
+
                         </div>
-                        <StatusBadge status={getStatusBadge(booking.status)} />
+
+
+                        {/* Landlord */}
+                        <div className="mt-5 bg-gray-50 rounded-xl p-4 font-montserrat">
+                          <p className="text-xs text-gray-500 font-medium">
+                            Landlord
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {booking.landlord?.name}
+                          </p>
+                          <p className="text-xs text-gray-600 truncate">
+                            {booking.landlord?.email}
+                          </p>
+                        </div>
                       </div>
 
-                      {/* Landlord Info */}
-                      <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                        <div className="text-sm text-gray-500 mb-1">Landlord</div>
-                        <div className="font-semibold text-gray-900">{booking.landlord?.name}</div>
-                        <div className="text-sm text-gray-600">{booking.landlord?.email}</div>
-                      </div>
+                      {/* ================= FOOTER ================= */}
+                      <div className="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t">
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <div className="flex items-center gap-2 text-xs text-gray-500 font-poppins">
                           <Clock className="w-4 h-4" />
-                          <span>Requested on {formatDate(booking.createdAt)}</span>
+                          Requested on {formatDate(booking.createdAt)}
                         </div>
-                        <div className="flex gap-3">
+
+                        <div className="flex flex-wrap gap-3 font-nunito">
                           {booking.status === "PENDING" && (
                             <button
                               onClick={() => setCancelBookingId(booking._id)}
-                              className="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-semibold hover:bg-red-100 transition-colors"
+                              className="px-4 py-2 rounded-lg bg-red-50 text-red-600 text-sm font-semibold hover:bg-red-100 transition"
                             >
-                              Cancel Request
+                              Cancel
                             </button>
                           )}
+
                           <button
-                            onClick={() => router.push(`/explore/${booking.property?._id}`)}
-                            className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold hover:bg-blue-100 transition-colors"
+                            onClick={() =>
+                              router.push(`/explore/${booking.property?._id}`)
+                            }
+                            className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition shadow-sm"
                           >
                             View Property
                           </button>
                         </div>
                       </div>
+
                     </div>
                   </div>
                 </div>
@@ -236,7 +319,6 @@ export default function StudentBookingsPage() {
         </div>
       </div>
 
-      {/* Cancel Confirmation Dialog */}
       <ConfirmDialog
         isOpen={!!cancelBookingId}
         onClose={() => setCancelBookingId(null)}
@@ -244,9 +326,10 @@ export default function StudentBookingsPage() {
         title="Cancel Booking Request?"
         message="Are you sure you want to cancel this booking request? This action cannot be undone."
         confirmText="Yes, Cancel"
-        cancelText="No, Keep It"
+        cancelText="Keep It"
         variant="danger"
       />
     </Layout>
+
   );
 }

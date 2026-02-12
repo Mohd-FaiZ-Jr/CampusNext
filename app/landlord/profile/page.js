@@ -94,171 +94,179 @@ export default function LandlordProfile() {
   const landlordProfile = profile.landlordProfile || {};
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-24 pb-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 border border-gray-100">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-6">
-            {/* Profile Image */}
+    <div className="min-h-screen bg-gray-50 pt-28 pb-16 px-4">
+      <div className="max-w-5xl mx-auto space-y-8">
+
+        {/* ================= PROFILE HEADER ================= */}
+        <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-8">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+
+            {/* Avatar Section */}
             <div className="relative">
               {landlordProfile.profileImage ? (
                 <img
                   src={landlordProfile.profileImage}
                   alt={profile.name}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-blue-100"
+                  className="w-36 h-36 rounded-2xl object-cover border border-gray-200 shadow-sm"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center border-4 border-blue-100">
-                  <span className="text-4xl font-bold text-white">
+                <div className="w-36 h-36 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-600 flex items-center justify-center shadow-sm">
+                  <span className="text-4xl font-semibold text-white">
                     {getInitials(profile.name)}
                   </span>
                 </div>
               )}
+
               {landlordProfile.isVerified && (
-                <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2 border-4 border-white">
-                  <CheckCircle className="w-6 h-6 text-white" />
+                <div className="absolute -top-3 -right-3 bg-emerald-500 rounded-full p-2 border-4 border-white shadow">
+                  <CheckCircle className="w-5 h-5 text-white" />
                 </div>
               )}
             </div>
 
-            {/* Profile Info */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-gray-900">
+            {/* Info Section */}
+            <div className="flex-1 space-y-3">
+              <div className="flex flex-wrap items-center gap-4">
+                <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">
                   {profile.name}
                 </h1>
+
                 {landlordProfile.isVerified && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium">
                     <CheckCircle className="w-4 h-4" />
-                    Verified Landlord
+                    Verified
                   </span>
                 )}
               </div>
+
               {landlordProfile.companyName && (
-                <p className="text-lg text-gray-600 mb-2 flex items-center justify-center md:justify-start gap-2">
-                  <Building2 className="w-5 h-5" />
+                <p className="text-gray-600 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-gray-400" />
                   {landlordProfile.companyName}
                 </p>
               )}
-              <p className="text-gray-500 flex items-center justify-center md:justify-start gap-2">
-                <Calendar className="w-4 h-4" />
+
+              <p className="text-sm text-gray-500 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-gray-400" />
                 Member since {formatDate(profile.createdAt)}
               </p>
-            </div>
 
-            {/* Edit Button */}
-            <button
-              onClick={() => router.push("/landlord/profile/edit")}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
-            >
-              <Edit className="w-5 h-5" />
-              Edit Profile
-            </button>
-          </div>
-
-          {/* Bio */}
-          {landlordProfile.bio && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-              <p className="text-gray-700 leading-relaxed">
-                {landlordProfile.bio}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Profile Details Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Contact Information */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Mail className="w-6 h-6 text-blue-600" />
-              Contact Information
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Email</p>
-                <p className="text-gray-900 font-medium">{profile.email}</p>
-              </div>
-              {landlordProfile.phoneNumber && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Phone</p>
-                  <p className="text-gray-900 font-medium flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-blue-600" />
-                    {landlordProfile.phoneNumber}
+              {landlordProfile.bio && (
+                <div className="pt-4 border-t border-gray-100">
+                  <p className="text-gray-700 leading-relaxed">
+                    {landlordProfile.bio}
                   </p>
                 </div>
               )}
-              {!landlordProfile.phoneNumber && (
-                <p className="text-gray-400 italic">No phone number added</p>
-              )}
+            </div>
+
+            {/* Action */}
+            <div className="w-full lg:w-auto">
+              <button
+                onClick={() => router.push("/landlord/profile/edit")}
+                className="w-full lg:w-auto px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-black transition-all duration-200 active:scale-[0.98] shadow-sm"
+              >
+                Edit Profile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= INFO GRID ================= */}
+        <div className="grid md:grid-cols-2 gap-6">
+
+          {/* Contact Card */}
+          <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-gray-400" />
+              Contact Information
+            </h2>
+
+            <div className="space-y-5 text-sm">
+              <div>
+                <p className="text-gray-500 mb-1">Email</p>
+                <p className="text-gray-900 font-medium">{profile.email}</p>
+              </div>
+
+              <div>
+                <p className="text-gray-500 mb-1">Phone</p>
+                {landlordProfile.phoneNumber ? (
+                  <p className="text-gray-900 font-medium flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-gray-400" />
+                    {landlordProfile.phoneNumber}
+                  </p>
+                ) : (
+                  <p className="text-gray-400 italic">Not added</p>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Professional Information */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Briefcase className="w-6 h-6 text-blue-600" />
+          {/* Professional Card */}
+          <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-gray-400" />
               Professional Details
             </h2>
-            <div className="space-y-4">
-              {landlordProfile.yearsOfExperience !== undefined &&
-              landlordProfile.yearsOfExperience !== null ? (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Experience</p>
+
+            <div className="space-y-5 text-sm">
+
+              <div>
+                <p className="text-gray-500 mb-1">Experience</p>
+                {landlordProfile.yearsOfExperience !== undefined &&
+                  landlordProfile.yearsOfExperience !== null ? (
                   <p className="text-gray-900 font-medium">
                     {landlordProfile.yearsOfExperience}{" "}
                     {landlordProfile.yearsOfExperience === 1 ? "year" : "years"}
                   </p>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Experience</p>
+                ) : (
                   <p className="text-gray-400 italic">Not specified</p>
-                </div>
-              )}
-              {landlordProfile.businessAddress && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Business Address</p>
+                )}
+              </div>
+
+              <div>
+                <p className="text-gray-500 mb-1">Business Address</p>
+                {landlordProfile.businessAddress ? (
                   <p className="text-gray-900 font-medium flex items-start gap-2">
-                    <MapPin className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
-                    <span>{landlordProfile.businessAddress}</span>
+                    <MapPin className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
+                    {landlordProfile.businessAddress}
                   </p>
-                </div>
-              )}
-              {!landlordProfile.businessAddress && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Business Address</p>
+                ) : (
                   <p className="text-gray-400 italic">Not specified</p>
-                </div>
-              )}
+                )}
+              </div>
+
             </div>
           </div>
         </div>
 
-        {/* Empty State Message */}
+        {/* ================= EMPTY STATE ================= */}
         {!landlordProfile.companyName &&
           !landlordProfile.phoneNumber &&
           !landlordProfile.bio &&
           !landlordProfile.yearsOfExperience &&
           !landlordProfile.businessAddress && (
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-              <User className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+            <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center shadow-sm">
+              <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Complete Your Profile
+                Complete Your Professional Profile
               </h3>
-              <p className="text-gray-600 mb-4">
-                Add your professional information to help students know more
-                about you and build trust.
+              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                Adding professional details builds trust and increases booking
+                confidence from students.
               </p>
+
               <button
                 onClick={() => router.push("/landlord/profile/edit")}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                className="px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-black transition-all active:scale-[0.98]"
               >
-                Complete Profile Now
+                Add Details
               </button>
             </div>
           )}
+
       </div>
     </div>
+
   );
 }

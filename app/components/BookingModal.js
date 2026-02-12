@@ -18,80 +18,115 @@ export default function BookingModal({ isOpen, onClose, property, onConfirm }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 animate-in fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 animate-in zoom-in-95">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">Confirm Booking Request</h3>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Confirm Booking
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              Review property details before sending request
+            </p>
+          </div>
+
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50"
+            className="p-2 rounded-full hover:bg-gray-100 transition disabled:opacity-50"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
-        {/* Property Details */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 mb-6 border border-blue-100">
-          <div className="flex items-start gap-4">
-            {property.images && property.images.length > 0 && (
+        {/* Body */}
+        <div className="px-6 py-6 space-y-6">
+
+          {/* Property Card */}
+          <div className="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+            {property.images?.length > 0 && (
               <img
                 src={property.images[0]}
                 alt={property.title}
-                className="w-20 h-20 object-cover rounded-lg"
+                className="w-24 h-24 object-cover rounded-xl"
               />
             )}
-            <div className="flex-1">
-              <h4 className="font-bold text-gray-900 text-lg mb-2">{property.title}</h4>
-              <div className="space-y-1 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  <span>{property.address}</span>
+
+            <div className="flex-1 min-w-0">
+              <h4 className="text-lg font-semibold text-gray-900 truncate">
+                {property.title}
+              </h4>
+
+              <div className="mt-2 space-y-1 text-sm text-gray-600">
+                <div className="flex items-center gap-2 truncate">
+                  <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                  <span className="truncate">{property.address}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="w-4 h-4" />
-                  <span>{property.college}</span>
+
+                <div className="flex items-center gap-2 truncate">
+                  <GraduationCap className="w-4 h-4 text-gray-400 shrink-0" />
+                  <span className="truncate">{property.college}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Home className="w-4 h-4" />
-                  <span className="text-xl font-bold text-blue-600">
-                    ₹{property.price?.toLocaleString("en-IN")}/mo
-                  </span>
-                </div>
+              </div>
+
+              <div className="mt-3">
+                <span className="text-2xl font-bold text-indigo-600">
+                  ₹{property.price?.toLocaleString("en-IN")}
+                </span>
+                <span className="text-sm text-gray-500"> / month</span>
               </div>
             </div>
           </div>
+
+          {/* Info Box */}
+          <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <div className="mt-0.5">
+              <svg
+                className="w-5 h-5 text-amber-600"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                />
+              </svg>
+            </div>
+            <p className="text-sm text-amber-800 leading-relaxed">
+              Your request will be sent to the landlord for approval. You’ll be notified once they respond.
+            </p>
+          </div>
+
         </div>
 
-        {/* Info Message */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-          <p className="text-sm text-yellow-800">
-            <strong>Note:</strong> Your booking request will be sent to the landlord for approval. 
-            You&apos;ll be notified once they respond.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3">
+        {/* Footer Actions */}
+        <div className="flex flex-col sm:flex-row gap-3 px-6 py-5 border-t border-gray-100 bg-gray-50">
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="flex-1 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition disabled:opacity-50"
           >
             Cancel
           </button>
+
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isLoading && (
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             )}
-            Send Booking Request
+            Send Request
           </button>
         </div>
       </div>
     </div>
+
   );
 }

@@ -80,91 +80,139 @@ export default function LandlordBookingsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-20 pb-12">
+      <div className="min-h-screen bg-gray-50 pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Booking Requests</h1>
-            <p className="text-gray-600">Manage booking requests for your properties</p>
+
+          {/* ================= HEADER ================= */}
+          <div className="mb-12">
+            <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 font-montserrat tracking-tight">
+              Booking Requests
+            </h1>
+            <p className="mt-2 text-gray-500 font-raleway text-sm md:text-base">
+              Review and manage booking requests from students.
+            </p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Total Requests</div>
-              <div className="text-3xl font-bold text-blue-600">{bookings.length}</div>
+          {/* ================= STATS ================= */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
+
+            {/* Total */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition">
+              <p className="text-xs uppercase tracking-wide text-gray-500 font-nunito">
+                Total Requests
+              </p>
+              <p className="mt-3 text-3xl font-semibold text-gray-900 font-montserrat">
+                {bookings.length}
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Pending Review</div>
-              <div className="text-3xl font-bold text-yellow-500">
+
+            {/* Pending */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition">
+              <p className="text-xs uppercase tracking-wide text-gray-500 font-nunito">
+                Pending
+              </p>
+              <p className="mt-3 text-3xl font-semibold text-yellow-500 font-montserrat">
                 {bookings.filter((b) => b.status === "PENDING").length}
-              </div>
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Approved</div>
-              <div className="text-3xl font-bold text-green-600">
+
+            {/* Approved */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition">
+              <p className="text-xs uppercase tracking-wide text-gray-500 font-nunito">
+                Approved
+              </p>
+              <p className="mt-3 text-3xl font-semibold text-green-600 font-montserrat">
                 {bookings.filter((b) => b.status === "APPROVED").length}
-              </div>
+              </p>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <div className="text-gray-500 font-semibold mb-2">Rejected</div>
-              <div className="text-3xl font-bold text-red-600">
-                {bookings.filter((b) => b.status === "CANCELLED" || b.status === "REJECTED").length}
-              </div>
+
+            {/* Rejected */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition">
+              <p className="text-xs uppercase tracking-wide text-gray-500 font-nunito">
+                Rejected
+              </p>
+              <p className="mt-3 text-3xl font-semibold text-red-600 font-montserrat">
+                {bookings.filter(
+                  (b) => b.status === "CANCELLED" || b.status === "REJECTED"
+                ).length}
+              </p>
             </div>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 p-2 flex gap-2">
-            {["ALL", "PENDING", "APPROVED", "CANCELLED"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setFilter(tab)}
-                className={`flex-1 py-2 px-4 rounded-xl font-semibold transition-all ${
-                  filter === tab
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                {tab.charAt(0) + tab.slice(1).toLowerCase()}
-                {tab === "PENDING" && bookings.filter((b) => b.status === "PENDING").length > 0 && (
-                  <span className="ml-2 bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {bookings.filter((b) => b.status === "PENDING").length}
-                  </span>
-                )}
-              </button>
-            ))}
+          {/* ================= FILTER TABS ================= */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-10 p-1.5 flex gap-2">
+
+            {["ALL", "PENDING", "APPROVED", "CANCELLED"].map((tab) => {
+              const isActive = filter === tab;
+              const pendingCount =
+                tab === "PENDING"
+                  ? bookings.filter((b) => b.status === "PENDING").length
+                  : 0;
+
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setFilter(tab)}
+                  className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold font-poppins transition-all duration-200 ${isActive
+                      ? "bg-gray-900 text-white shadow-sm"
+                      : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                >
+                  {tab.charAt(0) + tab.slice(1).toLowerCase()}
+
+                  {tab === "PENDING" && pendingCount > 0 && (
+                    <span
+                      className={`ml-2 text-xs px-2 py-0.5 rounded-full font-semibold ${isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-yellow-100 text-yellow-700"
+                        }`}
+                    >
+                      {pendingCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Bookings List */}
+          {/* ================= BOOKINGS LIST ================= */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+            <div className="flex items-center justify-center py-24">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-900 border-t-transparent"></div>
             </div>
           ) : filteredBookings.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
-              <div className="text-6xl mb-4">
-                <FileText className="w-20 h-20 mx-auto text-gray-300" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {filter === "ALL" ? "No booking requests yet" : `No ${filter.toLowerCase()} bookings`}
-              </h3>
-              <p className="text-gray-500 mb-6">
+
+            /* EMPTY STATE */
+            <div className="text-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
+
+              <FileText className="w-16 h-16 mx-auto text-gray-300 mb-6" />
+
+              <h3 className="text-2xl font-semibold text-gray-900 font-montserrat">
                 {filter === "ALL"
-                  ? "Booking requests from students will appear here"
-                  : `You don't have any ${filter.toLowerCase()} bookings at the moment`}
+                  ? "No booking requests yet"
+                  : `No ${filter.toLowerCase()} bookings`}
+              </h3>
+
+              <p className="mt-3 text-gray-500 font-raleway max-w-md mx-auto">
+                {filter === "ALL"
+                  ? "Booking requests from students will appear here once submitted."
+                  : `You currently have no ${filter.toLowerCase()} bookings.`}
               </p>
+
               {filter === "ALL" && (
                 <button
                   onClick={() => router.push("/landlord/dashboard")}
-                  className="text-blue-600 font-bold hover:underline"
+                  className="mt-6 inline-block text-blue-600 font-semibold font-poppins hover:underline"
                 >
                   Go to Dashboard →
                 </button>
               )}
             </div>
+
           ) : (
-            <div className="space-y-4">
+
+            /* BOOKING CARDS */
+            <div className="space-y-6">
               {filteredBookings.map((booking) => (
                 <BookingRequestCard
                   key={booking._id}
@@ -174,9 +222,12 @@ export default function LandlordBookingsPage() {
                 />
               ))}
             </div>
+
           )}
+
         </div>
       </div>
     </Layout>
+
   );
 }

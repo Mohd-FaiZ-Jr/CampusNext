@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import StatusBadge from "./StatusBadge";
-import { 
-  User, 
-  GraduationCap, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  MapPin, 
+import {
+  User,
+  GraduationCap,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
   Home,
   CheckCircle,
   XCircle
