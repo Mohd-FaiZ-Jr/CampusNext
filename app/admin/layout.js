@@ -36,10 +36,10 @@ export default function AdminLayout({ children }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-900 border-t-transparent"></div>
+          <p className="mt-4 text-gray-600 font-poppins">Loading...</p>
         </div>
       </div>
     );
@@ -50,10 +50,10 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f8fafc]">
       <AdminSidebar />
-      <main className="flex-1 w-full lg:w-auto p-3 sm:p-4 md:p-6 lg:p-8 pt-16 lg:pt-6 overflow-x-hidden">
-        <div className="max-w-full">{children}</div>
+      <main className="lg:ml-72 min-h-screen p-4 sm:p-6 md:p-8 pt-16 lg:pt-8">
+        <div className="max-w-7xl mx-auto">{children}</div>
       </main>
     </div>
   );
