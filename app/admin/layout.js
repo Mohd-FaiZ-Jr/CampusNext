@@ -52,7 +52,7 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <AdminSidebar />
-      <main className="lg:ml-72 min-h-screen p-4 sm:p-6 md:p-8 pt-16 lg:pt-8">
+      <main className="lg:ml-72 min-h-screen p-4 sm:p-6 md:p-8 pb-24 lg:pb-8">
         <div className="max-w-7xl mx-auto">{children}</div>
       </main>
     </div>
