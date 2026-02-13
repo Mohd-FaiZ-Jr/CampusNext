@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Layout from "../components/Layout";
 import FilterSidebar from "../components/FilterSidebar";
 import PropertyCard from "../components/PropertyCard";
@@ -12,6 +12,7 @@ export default function ExplorePage() {
   const router = useRouter();
   const { user, isLoading: authLoading, openLoginModal } = useAuth();
   const hasRedirected = useRef(false);
+  const searchParams = useSearchParams();
 
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +30,9 @@ export default function ExplorePage() {
     maxDistance: null,
     gender: "",
     amenities: [],
+    amenities: [],
     verified: true,
+    type: "",
   });
 
   const [userLocation, setUserLocation] = useState(null);
@@ -148,6 +151,25 @@ export default function ExplorePage() {
       },
     );
   };
+
+  // Sync URL params with state
+  useEffect(() => {
+    const collegeParam = searchParams.get("college");
+    const typeParam = searchParams.get("type");
+    const verifiedParam = searchParams.get("verified");
+
+    if (collegeParam) {
+      setSearchTerm(collegeParam);
+    }
+
+    if (typeParam) {
+      setFilters(prev => ({ ...prev, type: typeParam }));
+    }
+
+    if (verifiedParam !== null) {
+      setFilters(prev => ({ ...prev, verified: verifiedParam === "true" }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     console.log("Auth check - authLoading:", authLoading, "user:", user);

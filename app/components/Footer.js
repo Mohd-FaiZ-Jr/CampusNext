@@ -1,13 +1,4 @@
 import Link from "next/link";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
 
 // ... (imports remain the same)
 
@@ -31,7 +22,6 @@ export default function Footer() {
               helping students find verified homes without friction.
             </p>
 
-            {/* Optional subtle divider */}
             <div className="mt-8 h-px w-16 bg-indigo-500/40" />
           </div>
 
@@ -116,4 +106,3 @@ function FooterCol({ title, links }) {
     </div>
   );
 }
-

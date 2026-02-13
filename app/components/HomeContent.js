@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MapPin, CheckCircle, ShieldCheck, Zap, Heart, BedDouble, Users, ChevronDown } from "lucide-react";
+import { MapPin, CheckCircle, ShieldCheck, Zap, Heart, BedDouble, Users, ChevronDown, Search, Building2, GraduationCap } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import useDebounce from "../hooks/useDebounce";
 
 export default function HomeContent() {
   const router = useRouter();
@@ -15,13 +16,21 @@ export default function HomeContent() {
   // Dropdown States
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [rentType, setRentType] = useState("Rent type");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const dropdownRef = useRef(null);
+  const searchContainerRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
+      }
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setShowSuggestions(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -47,10 +56,68 @@ export default function HomeContent() {
     })();
   }, []);
 
+  // Fetch suggestions when debounced search term changes
+  useEffect(() => {
+    if (debouncedSearch && debouncedSearch.length > 1) {
+      const fetchSuggestions = async () => {
+        try {
+          const res = await fetch(`/api/properties/autocomplete?q=${encodeURIComponent(debouncedSearch)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setSuggestions(data);
+            setShowSuggestions(true);
+          }
+        } catch (error) {
+          console.error("Error fetching suggestions:", error);
+        }
+      };
+      fetchSuggestions();
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [debouncedSearch]);
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion.text);
+    setShowSuggestions(false);
+
+    if (suggestion.type === "property") {
+      // Direct navigation to property details
+      router.push(`/explore/${suggestion.id}`);
+    } else {
+      // Search for college
+      const params = new URLSearchParams();
+      params.append("college", suggestion.text);
+      if (rentType !== "Rent type") params.append("type", rentType);
+      router.push(`/explore?${params.toString()}`);
+    }
+  };
+
   const handleProtectedNav = (e, path) => {
     e.preventDefault();
     if (!user) return openLoginModal();
     router.push(path);
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) {
+      params.append("college", searchQuery.trim());
+    }
+    if (rentType !== "Rent type") {
+      params.append("type", rentType);
+    }
+
+    // Determine the target path
+    const targetPath = `/explore?${params.toString()}`;
+    router.push(targetPath);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -84,12 +151,45 @@ export default function HomeContent() {
             <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 p-3 flex flex-col md:flex-row gap-3 items-stretch">
 
               {/* Location */}
-              <div className="flex items-center flex-1 px-5 py-3 rounded-2xl bg-gray-50 focus-within:bg-white border border-transparent focus-within:border-indigo-200 transition">
-                <MapPin className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
-                <input
-                  placeholder="Search by city, university, or area"
-                  className="w-full bg-transparent outline-none text-gray-900 placeholder-gray-400 text-sm md:text-base font-poppins"
-                />
+              <div ref={searchContainerRef} className="relative flex-1">
+                <div className="flex items-center h-full px-5 py-3 rounded-2xl bg-gray-50 focus-within:bg-white border border-transparent focus-within:border-indigo-200 transition">
+                  <MapPin className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
+                  <input
+                    placeholder="Search by college or property..."
+                    className="w-full bg-transparent outline-none text-gray-900 placeholder-gray-400 text-sm md:text-base font-poppins"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => {
+                      if (suggestions.length > 0) setShowSuggestions(true);
+                    }}
+                  />
+                </div>
+
+                {/* Suggestions Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[60]">
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        className="px-5 py-3 hover:bg-indigo-50 cursor-pointer flex items-center gap-3 transition-colors border-b last:border-b-0 border-gray-50"
+                      >
+                        {suggestion.type === "property" ? (
+                          <Building2 className="w-4 h-4 text-gray-400" />
+                        ) : (
+                          <GraduationCap className="w-4 h-4 text-gray-400" />
+                        )}
+                        <span className="text-gray-700 font-poppins text-sm md:text-base">
+                          {suggestion.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Dropdown */}
@@ -125,6 +225,7 @@ export default function HomeContent() {
               {/* Search Button */}
 
               <button
+                onClick={handleSearch}
                 className="bg-indigo-50 hover:bg-indigo-100 text-gray-700 px-8 py-3 rounded-2xl font-semibold font-poppins transition active:scale-[0.98]"
               >
                 Search
