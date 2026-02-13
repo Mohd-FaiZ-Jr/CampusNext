@@ -11,7 +11,7 @@ export default function StatsCard({ title, value, icon, change, changeType }) {
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
-        <div className="p-3 bg-blue-50 rounded-xl">{icon}</div>
+        <div className="p-3 bg-gray-100 rounded-xl">{icon}</div>
         {change && (
           <span className={`text-sm font-semibold font-poppins ${changeColor}`}>
             {change}

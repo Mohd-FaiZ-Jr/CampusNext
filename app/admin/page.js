@@ -30,7 +30,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-900 border-t-transparent"></div>
       </div>
     );
   }
@@ -53,7 +53,7 @@ export default function AdminDashboard() {
           value={stats?.users?.total || 0}
           icon={
             <svg
-              className="w-6 h-6 text-blue-600"
+              className="w-6 h-6 text-gray-900"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
           value={stats?.properties?.total || 0}
           icon={
             <svg
-              className="w-6 h-6 text-blue-600"
+              className="w-6 h-6 text-gray-900"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -200,7 +200,7 @@ export default function AdminDashboard() {
           <h3 className="text-lg font-bold text-gray-900 font-montserrat">Recent Properties</h3>
           <Link
             href="/admin/properties"
-            className="text-blue-600 hover:text-blue-700 font-semibold text-sm font-poppins"
+            className="text-gray-900 hover:text-gray-700 font-semibold text-sm font-poppins"
           >
             View All →
           </Link>
@@ -266,12 +266,12 @@ export default function AdminDashboard() {
 
         <Link
           href="/admin/users"
-          className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
+          className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all group"
         >
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-200 rounded-xl group-hover:scale-110 transition-transform">
+            <div className="p-3 bg-gray-200 rounded-xl group-hover:scale-110 transition-transform">
               <svg
-                className="w-6 h-6 text-blue-700"
+                className="w-6 h-6 text-gray-700"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

@@ -131,24 +131,26 @@ export default function AdminPropertiesPage() {
             placeholder="Search by title or college..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-5 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-gray-900 font-nunito text-sm transition-colors"
+            className="w-full pl-12 pr-4 sm:pr-5 py-3 sm:py-3 min-h-[44px] border border-gray-300 rounded-xl focus:outline-none focus:border-gray-900 font-nunito text-sm transition-colors"
           />
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all font-poppins whitespace-nowrap ${activeTab === tab.id
-                  ? "bg-gray-900 text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="relative">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-1" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 sm:px-5 py-2.5 sm:py-2 rounded-lg text-sm font-medium transition-all font-poppins whitespace-nowrap snap-start flex-shrink-0 min-h-[44px] ${activeTab === tab.id
+                    ? "bg-gray-900 text-white shadow-sm"
+                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                  }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

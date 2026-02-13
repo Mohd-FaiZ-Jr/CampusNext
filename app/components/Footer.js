@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+// ... (imports remain the same)
+
 export default function Footer() {
   return (
     <footer className="relative bg-[#0b1220] text-gray-400">
@@ -11,7 +13,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="md:col-span-4">
 
-            <h3 className="text-white text-2xl font-bold font-montserrat tracking-tight mb-6">
+            <h3 className="text-white text-2xl font-bold font-orbitron tracking-tight mb-6">
               CampusNest<span className="text-indigo-500">.</span>
             </h3>
 
@@ -29,24 +31,24 @@ export default function Footer() {
             <FooterCol
               title="Explore"
               links={[
-                { label: "Find Homes", href: "/explore?verified=false" },
-                { label: "Verified Listings", href: "/explore?verified=true" },
+                { label: "Find Homes", href: "/explore" },
+                { label: "Verified Listings", href: "/verified" },
               ]}
             />
 
             <FooterCol
               title="Company"
               links={[
-                { label: "About Us", href: "/" },
-                { label: "Support", href: "/" },
+                { label: "About Us", href: "/about" },
+                { label: "Support", href: "/contact" },
               ]}
             />
 
             <FooterCol
               title="Legal"
               links={[
-                { label: "Privacy Policy", href: "/privacy-policy" },
-                { label: "Terms of Service", href: "/terms-of-service" },
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Terms of Service", href: "/terms" },
               ]}
             />
 
@@ -64,22 +66,21 @@ export default function Footer() {
           </p>
 
           <div className="flex items-center gap-6">
-            <Link href="/privacy-policy" className="hover:text-white transition">
+            <Link href="/privacy" className="hover:text-white transition cursor-pointer">
               Privacy
             </Link>
-            <Link href="/terms-of-service" className="hover:text-white transition">
+            <Link href="/terms" className="hover:text-white transition cursor-pointer">
               Terms
             </Link>
-            <span className="hover:text-white transition cursor-pointer">
+            <Link href="/contact" className="hover:text-white transition cursor-pointer">
               Support
-            </span>
+            </Link>
           </div>
 
         </div>
       </div>
 
     </footer>
-
   );
 }
 
@@ -93,12 +94,11 @@ function FooterCol({ title, links }) {
       <ul className="space-y-3 text-sm font-raleway">
         {links.map((l) => (
           <li key={l.label}>
-            <Link
-              href={l.href}
-              className="group relative inline-block transition text-gray-400 hover:text-white"
-            >
-              {l.label}
-              <span className="absolute left-0 -bottom-1 h-px w-0 bg-indigo-500 transition-all duration-300 group-hover:w-full" />
+            <Link href={l.href || "#"}>
+              <span className="group relative inline-block cursor-pointer transition text-gray-400 hover:text-white">
+                {l.label}
+                <span className="absolute left-0 -bottom-1 h-px w-0 bg-indigo-500 transition-all duration-300 group-hover:w-full" />
+              </span>
             </Link>
           </li>
         ))}
