@@ -1,13 +1,4 @@
 import Link from "next/link";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
 
 export default function Footer() {
   return (
@@ -29,7 +20,6 @@ export default function Footer() {
               helping students find verified homes without friction.
             </p>
 
-            {/* Optional subtle divider */}
             <div className="mt-8 h-px w-16 bg-indigo-500/40" />
           </div>
 
@@ -38,17 +28,26 @@ export default function Footer() {
 
             <FooterCol
               title="Explore"
-              links={["Find Homes", "Verified Listings"]}
+              links={[
+                { label: "Find Homes", href: "/explore?verified=false" },
+                { label: "Verified Listings", href: "/explore?verified=true" },
+              ]}
             />
 
             <FooterCol
               title="Company"
-              links={["About Us", "Support"]}
+              links={[
+                { label: "About Us", href: "/" },
+                { label: "Support", href: "/" },
+              ]}
             />
 
             <FooterCol
               title="Legal"
-              links={["Privacy Policy", "Terms of Service"]}
+              links={[
+                { label: "Privacy Policy", href: "/privacy-policy" },
+                { label: "Terms of Service", href: "/terms-of-service" },
+              ]}
             />
 
           </div>
@@ -65,12 +64,12 @@ export default function Footer() {
           </p>
 
           <div className="flex items-center gap-6">
-            <span className="hover:text-white transition cursor-pointer">
+            <Link href="/privacy-policy" className="hover:text-white transition">
               Privacy
-            </span>
-            <span className="hover:text-white transition cursor-pointer">
+            </Link>
+            <Link href="/terms-of-service" className="hover:text-white transition">
               Terms
-            </span>
+            </Link>
             <span className="hover:text-white transition cursor-pointer">
               Support
             </span>
@@ -93,15 +92,17 @@ function FooterCol({ title, links }) {
 
       <ul className="space-y-3 text-sm font-raleway">
         {links.map((l) => (
-          <li key={l}>
-            <span className="group relative inline-block cursor-pointer transition text-gray-400 hover:text-white">
-              {l}
+          <li key={l.label}>
+            <Link
+              href={l.href}
+              className="group relative inline-block transition text-gray-400 hover:text-white"
+            >
+              {l.label}
               <span className="absolute left-0 -bottom-1 h-px w-0 bg-indigo-500 transition-all duration-300 group-hover:w-full" />
-            </span>
+            </Link>
           </li>
         ))}
       </ul>
     </div>
   );
 }
-

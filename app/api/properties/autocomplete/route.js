@@ -5,7 +5,6 @@ import Property from "@/app/backend/models/Property.model";
 export async function GET(req) {
     try {
         await connectDB();
-
         const { searchParams } = new URL(req.url);
         const query = searchParams.get("q");
 
@@ -13,28 +12,46 @@ export async function GET(req) {
             return NextResponse.json([], { status: 200 });
         }
 
+        // Use regex for flexible matching (case-insensitive)
         const regex = new RegExp(query, "i");
 
-        // Search in title, college, and description
-        const properties = await Property.find({
-            $or: [
-                { title: regex },
-                { college: regex },
-                { description: regex },
-                // If address existed, we'd search it here. 
-                // For now, description usually contains address-like info.
-            ]
+        // Fetch matching Properties (by Title)
+        const propertySuggestions = await Property.find({
+            title: { $regex: regex }
         })
-        .select("title college _id location")
-        .limit(5);
+            .select("title _id")
+            .limit(5)
+            .lean();
 
-        return NextResponse.json(properties, { status: 200 });
+        // Fetch matching Colleges (by College Name)
+        const collegeSuggestions = await Property.find({
+            college: { $regex: regex }
+        })
+            .select("college")
+            .limit(5)
+            .lean();
+
+        // Format suggestions with type
+        const formattedProperties = propertySuggestions.map(p => ({
+            text: p.title,
+            type: "property",
+            id: p._id
+        }));
+
+        // Deduplicate colleges and format
+        const uniqueColleges = [...new Set(collegeSuggestions.map(p => p.college))];
+        const formattedColleges = uniqueColleges.map(c => ({
+            text: c,
+            type: "college"
+        }));
+
+        // Combine and limit total results
+        const combinedSuggestions = [...formattedProperties, ...formattedColleges].slice(0, 8);
+
+        return NextResponse.json(combinedSuggestions, { status: 200 });
 
     } catch (error) {
-        console.error("Search API Error:", error);
-        return NextResponse.json(
-            { message: "Internal Server Error" },
-            { status: 500 }
-        );
+        console.error("Autocomplete API Error:", error);
+        return NextResponse.json([], { status: 500 });
     }
 }
