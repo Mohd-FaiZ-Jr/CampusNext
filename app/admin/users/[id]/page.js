@@ -106,7 +106,7 @@ export default function AdminUserProfilePage({ params }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-900 border-t-transparent"></div>
       </div>
     );
   }
@@ -146,7 +146,7 @@ export default function AdminUserProfilePage({ params }) {
               {user.name}
               {user.role === "LANDLORD" && user.landlordProfile?.isVerified && (
                 <ShieldCheck
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6 text-gray-900"
                   title="Verified Landlord"
                 />
               )}
@@ -154,10 +154,10 @@ export default function AdminUserProfilePage({ params }) {
             <div className="flex items-center gap-3 mt-2 text-gray-500 font-poppins">
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.role === "LANDLORD"
-                    ? "bg-purple-100 text-purple-800"
-                    : user.role === "ADMIN"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
+                  ? "bg-purple-100 text-purple-800"
+                  : user.role === "ADMIN"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-gray-100 text-gray-900"
                   }`}
               >
                 {user.role}
@@ -182,7 +182,7 @@ export default function AdminUserProfilePage({ params }) {
               ) : (
                 <button
                   onClick={() => handleVerifyLandlord(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm text-sm font-medium flex items-center gap-2 font-montserrat"
+                  className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition shadow-sm text-sm font-medium flex items-center gap-2 font-montserrat"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   Verify Landlord
@@ -201,8 +201,8 @@ export default function AdminUserProfilePage({ params }) {
                     })
                 }
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition border flex items-center gap-2 ${user.suspended
-                    ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
-                    : "bg-white text-red-600 border-red-200 hover:bg-red-50"
+                  ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
+                  : "bg-white text-red-600 border-red-200 hover:bg-red-50"
                   }`}
               >
                 {user.suspended ? (
