@@ -23,6 +23,10 @@ export async function POST(req) {
             location,
             college,
             images,
+            bedrooms,
+            bathrooms,
+            sqft,
+            garage,
         } = body;
 
         // 3. Validation (Basic)
@@ -61,6 +65,10 @@ export async function POST(req) {
             owner: user.id, // from token payload
             verified: false, // Default
             distance: 0, // Default or calculated
+            bedrooms: bedrooms || 0,
+            bathrooms: bathrooms || 0,
+            sqft: sqft || 0,
+            garage: garage || 0,
         });
 
         console.log('✅ Property created successfully:', newProperty._id);
@@ -261,6 +269,10 @@ export async function GET(req) {
                 location: prop.location,
                 verified: prop.verified,
                 distance: `${calculatedDistance}km`,
+                bedrooms: prop.bedrooms || 0,
+                bathrooms: prop.bathrooms || 0,
+                sqft: prop.sqft || 0,
+                garage: prop.garage || 0,
             };
         });
 

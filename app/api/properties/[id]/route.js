@@ -67,6 +67,10 @@ export async function PUT(req, { params }) {
       college,
       location,
       images,
+      bedrooms,
+      bathrooms,
+      sqft,
+      garage,
     } = body;
 
     // Debug logging
@@ -134,6 +138,10 @@ export async function PUT(req, { params }) {
     if (gender) updateData.gender = gender;
     if (amenities) updateData.amenities = amenities;
     if (college) updateData.college = college;
+    if (bedrooms !== undefined) updateData.bedrooms = bedrooms;
+    if (bathrooms !== undefined) updateData.bathrooms = bathrooms;
+    if (sqft !== undefined) updateData.sqft = sqft;
+    if (garage !== undefined) updateData.garage = garage;
 
     // If critical fields changed, unverify the property
     if (hasCriticalChanges) {

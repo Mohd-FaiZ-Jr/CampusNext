@@ -81,6 +81,26 @@ const PropertySchema = new mongoose.Schema(
     rejectionReason: {
       type: String,
     },
+    bedrooms: {
+      type: Number,
+      default: 0,
+      min: [0, "Bedrooms cannot be negative"],
+    },
+    bathrooms: {
+      type: Number,
+      default: 0,
+      min: [0, "Bathrooms cannot be negative"],
+    },
+    sqft: {
+      type: Number,
+      default: 0,
+      min: [0, "Square footage cannot be negative"],
+    },
+    garage: {
+      type: Number,
+      default: 0,
+      min: [0, "Garage cannot be negative"],
+    },
     distance: {
       type: Number,
       default: 0,

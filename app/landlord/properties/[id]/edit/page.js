@@ -22,6 +22,10 @@ export default function EditPropertyPage() {
     college: "",
     location: null,
     images: [],
+    bedrooms: "",
+    bathrooms: "",
+    sqft: "",
+    garage: "",
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +56,10 @@ export default function EditPropertyPage() {
           lat: data.location.coordinates[1],
         },
         images: data.images || [],
+        bedrooms: data.bedrooms || "",
+        bathrooms: data.bathrooms || "",
+        sqft: data.sqft || "",
+        garage: data.garage || "",
       });
     } catch (err) {
       setError(err.message);
@@ -94,6 +102,10 @@ export default function EditPropertyPage() {
         ...formData,
         price: Number(formData.price),
         amenities: amenitiesArray,
+        bedrooms: Number(formData.bedrooms) || 0,
+        bathrooms: Number(formData.bathrooms) || 0,
+        sqft: Number(formData.sqft) || 0,
+        garage: Number(formData.garage) || 0,
       };
 
       console.log('Edit Form - Submitting payload:', payload);
@@ -240,6 +252,71 @@ export default function EditPropertyPage() {
                     required
                   />
                 </div>
+              </div>
+
+              {/* ================= PROPERTY DETAILS ================= */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Bedrooms
+                  </label>
+                  <input
+                    type="number"
+                    name="bedrooms"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    placeholder="0"
+                    min="0"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Bathrooms
+                  </label>
+                  <input
+                    type="number"
+                    name="bathrooms"
+                    value={formData.bathrooms}
+                    onChange={handleChange}
+                    placeholder="0"
+                    min="0"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Area (sq ft)
+                  </label>
+                  <input
+                    type="number"
+                    name="sqft"
+                    value={formData.sqft}
+                    onChange={handleChange}
+                    placeholder="0"
+                    min="0"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 font-nunito">
+                    Garage
+                  </label>
+                  <input
+                    type="number"
+                    name="garage"
+                    value={formData.garage}
+                    onChange={handleChange}
+                    placeholder="0"
+                    min="0"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-gray-900 outline-none transition font-poppins text-sm"
+                  />
+                </div>
+
               </div>
 
               {/* ================= PREFERENCES ================= */}
