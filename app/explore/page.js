@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Layout from "../components/Layout";
 import FilterSidebar from "../components/FilterSidebar";
@@ -8,7 +8,7 @@ import PropertyCard from "../components/PropertyCard";
 import useDebounce from "../hooks/useDebounce";
 import { useAuth } from "../context/AuthContext";
 
-export default function ExplorePage() {
+function ExploreContent() {
   const router = useRouter();
   const { user, isLoading: authLoading, openLoginModal } = useAuth();
   const hasRedirected = useRef(false);
@@ -386,5 +386,24 @@ export default function ExplorePage() {
         </div>
       </div>
     </Layout>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense
+      fallback={
+        <Layout>
+          <div className="min-h-screen flex items-center justify-center bg-white">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+              <p className="mt-4 text-gray-600">Loading...</p>
+            </div>
+          </div>
+        </Layout>
+      }
+    >
+      <ExploreContent />
+    </Suspense>
   );
 }

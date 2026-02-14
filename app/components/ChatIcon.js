@@ -84,6 +84,7 @@ export default function ChatIcon() {
 
     // Hide chat on map/navigation pages
     const isMapPage = pathname?.startsWith('/navigate') || pathname === '/map';
+    const isAdmin = pathname?.startsWith('/admin');
 
     // Don't render during SSR, if user not logged in, or on map pages
     if (!isMounted || !user || isMapPage) return null;
@@ -93,7 +94,7 @@ export default function ChatIcon() {
             {/* Floating Chat Button - Works on Mobile */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-40 w-14 h-14
+                className={`fixed ${isAdmin ? 'bottom-24 lg:bottom-6' : 'bottom-6'} right-6 z-[100] w-14 h-14
              bg-white text-gray-800
              border border-gray-200
              rounded-full
@@ -102,7 +103,7 @@ export default function ChatIcon() {
              hover:scale-105
              active:scale-95
              transition-all duration-200
-             flex items-center justify-center"
+             flex items-center justify-center`}
                 aria-label="Open chat"
                 style={{ minWidth: '56px', minHeight: '56px' }}
             >
@@ -122,7 +123,7 @@ export default function ChatIcon() {
 
             {/* Chat Panel - Responsive for Mobile */}
             {isOpen && (
-                <div className="fixed inset-0 z-50 bg-white md:fixed md:bottom-24 md:right-6 md:w-96 md:h-[600px] md:inset-auto md:rounded-xl md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 animate-fadeIn">
+                <div className="fixed inset-0 z-[101] bg-white md:fixed md:bottom-24 md:right-6 md:w-96 md:h-[600px] md:inset-auto md:rounded-xl md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 animate-fadeIn">
                     <ChatList
                         onClose={() => {
                             setIsOpen(false);
