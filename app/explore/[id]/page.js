@@ -23,6 +23,8 @@ export default function PropertyDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
 
   // Check authentication - redirect if not logged in
   useEffect(() => {
@@ -69,6 +71,67 @@ export default function PropertyDetailPage() {
       setIsLoading(false);
     }
   };
+
+  // Calculate distance using Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+  };
+
+  // Format distance for display
+  const formatDistance = (km) => {
+    if (km < 1) {
+      return "< 1 km";
+    } else if (km < 10) {
+      return `${km.toFixed(1)} km`;
+    } else {
+      return `${Math.round(km)} km`;
+    }
+  };
+
+  // Request user location and calculate distance
+  useEffect(() => {
+    if (!property?.location?.coordinates) return;
+
+    // Check if geolocation is supported
+    if (!navigator.geolocation) {
+      console.log("Geolocation not supported");
+      return;
+    }
+
+    // Request user location
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+        setUserLocation({ lat: userLat, lon: userLon });
+
+        // Property coordinates are [longitude, latitude] in GeoJSON format
+        const [propLon, propLat] = property.location.coordinates;
+
+        // Calculate distance
+        const dist = calculateDistance(userLat, userLon, propLat, propLon);
+        setDistance(dist);
+      },
+      (error) => {
+        console.log("Geolocation error:", error.message);
+        // Silently fail - distance will remain null
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 300000 // Cache for 5 minutes
+      }
+    );
+  }, [property]);
 
   if (authLoading || !user) {
     return (
@@ -240,11 +303,10 @@ export default function PropertyDetailPage() {
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`relative w-24 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all duration-300
-            ${
-              currentImageIndex === index
-                ? "border-blue-600 scale-105"
-                : "border-gray-200 opacity-70 hover:opacity-100"
-            }`}
+            ${currentImageIndex === index
+                        ? "border-blue-600 scale-105"
+                        : "border-gray-200 opacity-70 hover:opacity-100"
+                      }`}
                   >
                     <img
                       src={img}
@@ -341,7 +403,7 @@ export default function PropertyDetailPage() {
                         {property.gender === "UNISEX"
                           ? "Co-ed"
                           : property.gender?.charAt(0) +
-                              property.gender?.slice(1).toLowerCase() || "Any"}
+                          property.gender?.slice(1).toLowerCase() || "Any"}
                       </p>
                     </div>
                   </div>
@@ -395,7 +457,7 @@ export default function PropertyDetailPage() {
                         Distance
                       </p>
                       <p className="font-semibold text-gray-900">
-                        &lt; 1 km to Campus
+                        {distance !== null ? formatDistance(distance) : "Distance unavailable"}
                       </p>
                     </div>
                   </div>
@@ -457,7 +519,7 @@ export default function PropertyDetailPage() {
 
                 <div className="h-72">
                   {property.location?.coordinates &&
-                  property.location.coordinates.length === 2 ? (
+                    property.location.coordinates.length === 2 ? (
                     <PropertyMap
                       coordinates={property.location.coordinates}
                       title={property.title}

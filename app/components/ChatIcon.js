@@ -94,7 +94,7 @@ export default function ChatIcon() {
             {/* Floating Chat Button - Works on Mobile */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed ${isAdmin ? 'bottom-24 lg:bottom-6' : 'bottom-6'} right-6 z-[100] w-14 h-14
+                className={`fixed ${isAdmin ? 'bottom-24 lg:bottom-6' : 'bottom-6'} right-6 z-[2000] md:z-[100] w-14 h-14
              bg-white text-gray-800
              border border-gray-200
              rounded-full
@@ -123,7 +123,7 @@ export default function ChatIcon() {
 
             {/* Chat Panel - Responsive for Mobile */}
             {isOpen && (
-                <div className="fixed inset-0 z-[101] bg-white md:fixed md:bottom-24 md:right-6 md:w-96 md:h-[600px] md:inset-auto md:rounded-xl md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 animate-fadeIn">
+                <div className="fixed inset-0 z-[2001] md:z-[101] bg-white md:fixed md:bottom-24 md:right-6 md:w-96 md:h-[600px] md:inset-auto md:rounded-xl md:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 animate-fadeIn">
                     <ChatList
                         onClose={() => {
                             setIsOpen(false);

@@ -38,7 +38,7 @@ export default function Footer() {
               title="Company"
               links={[
                 { label: "About Us", href: "/" },
-                { label: "Support", href: "/" },
+                { label: "Support", href: "/contact" },
               ]}
             />
 
@@ -70,9 +70,9 @@ export default function Footer() {
             <Link href="/terms-of-service" className="hover:text-white transition">
               Terms
             </Link>
-            <span className="hover:text-white transition cursor-pointer">
+            <Link href="/contact" className="hover:text-white transition">
               Support
-            </span>
+            </Link>
           </div>
 
         </div>
